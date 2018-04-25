@@ -410,12 +410,39 @@ gb.embed.LayerDefinition.prototype.setJSONFile = function() {
 };
 
 gb.embed.LayerDefinition.prototype.getJSONFile = function() {
-	var setting = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.getStructure()));
-	var anchor = $("<a>").attr({
-		"href" : setting,
-		"download" : "layer_setting.json"
-	});
-	$(anchor)[0].click();
+	// Opera 8.0+
+	var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+	// Firefox 1.0+
+	var isFirefox = typeof InstallTrigger !== 'undefined';
+
+	// Safari 3.0+ "[object HTMLElementConstructor]"
+	var isSafari = /constructor/i.test(window.HTMLElement) || (function(p) {
+		return p.toString() === "[object SafariRemoteNotification]";
+	})(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
+
+	// Internet Explorer 6-11
+	var isIE = /* @cc_on!@ */false || !!document.documentMode;
+
+	// Edge 20+
+	var isEdge = !isIE && !!window.StyleMedia;
+
+	// Chrome 1+
+	var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+	// Blink engine detection
+	var isBlink = (isChrome || isOpera) && !!window.CSS;
+
+	if (isIE) {
+		download(JSON.stringify(this.getStructure()), "layer_setting.json", "text/plain");
+	} else {
+		var setting = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.getStructure()));
+		var anchor = $("<a>").attr({
+			"href" : setting,
+			"download" : "layer_setting.json"
+		});
+		$(anchor)[0].click();
+	}
 };
 
 gb.embed.LayerDefinition.prototype.inputAttributeValues = function(inp) {
