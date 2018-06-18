@@ -50,10 +50,10 @@ jQuery, OpenLayers3, JsTree, jQueryUI, Bootstrap3를 필요로 합니다.</br>
 </html>
 ```
 ### 2. declare OpenGDS/Builder
-```
+<pre><code>
  <head>
     <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
-    <link rel="stylesheet" href="https://location-of-gb/css/gb.css" type="text/css">
+    <b><link rel="stylesheet" href="https://location-of-gb/css/gb.css" type="text/css"><b/>
     <style>
       .map {
         height: 400px;
@@ -64,7 +64,7 @@ jQuery, OpenLayers3, JsTree, jQueryUI, Bootstrap3를 필요로 합니다.</br>
     <script src="https://location-of-gb/gb.js" type="text/javascript"></script>
     <title>OpenGDS/Builder example</title>
  </head>
-```
+</code></pre>
 
 ```
 <script type="text/javascript">
