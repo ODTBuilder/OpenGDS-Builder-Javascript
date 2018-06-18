@@ -60,7 +60,7 @@ JQeury, OpenLayers3, JsTree를 필요로 합니다.</br>
       }
     </style>
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
-    **<script src="https://locationofgb/gb.js" type="text/javascript"></script>**
+    <script src="https://locationofgb/gb.js" type="text/javascript"></script>
     <title>OpenGDS/Builder example</title>
  </head>
 ```
@@ -89,8 +89,8 @@ JQeury, OpenLayers3, JsTree를 필요로 합니다.</br>
               autoOpen : false,
               map : map, // 위에 선언한 ol.Map
               featureRecord : new gb.edit.FeatureRecord({
-			                          id : "feature_id" // GeoServer 통신시 feature의 고유ID로 사용되는 컬럼명
-		                          }),
+			        id : "feature_id" // GeoServer 통신시 feature의 고유ID로 사용되는 컬럼명
+		              }),
               selected : function() { // 편집할 ol.layer.Base 객체를 반환할 함수
                 return vector;
               },
