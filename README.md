@@ -6,7 +6,7 @@ JQeury, OpenLayers3, JsTree를 필요로 합니다.</br>
 # Quick Start
 
 ### 1. declare Openlayers 3
-
+```
 <!doctype html>
 <html lang="en">
   <head>
@@ -48,9 +48,9 @@ JQeury, OpenLayers3, JsTree를 필요로 합니다.</br>
     </script>
   </body>
 </html>
-
+```
 ### 2. declare OpenGDS/Builder
-====================================================================================================
+```
  <head>
     <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
     <style>
@@ -63,9 +63,9 @@ JQeury, OpenLayers3, JsTree를 필요로 합니다.</br>
     **<script src="https://locationofgb/gb.js" type="text/javascript"></script>**
     <title>OpenGDS/Builder example</title>
  </head>
-====================================================================================================
+```
 
-====================================================================================================
+```
 <script type="text/javascript">
    var map = new ol.Map({
         target: 'map',
@@ -100,4 +100,4 @@ JQeury, OpenLayers3, JsTree를 필요로 합니다.</br>
               getFeatureInfo : "http:// some geoserver url /geoserver/wms"
   });
 </script>
-====================================================================================================    
+```
