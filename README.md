@@ -53,7 +53,7 @@ jQuery, OpenLayers3, JsTree, jQueryUI, Bootstrap3를 필요로 합니다.</br>
 ```
  <head>
     <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
-    <link rel="stylesheet" href="https://location/of/gb/css/gb.css" type="text/css">
+    <link rel="stylesheet" href="https://location-of-gb/css/gb.css" type="text/css">
     <style>
       .map {
         height: 400px;
@@ -61,7 +61,7 @@ jQuery, OpenLayers3, JsTree, jQueryUI, Bootstrap3를 필요로 합니다.</br>
       }
     </style>
     <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
-    <script src="https://location/of/gb/gb.js" type="text/javascript"></script>
+    <script src="https://location-of-gb/gb.js" type="text/javascript"></script>
     <title>OpenGDS/Builder example</title>
  </head>
 ```
@@ -95,10 +95,10 @@ jQuery, OpenLayers3, JsTree, jQueryUI, Bootstrap3를 필요로 합니다.</br>
               selected : function() { // 편집할 ol.layer.Base 객체를 반환할 함수
                 return vector;
               },
-              layerInfo : "http:// some geoserver url /geoserver/wms",
-              imageTile : "http:// some geoserver url /geoserver/wms",
-              getFeature : "http:// some geoserver url /geoserver/wfs",
-              getFeatureInfo : "http:// some geoserver url /geoserver/wms"
+              layerInfo : "http://URL-of-Geoserver/geoserver/wms",
+              imageTile : "http://URL-of-Geoserver/geoserver/wms",
+              getFeature : "http://URL-of-Geoserver/geoserver/wfs",
+              getFeatureInfo : "http://URL-of-Geoserver/geoserver/wms"
   });
 </script>
 ```
