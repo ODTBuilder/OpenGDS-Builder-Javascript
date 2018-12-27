@@ -1,7 +1,5 @@
 # OpenGDS-Builder-Javascript
 OpenGDS/Builder 중 Javascript library</br>
-License - LGPL 3.0</br>
-jQuery, OpenLayers3, JsTree, jQueryUI, Bootstrap3를 필요로 합니다.</br>
 
 # Quick Start
 
@@ -103,6 +101,6 @@ jQuery, OpenLayers3, JsTree, jQueryUI, Bootstrap3를 필요로 합니다.</br>
 ```
 ![editingtool](https://user-images.githubusercontent.com/16248351/41519448-220ca6de-7303-11e8-863a-ca364eaf5a82.PNG)
 
-#사용 라이브러리
-jsTree 3.3.3, 3.3.7 (MIT License)
-ol-geocoder 3.2.0 (MIT License)
+#사용 라이브러리</br>
+jsTree 3.3.3, 3.3.7 (MIT License)</br>
+ol-geocoder 3.2.0 (MIT License)</br>
