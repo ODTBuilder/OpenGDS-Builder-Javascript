@@ -53,7 +53,7 @@ OpenGDS/Builder에서 공간정보기술(주)가 직접 개발한 Javascript lib
 </html>
 ```
 **더 자세한 내용들은 https://openlayers.org/ 를 참조해주세요.<br>
-### 2. declare OpenGDS/Builder
+### 2. OpenGDS/Builder 선언하기
 ```
 <head>
   <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
@@ -85,26 +85,22 @@ OpenGDS/Builder에서 공간정보기술(주)가 직접 개발한 Javascript lib
         })
       });
 
-  var temp = new gb.panel.EditingTool({
-              width : 84,
-              height : 145,
-              positionX : 425,
-              positionY : 100,
-              autoOpen : false,
+  var temp = new gb.header.EditingTool({
+              targetElement : jQuery객체, // EditingTool 메뉴바를 생성할 Div의 jQuery객체
               map : map, // 위에 선언한 ol.Map
               featureRecord : new gb.edit.FeatureRecord({
-			        id : "feature_id" // GeoServer 통신시 feature의 고유ID로 사용되는 컬럼명
+			        wfstURL : "geoserver/geoserverWFSTransaction.ajax", // Geoserver Layer 변경사항 저장 요청
+			        layerInfoURL : "geoserver/getGeoLayerInfoList.ajax" // Geoserver Layer 정보 요청
 		              }),
-              selected : function() { // 편집할 ol.layer.Base 객체를 반환할 함수
-                return vector;
-              },
-              layerInfo : "http://URL-of-Geoserver/geoserver/wms",
-              imageTile : "http://URL-of-Geoserver/geoserver/wms",
-              getFeature : "http://URL-of-Geoserver/geoserver/wfs",
-              getFeatureInfo : "http://URL-of-Geoserver/geoserver/wms"
+	      locale : "en", // 언어 설정
+              layerInfo : "geoserver/getGeoLayerInfoList.ajax", // Geoserver Layer 정보 요청
+              imageTile : "geoserver/geoserverWMSLayerLoad.do", // WMS 요청
+              wfsURL : "geoserver/geoserverWFSGetFeature.ajax", // Feature 객체 요청
+	      isEditing : gb.module.isEditing // EditingTool 활성화시 다른 작업을 제한하는 모듈
   });
 </script>
 ```
+** EditingTool에 사용된 주소들은 openGDS/Builder의 Java Controller 주소입니다.
 ![editingtool](https://user-images.githubusercontent.com/16248351/41519448-220ca6de-7303-11e8-863a-ca364eaf5a82.PNG)
 
 #사용 라이브러리</br>
