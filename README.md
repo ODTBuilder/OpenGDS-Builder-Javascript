@@ -103,6 +103,7 @@ OpenGDS/Builder에서 공간정보기술(주)가 직접 개발한 Javascript lib
 ** EditingTool에 사용된 주소들은 openGDS/Builder의 Java Controller 주소입니다.
 ![editingtool](https://user-images.githubusercontent.com/16248351/41519448-220ca6de-7303-11e8-863a-ca364eaf5a82.PNG)
 
+### 3. OpenGDS/Builder 선언하기
 #사용 라이브러리</br>
 jsTree 3.3.3, 3.3.7 (MIT License)</br>
 ol-geocoder 3.2.0 (MIT License)</br>
