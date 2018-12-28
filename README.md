@@ -4,11 +4,11 @@
 
 <a name="korean"></a>
 # OpenGDS-Builder-Javascript
-OpenGDS/Builder 중 Javascript library</br>
+OpenGDS/Builder에서 공간정보기술(주)가 직접 개발한 Javascript library들입니다.</br>
 
 # Quick Start
 
-### 1. declare Openlayers 3
+### 1. Openlayers 3 선언하기
 ```
 <!doctype html>
 <html lang="en">
@@ -52,6 +52,7 @@ OpenGDS/Builder 중 Javascript library</br>
   </body>
 </html>
 ```
+**더 자세한 내용들은 https://openlayers.org/ 를 참조해주세요.<br>
 ### 2. declare OpenGDS/Builder
 ```
 <head>
