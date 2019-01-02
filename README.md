@@ -13,38 +13,16 @@ OpenGDS/Builder에서 공간정보기술(주)가 직접 개발한 Javascript lib
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
-    <style>
-      .map {
-        height: 400px;
-        width: 100%;
-      }
-    </style>
-    <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
     <title>OpenGDS/Builder example</title>
   </head>
   <body>
     <h2>My Map</h2>
     <div id="map" class="map"></div>
     <script type="text/javascript">
-      var vector = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          url: 'https://openlayers.org/en/v4.6.5/examples/data/geojson/countries.geojson',
-          format: new ol.format.GeoJSON(),
-          wrapX: false
-        })
-      });
-
       var gbMap = new gb.Map({
         "target" : $("#map")[0], // Openlayers Map을 생성할 HTML Element 객체
-	"upperMap" : {
-	  "controls" : [],
-	  "layers" : []
-	},
-	"lowerMap" : {
-	  "controls" : [],
-	  "layers" : []
-	}
       });
     </script>
   </body>
@@ -54,9 +32,9 @@ OpenGDS/Builder에서 공간정보기술(주)가 직접 개발한 Javascript lib
 ### 2. Editing Tool 라이브러리 사용 환경 구성하기
 ```
 <head>
-  <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+  <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
   <link rel="stylesheet" href="https://location-of-gb/css/gb.css" type="text/css">
-  <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
   <script src="https://location-of-gb/gb.js" type="text/javascript"></script>
   <title>OpenGDS/Builder example</title>
 </head>
