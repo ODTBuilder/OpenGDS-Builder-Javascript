@@ -7,6 +7,9 @@
 OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)에서 공간정보기술(주)가 직접 개발한 Javascript library들입니다.</br>
 이 라이브러리들을 다운로드하여 기능별로 사용할 수 있으며 확장이 가능합니다.
 
+# 특징
+이 라이브러리들은 Openlayers3 와 JSTree를 사용하여 개발되었습니다. 일부 라이브러리들은 작동을 위해 서버와의 통신이 필수적입니다.
+
 # Quick Start
 
 ### 1. Openlayers 3 선언하기
@@ -16,6 +19,9 @@ OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)
   <head>
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
     <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="./gb/css/gb.css">
+    <script src="./gb/gb.js"></script>
+    <script src="./gb/map/map.js"></script>
     <title>OpenGDS/Builder example</title>
   </head>
   <body>
@@ -35,8 +41,9 @@ OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)
 <head>
   <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
   <link rel="stylesheet" href="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css" type="text/css">
-  <link rel="stylesheet" href="https://location-of-gb/css/gb.css" type="text/css">
-  <script src="https://location-of-gb/gb.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="./gb/css/gb.css">
+  <script src="./gb/gb.js"></script>
+  <script src="./gb/map/map.js"></script>
   <title>OpenGDS/Builder example</title>
 </head>
 ```
