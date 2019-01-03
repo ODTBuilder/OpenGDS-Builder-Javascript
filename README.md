@@ -131,54 +131,54 @@ OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)
     /* 2번 body부분과 동일하게 작성 */
     
     // 면적 측정 객체 선언
-		var measureArea = new gb.interaction.MeasureTip({
-			type : "Polygon",
-			map : gbMap.getUpperMap(),
-			snapSource : epan.snapSource
-		});
+    var measureArea = new gb.interaction.MeasureTip({
+      type : "Polygon",
+      map : gbMap.getUpperMap(),
+      snapSource : epan.snapSource
+    });
 
     // 거리 측정 객체 선언
-		var measureLength = new gb.interaction.MeasureTip({
-			type : "LineString",
-			map : gbMap.getUpperMap(),
-			snapSource : epan.snapSource
-		});
+    var measureLength = new gb.interaction.MeasureTip({
+      type : "LineString",
+      map : gbMap.getUpperMap(),
+      snapSource : epan.snapSource
+    });
     
     // 홀 폴리곤 그리기 객체 선언
-		var hole = new gb.interaction.HoleDraw({
-			selected : epan.selected
-		});
+    var hole = new gb.interaction.HoleDraw({
+      selected : epan.selected
+    });
     
     // Editing Tool에 면적 측정 기능 추가
     epan.addInteraction({
-			icon : "fas fa-ruler-combined",
-			content : "area",
-			interaction : measureArea,
-			"float" : "right"
-		});
+      icon : "fas fa-ruler-combined",
+      content : "area",
+      interaction : measureArea,
+      "float" : "right"
+    });
 
     // Editing Tool에 거리 측정 기능 추가
-		epan.addInteraction({
-			icon : "fas fa-ruler-vertical",
-			content : "length",
-			interaction : measureLength,
-			"float" : "right",
-			clickEvent : function() {
-				console.log("mesure length");
-			}
-		});
+    epan.addInteraction({
+      icon : "fas fa-ruler-vertical",
+      content : "length",
+      interaction : measureLength,
+      "float" : "right",
+      clickEvent : function() {
+        console.log("mesure length");
+      }
+    });
     
     // Editing Tool에 홀 폴리곤 그리기 기능 추가
     epan.addInteraction({
-			icon : "fab fa-bitbucket",
-			content : "Hole",
-			interaction : hole,
-			selectActive : true,
-			"float" : "right",
-			clickEvent : function() {
-				console.log("Hole draw");
-			}
-		});
+      icon : "fab fa-bitbucket",
+      content : "Hole",
+      interaction : hole,
+      selectActive : true,
+      "float" : "right",
+      clickEvent : function() {
+        console.log("Hole draw");
+      }
+    });
   <script>
 </body>
 ```
