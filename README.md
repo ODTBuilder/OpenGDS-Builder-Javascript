@@ -4,7 +4,8 @@
 
 <a name="korean"></a>
 # OpenGDS-Builder-Javascript
-OpenGDS/Builder에서 공간정보기술(주)가 직접 개발한 Javascript library들입니다.</br>
+OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)에서 공간정보기술(주)가 직접 개발한 Javascript library들입니다.</br>
+이 라이브러리들을 다운로드하여 기능별로 사용할 수 있으며 확장이 가능합니다.
 
 # Quick Start
 
