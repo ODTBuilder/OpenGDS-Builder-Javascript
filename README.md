@@ -182,8 +182,9 @@ OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)
   <script>
 </body>
 ```
-** 위와 같은 방식을 통해 Editing Tool 메뉴에 새로운 기능을 추가할 수 있습니다.<br>
-** icon 이미지는 fontawesome(https://fontawesome.com/icons)을 사용하였습니다.<br>
+** 위와 같은 방식을 통해 Editing Tool 메뉴에 새로운 기능을 추가할 수 있습니다.</br>
+** icon 이미지는 fontawesome(https://fontawesome.com/icons)을 사용하였습니다.</br>
 ### 5. 사용 라이브러리
 jsTree 3.3.3, 3.3.7 (MIT License)</br>
 ol-geocoder 3.2.0 (MIT License)</br>
+Openlayers3 v5.3.0 (FreeBSD) www.openlayers.org</br>
