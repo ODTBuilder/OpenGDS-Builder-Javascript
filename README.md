@@ -96,7 +96,7 @@ OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)
 </script>
 </body>
 ```
-![editingtool](https://user-images.githubusercontent.com/16248351/41519448-220ca6de-7303-11e8-863a-ca364eaf5a82.PNG)
+<img src="https://user-images.githubusercontent.com/11713603/50584143-11137980-0eb1-11e9-8dc9-8ca533d129f9.png" alt="alt text" width="75%">
 
 ### 3. Openlayers Layer 객체 추적 기능 추가하기
 ```
@@ -112,8 +112,9 @@ OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git)
  /* 2번 body부분과 동일하게 작성 */
 </body>
 ```
+<img src="https://user-images.githubusercontent.com/11713603/50585150-f9d78a80-0eb6-11e9-9fbb-065536614d7d.gif" alt="alt text" width="75%">
 
-### 3. Editing Tool에 기능 추가하기
+### 4. Editing Tool에 기능 추가하기
 ```
 <head>
   /**
