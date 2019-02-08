@@ -8,9 +8,9 @@ OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuild
 
 # 특징
 - 이 라이브러리들은 jQuery, Openlayers3, JSTree를 사용하여 개발되었습니다.<br>
-- 사용하려는 모듈을 선언할 때 div의 id또는 class 이름을 인자값으로 넘겨주는 것만으로 해당 div에 UI가 생성되어 편리합니다.<br>
+- 원하는 기능만을 선언하여 사용할 수 있어 편리합니다.<br>
 - 공간 데이터를 웹브라우저상에서 쉽고 빠르게 관리할 수 있습니다.<br>
-- 오픈소스 기반으로 개발되어 확장성이 뛰어납니다.<br>
+- 오픈소스 기반으로 개발되어 확장성이 뛰어납니다.<br><br>
 일부 라이브러리들은 작동을 위해 서버와의 통신이 필수적입니다.<br>
 서버와 연동되는 부분의 기능들은 OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git) 에서 확인할 수 있습니다.
 
