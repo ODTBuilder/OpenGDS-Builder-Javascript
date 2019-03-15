@@ -4,6 +4,8 @@ if (!gb)
 if (!gb.header)
 	gb.header = {};
 
+gb.header.ZOOMLEVEL = 11;
+gb.header.ACTIVEAREA = 7.75;
 /**
  * 레이어 편집 기능을 정의한다. 필수 라이브러리: jQuery, fontawesome, openlayers, gb.header.Base
  * 
@@ -27,8 +29,6 @@ gb.header.EditingTool = function(obj) {
 	this.selected = options.selected ? options.selected : undefined;
 	this.layerInfo = options.layerInfo ? options.layerInfo : undefined;
 	this.imageTile = options.imageTile ? options.imageTile : undefined;
-	this.getFeature = options.getFeature ? options.getFeature : undefined;
-	this.getFeatureInfo = options.getFeatureInfo ? options.getFeatureInfo : undefined;
 	this.versioningFeature = options.versioning instanceof gb.versioning.Feature ? options.versioning : undefined; 
 	this.selectedSource = undefined;
 	this.selectSources = new ol.Collection();
@@ -38,11 +38,78 @@ gb.header.EditingTool = function(obj) {
 	this.isEditing = options.isEditing instanceof Object ? options.isEditing : undefined;
 	this.vectorSourcesOfServer_ = {};
 	this.vectorSourcesOfVector_ = {};
-	this.customVector_ = {};
+//	this.customVector_ = {};
 	this.copyPaste_ = undefined;
 	this.wfsURL = options.wfsURL;
 	this.otree.setEditingTool(this);
 
+	this.locale = options.locale || "en";
+	this.translation = {
+		"notSupportHistory" : {
+			"en" : "This layer is not support feature history",
+			"ko" : "피처 이력을 지원하지 않는 레이어 입니다."
+		},
+		"alertSelectFeature" : {
+			"en" : "you should select Feature",
+			"ko" : "피처를 선택해 주세요."
+		},
+		"alertSelectOneLayer" : {
+			"en" : "you must select only one Layer",
+			"ko" : "레이어는 하나만 선택해야 합니다."
+		},
+		"returnMustArray" : {
+			"en" : "The return type must be an array",
+			"ko" : "리턴 객체는 배열이어야 합니다"
+		},
+		"editToolHint" : {
+			"en" : "Please zoom in to edit",
+			"ko" : "편집하시려면 확대해주세요"
+		},
+		"changes" : {
+			"en" : "Changes",
+			"ko" : "변경이력"
+		},
+		"add" : {
+			"ko" : "추가",
+			"en" : "Add"
+		},
+		"cancel" : {
+			"ko" : "취소",
+			"en" : "Cancel"
+		},
+		"delete" : {
+			"ko" : "삭제",
+			"en" : "Delete"
+		},
+		"deleteFeature" : {
+			"ko" : "객체 삭제",
+			"en" : "Delete Feature"
+		},
+		"notNullHint" : {
+			"ko" : "빈 값이 허용되지않습니다.",
+			"en" : "null values ​​are not allowed."
+		},
+		"valueHint" : {
+			"ko" : "타입에 맞게 값을 입력해야합니다.",
+			"en" : "You must enter a value for the type."
+		},
+		"tempLayer" : {
+			"ko" : "Move 임시레이어",
+			"en" : "Move temporary layer"
+		},
+		"deleteFeaturesHint" : {
+			"ko" : "선택한 객체들을 정말로 삭제하시겠습니까?",
+			"en" : "Are you sure you want to delete the selected features?"
+		},
+		"selectFeatureNum" : {
+			"ko" : "선택된 객체 수",
+			"en" : "Number of selected features"
+		},
+		"transformPointHint" : {
+			"ko" : "Point객체는 변환 기능을 사용할 수 없습니다.",
+			"en" : "Point objects can not use the transform function."
+		}
+	}
 
 	this.snapWMS = [];
 	this.snapSource = new ol.source.Vector();
@@ -57,7 +124,7 @@ gb.header.EditingTool = function(obj) {
 		renderMode: "vector",
 		source : this.tempSource
 	});
-
+	this.tempVector.set("name", this.translation.tempLayer[this.locale]);
 	this.managed = new ol.layer.Vector({
 		renderMode: "vector",
 		source : this.tempSource
@@ -272,13 +339,13 @@ gb.header.EditingTool = function(obj) {
 			"select": "selectBtn",
 			"move": "moveBtn",
 			"draw": "drawBtn",
-			"transform": "rotateBtn",
+			"rotate": "rotateBtn",
 			"modify": "modiBtn",
 			"delete": "delBtn"
 	}
 	for(var i in eventList){
 		if(eventList[i].text()){
-			this.btn[match[eventList[i].text().toLowerCase()]] = eventList[i];
+			this.btn[match[eventList[i].data("content").toLowerCase()]] = eventList[i];
 		}
 	}
 
@@ -305,8 +372,9 @@ gb.header.EditingTool = function(obj) {
 	});
 	
 	var ath1 = $("<th>").text("Name");
-	var ath2 = $("<th>").text("Value");
-	var atr = $("<tr>").append(ath1).append(ath2);
+	var ath2 = $("<th>").text("Type");
+	var ath3 = $("<th>").text("Value");
+	var atr = $("<tr>").append(ath1).append(ath2).append(ath3);
 	var ahd = $("<thead>").append(atr);
 	this.attrTB = $("<tbody>");
 	var atb = $("<table>").addClass("gb-table").append(ahd).append(this.attrTB);
@@ -332,7 +400,8 @@ gb.header.EditingTool = function(obj) {
 		});
 	});
 
-	var preventReload = false;
+	var preventReload = true;
+	var firstLoad = true;
 	this.map.on('moveend', function(evt){
 		that.loadSnappingLayer(this.getView().calculateExtent(this.getSize()));
 
@@ -342,32 +411,42 @@ gb.header.EditingTool = function(obj) {
 		var zoom = view.getZoom();
 
 		if(that.getActiveTool()){
-			if(zoom > 11 && !preventReload){
+			if(that.checkActiveTool() && firstLoad){
+				preventReload = false;
+				firstLoad = false;
+			} else if(!that.checkActiveTool() && firstLoad){
+				preventReload = true;
+				firstLoad = false;
+			}
+			
+			if(that.checkActiveTool() && !preventReload){
 				that.loadWFS_();
 				that.loadVector_();
 				that.displayEditZoomHint(false);
 				preventReload = true;
-			} else if(zoom <= 11 && preventReload) {
+			} else if(!that.checkActiveTool() && preventReload) {
 				that.setVisibleWFS(false);
-				that.setVisibleImageVector(false);
+				that.setVisibleVectorVector(false);
 				that.displayEditZoomHint(true);
 				preventReload = false;
 			}
+		} else {
+			preventReload = false;
 		}
 	});
 
 	this.treeElement.on("changed.jstreeol3", function(e, data){
 		if(that.getActiveTool()){
-			if(that.map.getView().getZoom() > 11){
+			if(that.checkActiveTool()){
 				if(data.selected.length === 1){
-					that.select(that.updateSelected(data.selected[0]));
-					that.moveUpEditingLayer_();
+					that.select(that.updateSelected());
+					// that.moveUpEditingLayer_();
 				}
 			}
 		}
 	});
 
-	this.treeElement.on("delete_node.jstreeol3", function(e, data){
+	this.treeElement.on("delete_node_layer.jstreeol3", function(e, data){
 		var id = data.node.id;
 		var source = that.getVectorSourceOfServer(id);
 		if(!!source){
@@ -375,9 +454,17 @@ gb.header.EditingTool = function(obj) {
 			source.clear();
 			delete that.vectorSourcesOfServer_[id];
 		}
-		if(that.customVector_[id]){
-			delete that.customVector_[id];
+		
+		source = that.getVectorSourceOfVector(id);
+		if(!!source){
+			source.get("git").tempLayer.setMap(null);
+			source.clear();
+			delete that.vectorSourcesOfVector_[id];
 		}
+//		if(that.customVector_[id]){
+//			that.customVector_[id].get("git").tempLayer.setVisible(false);
+//			delete that.customVector_[id];
+//		}
 		that.refreshTileLayer();
 	});
 
@@ -387,7 +474,7 @@ gb.header.EditingTool = function(obj) {
 		this.getVersioningFeature().setEditingTool(this);
 		console.log(this.ulTagRight);
 		var iTag = $("<i>").addClass("fas").addClass("fa-history").attr("aria-hidden", "true").css(this.iStyle);
-		var aTag = $("<a>").attr("href", "#").append(iTag).append("Changes").css(this.aStyle).click(function(){
+		var aTag = $("<a>").attr("href", "#").append(iTag).append(this.translation.changes[this.locale]).css(this.aStyle).click(function(){
 			that.toggleFeatureHistoryModal();
 		});
 		aTag.hover(function(){
@@ -423,11 +510,11 @@ gb.header.EditingTool.prototype.toggleFeatureHistoryModal = function(feature) {
 	var git = layer.get("git");
 	if (git !== undefined) {
 		if (!(git.hasOwnProperty("geogigRepo") && git.hasOwnProperty("geogigBranch"))) {
-			alert("피처 이력을 지원하지 않는 레이어 입니다.");
+			alert(this.translation.notSupportHistory[this.locale]);
 			return;
 		}
 	} else {
-		alert("피처 이력을 지원하지 않는 레이어 입니다.");
+		alert(this.translation.notSupportHistory[this.locale]);
 		return;
 	}
 	if ($(vfeature.getPanel().getPanel()).css("display") !== "none") {
@@ -437,7 +524,7 @@ gb.header.EditingTool.prototype.toggleFeatureHistoryModal = function(feature) {
 // this.interaction.select.getFeatures().getLength() === 1 ?
 // this.interaction.select.getFeatures().item(0) : undefined;
 		if (nfeature === undefined) {
-			alert("피처를 선택해 주세요.");
+			alert(this.translation.alertSelectFeature[this.locale]);
 			return;
 		}
 		if (layers.length === 1 && nfeature) {
@@ -473,7 +560,7 @@ gb.header.EditingTool.prototype.toggleFeatureHistoryModal = function(feature) {
 				vfeature.open();
 			}
 		} else {
-			alert("피처를 선택해 주세요.");
+			alert(this.translation.alertSelectFeature[this.locale]);
 			return;
 		}
 	}
@@ -796,32 +883,14 @@ gb.header.EditingTool.prototype.select = function(source) {
 			})
 		}
 	});
-	this.interaction.select.on("select", function(evt) {
-		console.log("select-interact");
-		var features = that.interaction.select.getFeatures();
-		var slayers = $(that.treeElement).jstreeol3("get_selected_layer");
-		var slayer;
-		if (slayers.length === 1) {
-			slayer = slayers[0];
-		}
-		var git;
-		if (slayer !== undefined) {
-			git = slayer.get("git");	
-		}
-		
-		if (that.getVersioningFeature() instanceof gb.versioning.Feature && features.getLength() === 1 && git.hasOwnProperty("geogigRepo") && git.hasOwnProperty("geogigBranch")) {
-			console.log($(that.treeElement).jstreeol3("get_selected_layer"));
-			var feature = features.item(0);
-			that.updateFeatureHistoryModal(feature);
-		} else {
-			var vfeature = that.getVersioningFeature();
-			vfeature.close();
-		}
-	});
+
 	this.interaction.select.getFeatures().on("change:length", function(evt) {
 		var vfeature = that.getVersioningFeature();
 		that.features = that.interaction.select.getFeatures();
 		$(that.featureTB).empty();
+		
+		var gitAttr = that.selectedSource.get("git");
+		
 		if (that.features.getLength() > 1) {
 			vfeature.close();
 			that.featurePop.close();
@@ -830,14 +899,13 @@ gb.header.EditingTool.prototype.select = function(source) {
 				var fno = idx ? idx.substring(that.features.item(i).getId().indexOf(".") + 1) : "";
 				var td1 = $("<td>").text(fno);
 				var feature = that.features.item(i);
-				var gitAttr = that.selectedSource.get("git");
 				var anc = $("<a>").addClass("gb-edit-sel-flist").css("cursor", "pointer").attr({
 					"value" : gitAttr.treeID + "," + feature.getId()
 				}).text("Selecting feature").click(function() {
 					var param = $(this).attr("value").split(",");
 					var slayers = $(that.treeElement).jstreeol3("get_selected_layer");
 					if (slayers.length !== 1) {
-						console.error("레이어는 하나만 선택해야 합니다.");
+						console.error(this.translation.alertSelectOneLayer[this.locale]);
 						return;
 					}
 					if (slayers[0] instanceof ol.layer.Tile) {
@@ -858,7 +926,7 @@ gb.header.EditingTool.prototype.select = function(source) {
 					var param = $(this).find("a").attr("value").split(",");
 					var slayers = $(that.treeElement).jstreeol3("get_selected_layer");
 					if (slayers.length !== 1) {
-						console.error("레이어는 하나만 선택해야 합니다.");
+						console.error(this.translation.alertSelectOneLayer[this.locale]);
 						return;
 					}
 					if (slayers[0] instanceof ol.layer.Tile) {
@@ -880,7 +948,7 @@ gb.header.EditingTool.prototype.select = function(source) {
 					var param = $(this).find("a").attr("value").split(",");
 					var slayers = $(that.treeElement).jstreeol3("get_selected_layer");
 					if (slayers.length !== 1) {
-						console.error("레이어는 하나만 선택해야 합니다.");
+						console.error(this.translation.alertSelectOneLayer[this.locale]);
 						return;
 					}
 					if (slayers[0] instanceof ol.layer.Tile) {
@@ -904,78 +972,165 @@ gb.header.EditingTool.prototype.select = function(source) {
 			});
 			that.attrPop.close();
 		} else if (that.features.getLength() === 1) {
+			//피처 버저닝 이력 시작
+			var features = that.interaction.select.getFeatures();
+			var slayers = $(that.treeElement).jstreeol3("get_selected_layer");
+			var slayer;
+			if (slayers.length === 1) {
+				slayer = slayers[0];
+			}
+			var git;
+			if (slayer !== undefined) {
+				git = slayer.get("git");	
+			}
+			
+			if (that.getVersioningFeature() instanceof gb.versioning.Feature && features.getLength() === 1 && git.hasOwnProperty("geogigRepo") && git.hasOwnProperty("geogigBranch")) {
+				console.log($(that.treeElement).jstreeol3("get_selected_layer"));
+				var feature = features.item(0);
+				that.updateFeatureHistoryModal(feature);
+			} else {
+				var vfeature = that.getVersioningFeature();
+				vfeature.close();
+			}
+			//피처 버저닝 이력 끝
+			
 			that.featurePop.close();
 			$(that.attrTB).empty();
 			that.feature = that.features.item(0);
-			var attrInfo = that.feature.getProperties();
-
+			
+			var source = that.selectedSource;
+			var git = source.get("git");
+			var props = git.attribute || [];
+			var layer = source.get("git").tempLayer;
+			
 			if (1) {
-				var attr = that.features.item(0).getProperties();
-				var keys = Object.keys(attrInfo);
-				for (var i = 0; i < keys.length; i++) {
-					if (keys[i] === "geometry") {
-						continue;
-					}
-					var td1 = $("<td>").text(keys[i]);
+				for (var i = 0; i < props.length; i++) {
+					var td1 = $("<td>").text(props[i].fieldName);
+					var td2 = $("<td>").text(props[i].type);
 					var tform = $("<input>").addClass("gb-edit-sel-alist").attr({
 						"type" : "text"
 					}).css({
 						"width" : "100%",
 						"border" : "none"
-					}).val(attr[keys[i]]).on("input", function() {
-						var attrTemp = attrInfo[$(this).parent().prev().text()];
+					}).val(that.feature.get(props[i].fieldName)).on("input", function(e) {
+//						var attrTemp = attrInfo[$(this).parent().prev().text()];
+						var key = $(this).parent().prev().prev().text();
 						var source = that.selectedSource;
+						var git = source.get("git");
+						var props = git.attribute || [];
 						var layer = source.get("git").tempLayer;
 						var obj = {};
-						obj[$(this).parent().prev().text()] = $(this).val();
-						that.feature.setProperties(obj);
-						that.featureRecord.update(layer, that.feature);
-						/*
-						 * switch (typeof attrTemp) { case "string": if
-						 * (that.isString($(this).val()) || ($(this).val() ===
-						 * "")) { var obj = {};
-						 * obj[$(this).parent().prev().text()] = $(this).val();
-						 * that.feature.setProperties(obj);
-						 * that.featureRecord.update(that.getLayer(),
-						 * that.feature); } else { $(this).val(""); } break;
-						 * case "number": if (that.isInteger($(this).val()) ||
-						 * ($(this).val() === "")) { var obj = {};
-						 * obj[$(this).parent().prev().text()] = $(this).val();
-						 * that.feature.setProperties(obj);
-						 * that.featureRecord.update(that.getLayer(),
-						 * that.feature); } else { $(this).val(""); } break;
-						 * case "Double": if (that.isDouble($(this).val()) ||
-						 * ($(this).val() === "")) { var obj = {};
-						 * obj[$(this).parent().prev().text()] = $(this).val();
-						 * that.feature.setProperties(obj);
-						 * that.featureRecord.update(that.getLayer(),
-						 * that.feature); console.log("set"); } else {
-						 * $(this).val(""); } break; case "boolean": var valid = [
-						 * "t", "tr", "tru", "true", "f", "fa", "fal", "fals",
-						 * "false" ]; if (valid.indexOf($(this).val()) !== -1) {
-						 * if (that.isBoolean($(this).val())) { var obj = {};
-						 * obj[$(this).parent().prev().text()] = $(this).val();
-						 * that.feature.setProperties(obj);
-						 * that.featureRecord.update(that.getLayer(),
-						 * that.feature); console.log("set"); } } else if
-						 * ($(this).val() === "") { var obj = {};
-						 * obj[$(this).parent().prev().text()] = $(this).val();
-						 * that.feature.setProperties(obj);
-						 * that.featureRecord.update(that.getLayer(),
-						 * that.feature); console.log("set"); } else {
-						 * $(this).val(""); } break; case "Date": if
-						 * ($(this).val().length === 10) { if
-						 * (that.isDate($(this).val())) { var obj = {};
-						 * obj[$(this).parent().prev().text()] = $(this).val();
-						 * that.feature.setProperties(obj);
-						 * that.featureRecord.update(that.getLayer(),
-						 * that.feature); console.log("set"); } else {
-						 * $(this).val(""); } } else if ($(this).val().length >
-						 * 10) { $(this).val(""); } break; default: break; }
-						 */
+						var unique, nullable, type;
+						
+						for(var i = 0; i < props.length; i++){
+							if(key === props[i].fieldName){
+								unique = props[i].isUnique || false;
+								nullable = props[i].nullable || false;
+								type = props[i].type || "String";
+								break;
+							}
+						}
+						
+//						obj[$(this).parent().prev().text()] = $(this).val();
+//						that.feature.setProperties(obj);
+//						that.featureRecord.update(layer, that.feature);
+						
+						if(!nullable && $(this).val() === ""){
+							return;
+						}
+						
+						switch (type) { 
+						case "String":
+							if(that.isString($(this).val()) || ($(this).val() === "")){ 
+								var obj = {};
+								obj[key] = $(this).val();
+								that.feature.setProperties(obj);
+								that.featureRecord.update(layer, that.feature);
+							} else { 
+								$(this).val("");
+							}
+							break;
+						case "Number":
+							if (that.isInteger($(this).val()) || ($(this).val() === "")) {
+								var obj = {};
+								obj[key] = $(this).val();
+								that.feature.setProperties(obj);
+								that.featureRecord.update(layer,that.feature);
+							} else {
+								$(this).val($(this).val().replace(/[^0-9]/g, ""));
+							}
+							break;
+						case "Integer":
+							if (that.isInteger($(this).val()) || ($(this).val() === "")) {
+								var obj = {};
+								obj[key] = $(this).val();
+								that.feature.setProperties(obj);
+								that.featureRecord.update(layer,that.feature);
+							} else {
+								$(this).val($(this).val().replace(/[^0-9]/g, ""));
+							}
+							break;
+						case "Double":
+							if (that.isDouble($(this).val()) || ($(this).val() === "")) {
+								var obj = {};
+								obj[key] = $(this).val();
+								that.feature.setProperties(obj);
+								that.featureRecord.update(layer, that.feature);
+								console.log("set");
+							} else {
+								$(this).val($(this).val().replace(/[^0-9\.]/g, ""));
+							}
+							break;
+						case "Long":
+							if (that.isInteger($(this).val()) || ($(this).val() === "")) {
+								var obj = {};
+								obj[key] = $(this).val();
+								that.feature.setProperties(obj);
+								that.featureRecord.update(layer,that.feature);
+							} else {
+								$(this).val($(this).val().replace(/[^0-9]/g, ""));
+							}
+							break;
+						case "Boolean":
+							var valid = ["t", "tr", "tru", "true", "f", "fa", "fal", "fals", "false" ];
+							if (valid.indexOf($(this).val()) !== -1) {
+								if (that.isBoolean($(this).val())) {
+									var obj = {};
+									obj[key] = $(this).val();
+									that.feature.setProperties(obj);
+									that.featureRecord.update(layer, that.feature);
+									console.log("set");
+								}
+							} else if($(this).val() === "") {
+								var obj = {};
+								obj[key] = $(this).val();
+								that.feature.setProperties(obj);
+								that.featureRecord.update(layer, that.feature);
+								console.log("set");
+							} else {
+								$(this).val("");
+							}
+							break;
+						case "Date":
+							if($(this).val().length === 10) {
+								if(that.isDate($(this).val())) {
+									var obj = {};
+									obj[key] = $(this).val();
+									that.feature.setProperties(obj);
+									that.featureRecord.update(layer, that.feature);
+									console.log("set");
+								} else {
+									$(this).val("");
+								}
+							} else if ($(this).val().length >10) {
+								$(this).val("");
+							}
+							break;
+						default: break;
+						}
 					});
-					var td2 = $("<td>").append(tform);
-					var tr = $("<tr>").append(td1).append(td2);
+					var td3 = $("<td>").append(tform);
+					var tr = $("<tr>").append(td1).append(td2).append(td3);
 					that.attrTB.append(tr);
 				}
 				that.attrPop.open();
@@ -1080,47 +1235,195 @@ gb.header.EditingTool.prototype.draw = function(layer) {
 			console.log(evt);
 			gb.undo.setActive(true);
 			
+			var feature = evt.feature;
 			var source = that.selectedSource;
 			var layer = source.get("git").tempLayer;
 			var arr = that.selectedSource.getFeatures() instanceof Array ? that.selectedSource.getFeatures() : [];
 			var item = arr[0];
-			var prop, setProp = {};
+			var prop, notNull = {}, setProp = {};
 			
-			if(item instanceof ol.Feature){
-				prop = item.getProperties();
-				for(let key in prop){
-					if(prop[key] instanceof Object){
-						continue;
-					}
-					
-					setProp[key] = "";
-				}
-			} else {
-				if(layer.get("git") instanceof Object){
-					if(layer.get("git").attribute instanceof Array){
-						for(let i = 0; i < layer.get("git").attribute.length; i++){
-							prop = layer.get("git").attribute[i];
-							setProp[prop.fieldName] = "";
+			if(source.get("git") instanceof Object){
+				if(source.get("git").attribute instanceof Array){
+					var typeFormBody = $("<tbody>");
+					for(var i = 0; i < source.get("git").attribute.length; i++){
+						prop = source.get("git").attribute[i];
+						notNull[prop.fieldName] = prop.nullable;
+						
+						var td1 = $("<td>").text(prop.fieldName);
+						var td2 = $("<td>").text(prop.type);
+						var input = $("<input>").addClass("form-control").attr({
+							"type" : "text"
+						});
+						if(!prop.nullable){
+							input.attr("placeholder", "Not Null");
 						}
+						var td3 = $("<td>").append(input);
+						var tr = $("<tr>").append(td1).append(td2).append(td3);
+						typeFormBody.append(tr);
 					}
+					var htd1 = $("<td>").text("Key");
+					var htd2 = $("<td>").text("Type");
+					var htd3 = $("<td>").text("Value");
+					var thd = $("<thead>").append(htd1).append(htd2).append(htd3);
+					
+					var table = $("<table>").addClass("table").addClass("text-center").append(thd).append(typeFormBody);
+					
+					var okBtn = 
+						$("<button>")
+							.css({
+								"float" : "right"
+							})
+							.addClass("gb-button")
+							.addClass("gb-button-primary")
+							.text(that.translation.add[that.locale]);
+					
+					var buttonArea = 
+						$("<span>")
+							.addClass("gb-modal-buttons")
+							.append(okBtn);
+					
+					var modalFooter = $("<div>").append(buttonArea);
+
+					var body = 
+						$("<div>")
+							.append(table)
+							.css({
+								"max-height" : "300px",
+								"overflow-y" : "auto"
+							});
+					
+					var addPropModal = new gb.modal.Base({
+						"width" : 540,
+						"autoOpen" : source.get("git").attribute.length !== 0 ? true : false,
+						"body" : body,
+						"footer" : modalFooter
+					});
+					
+					okBtn.click(function(){
+						var nullCheck = true;
+						var check = true;
+						
+						typeFormBody.children().each(function(){
+							var key = $(this).children().eq(0).text();
+							var type = $(this).children().eq(1).text();
+							var input = $(this).children().eq(2).find("input:text");
+							var value = input.val().replace(/(\s*)/g, '');
+							var valueCheck = true;
+							
+							if(!notNull[key] && value === ''){
+								nullCheck = false;
+							}
+							
+							switch (type) { 
+							case "String":
+								if(that.isString(value) || value === ''){ 
+									setProp[key] = value;
+								} else {
+									valueCheck = false;
+									$(this).val("");
+								}
+								break;
+							case "Number":
+								if (that.isInteger(value) || value === '') {
+									setProp[key] = value;
+								} else {
+									valueCheck = false;
+									$(this).val(value.replace(/[^0-9]/g, ""));
+								}
+								break;
+							case "Integer":
+								if (that.isInteger(value) || value === '') {
+									setProp[key] = value;
+								} else {
+									valueCheck = false;
+									$(this).val(value.replace(/[^0-9]/g, ""));
+								}
+								break;
+							case "Double":
+								if (that.isDouble(value) || value === '') {
+									setProp[key] = value;
+								} else {
+									valueCheck = false;
+									$(this).val(value.replace(/[^0-9\.]/g, ""));
+								}
+								break;
+							case "Long":
+								if (that.isInteger(value) || value === '') {
+									setProp[key] = value;
+								} else {
+									valueCheck = false;
+									$(this).val(value.replace(/[^0-9]/g, ""));
+								}
+								break;
+							case "Boolean":
+								var valid = ["t", "tr", "tru", "true", "f", "fa", "fal", "fals", "false" ];
+								if (valid.indexOf(value) !== -1) {
+									if (that.isBoolean(value)) {
+										setProp[key] = value;
+									}
+								} else if (value === ''){
+									setProp[key] = value;
+								} else {
+									valueCheck = false;
+									$(this).val("");
+								}
+								break;
+							case "Date":
+								if(value.length === 10) {
+									if(that.isDate(value)) {
+										setProp[key] = value;
+									} else {
+										valueCheck = false;
+										$(this).val("");
+									}
+								} else if (value === '') {
+									setProp[key] = value;
+								} else if (value.length >10) {
+									valueCheck = false;
+									$(this).val("");
+								}
+								break;
+							default: break;
+							}
+							
+							if(!valueCheck){
+								check = false;
+								input.css("background-color", "#ccc");
+							} else {
+								input.css("background-color", "#fff");
+							}
+						});
+						
+						if(!nullCheck){
+							alert(that.translation.notNullHint[that.locale]);
+							return;
+						}
+						
+						if(!check){
+							alert(that.translation.valueHint[that.locale]);
+							return;
+						}
+						
+						feature.setProperties(setProp);
+						addPropModal.close();
+					});
+					addPropModal.modalHead.remove();
 				}
 			}
 			
 			if (!!source) {
-				var feature = evt.feature;
-				var l = source.getFeatureById(source.get("git").layerID + ".new0")
-				feature.setProperties(setProp);
+				var l = source.getFeatureById(source.get("git").treeID + ".new0")
 				
 				if (!l) {
-					var fid = source.get("git").layerID + ".new0";
+					var fid = source.get("git").treeID + ".new0";
 					feature.setId(fid);
 					that.featureRecord.create(layer, feature);
 				} else {
 					var count = 1;
-					while(source.getFeatureById(source.get("git").layerID + ".new" + count) !== null){
+					while(source.getFeatureById(source.get("git").treeID + ".new" + count) !== null){
 						count++;
 					}
-					var fid = source.get("git").layerID + ".new" + count;
+					var fid = source.get("git").treeID + ".new" + count;
 					feature.setId(fid);
 					that.featureRecord.create(layer, feature);
 				}
@@ -1293,9 +1596,10 @@ gb.header.EditingTool.prototype.move = function(layer) {
 
 		selectSource.get("git").tempLayer.setMap(null);
 		this.tempVector.setSource(selectSource);
+		this.tempVector.setStyle(selectSource.get("git").tempLayer.getStyle());
 		this.map.addLayer(this.tempVector);
 	} else {
-		console.error("select features");
+		console.error(this.translation.alertSelectFeature[this.locale]);
 	}
 };
 /**
@@ -1326,6 +1630,14 @@ gb.header.EditingTool.prototype.rotate = function(layer) {
 	if(!selectSource){
 		return;
 	}
+	
+	var git = selectSource.get("git");
+	if(git instanceof Object){
+		if(git.geometry === "Point" || git.geometry === "MultiPoint"){
+			alert(this.translation.transformPointHint[this.locale]);
+			return;
+		}
+	}
 
 	if (this.interaction.select.getFeatures().getLength() > 0) {
 
@@ -1340,14 +1652,19 @@ gb.header.EditingTool.prototype.rotate = function(layer) {
 
 		var lastCoord;
 		this.interaction.rotate.on("transformstart", function(evt) {
-			if(!evt.feature){
+			var feature = evt.target.getFeatures().item(0);
+			if(!feature){
 				return;
 			}
-			lastCoord = evt.feature.getGeometry().getCoordinates();
+			lastCoord = feature.getGeometry().getCoordinates();
 		});
 		this.interaction.rotate.on("transformend", function(evt) {
 
-			var feature = evt.feature;
+			var feature = evt.target.getFeatures().item(0);
+			if(!feature){
+				return;
+			}
+			
 			that.featureRecord.update(selectSource.get("git").tempLayer, feature);
 
 			gb.undo.pushAction({
@@ -1377,7 +1694,7 @@ gb.header.EditingTool.prototype.rotate = function(layer) {
 		this.activeIntrct_("rotate");
 		this.activeBtn_("rotateBtn");
 	} else {
-		console.error("select features");
+		console.error(this.translation.alertSelectFeature[this.locale]);
 	}
 };
 /**
@@ -1492,7 +1809,7 @@ gb.header.EditingTool.prototype.modify = function(layer) {
 		this.activeIntrct_("modify");
 		this.activeBtn_("modiBtn");
 	} else {
-		console.error("select features");
+		console.error(this.translation.alertSelectFeature[this.locale]);
 	}
 };
 /**
@@ -1513,7 +1830,9 @@ gb.header.EditingTool.prototype.remove = function(layer) {
 		return;
 	}
 
-	if (this.interaction.select.getFeatures().getLength() > 0) {
+	var length = this.interaction.select.getFeatures().getLength();
+	
+	if (length > 0) {
 		var features = this.interaction.select.getFeatures();
 		var fill = new ol.style.Fill({
 			color : "rgba(255,0,0,0.01)"
@@ -1534,67 +1853,102 @@ gb.header.EditingTool.prototype.remove = function(layer) {
 			fill : undefined,
 			stroke : undefined
 		});
-
-		if (selectSource.get("git").tempLayer instanceof ol.layer.Vector) {
-			for (var i = 0; i < features.getLength(); i++) {
-				if (features.item(i).getId().search(".new") !== -1) {
-					selectSource.removeFeature(features.item(i));
-				} else {
-					features.item(i).setStyle(style);
-				}
-				that.featureRecord.remove(selectSource.get("git").tempLayer, features.item(i));
-			}
-
-			gb.undo.pushAction({
-				undo: function(data){
-					var feature, id;
-					for (var i = 0; i < data.features.length; i++) {
-						id = data.features[i].getId();
-						if (id.search(".new") !== -1) {
-							data.source.addFeature(data.features[i]);
-						} else {
-							feature = data.source.getFeatureById(id);
-							feature.setStyle(data.defaultStyle);
-						}
-						data.that.featureRecord.deleteFeatureRemoved(data.source.get("git").tempLayer.get("id"), data.features[i].getId());
+		
+		
+		
+		var msg1 = $("<div>").css({
+			"text-align" : "center",
+			"font-size" : "16px"
+		}).text(this.translation.deleteFeaturesHint[this.locale]);
+		
+		var todel = this.translation.selectFeatureNum[this.locale] + " : " + length;
+		var msg2 = $("<div>").text(todel).css({
+			"text-align" : "center",
+			"font-size" : "24px",
+			"word-break" : "break-word"
+		});
+		
+		var body = $("<div>").append(msg1).append(msg2);
+		var closeBtn = $("<button>").css({
+			"float" : "right"
+		}).addClass("gb-button").addClass("gb-button-default").text(this.translation.cancel[this.locale]);
+		var okBtn = $("<button>").css({
+			"float" : "right"
+		}).addClass("gb-button").addClass("gb-button-primary").text(this.translation["delete"][this.locale]);
+		var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
+		var deleteModal = new gb.modal.Base({
+			"title" : this.translation.deleteFeature[this.locale],
+			"width" : 310,
+			"height" : 200,
+			"autoOpen" : false,
+			"body" : body,
+			"footer" : buttonArea
+		});
+		$(closeBtn).click(function() {
+			deleteModal.close();
+		});
+		$(okBtn).click(function() {
+			if (selectSource.get("git").tempLayer instanceof ol.layer.Vector) {
+				for (var i = 0; i < features.getLength(); i++) {
+					if (features.item(i).getId().search(".new") !== -1) {
+						selectSource.removeFeature(features.item(i));
+					} else {
+						features.item(i).setStyle(style);
 					}
-				},
-				redo: function(data){
-					var feature, id;
-					for (var i = 0; i < data.features.length; i++) {
-						id = data.features[i].getId();
-						if (id.search(".new") !== -1) {
-							data.source.removeFeature(data.features[i]);
-						} else {
-							feature = data.source.getFeatureById(id);
-							feature.setStyle(data.removeStyle);
+					that.featureRecord.remove(selectSource.get("git").tempLayer, features.item(i));
+				}
+
+				gb.undo.pushAction({
+					undo: function(data){
+						var feature, id;
+						for (var i = 0; i < data.features.length; i++) {
+							id = data.features[i].getId();
+							if (id.search(".new") !== -1) {
+								data.source.addFeature(data.features[i]);
+							} else {
+								feature = data.source.getFeatureById(id);
+								feature.setStyle(data.defaultStyle);
+							}
+							data.that.featureRecord.deleteFeatureRemoved(data.source.get("git").tempLayer.get("id"), data.features[i].getId());
 						}
-						data.that.featureRecord.remove(data.source.get("git").tempLayer, data.features[i]);
+					},
+					redo: function(data){
+						var feature, id;
+						for (var i = 0; i < data.features.length; i++) {
+							id = data.features[i].getId();
+							if (id.search(".new") !== -1) {
+								data.source.removeFeature(data.features[i]);
+							} else {
+								feature = data.source.getFeatureById(id);
+								feature.setStyle(data.removeStyle);
+							}
+							data.that.featureRecord.remove(data.source.get("git").tempLayer, data.features[i]);
+						}
+					},
+					data: {
+						that: that,
+						source: selectSource,
+						features: features.getArray().slice(),
+						defaultStyle: selectSource.get("git").tempLayer.getStyle(),
+						removeStyle: style
 					}
-				},
-				data: {
-					that: that,
-					source: selectSource,
-					features: features.getArray().slice(),
-					defaultStyle: selectSource.get("git").tempLayer.getStyle(),
-					removeStyle: style
+				});
+			} else if (selectSource.get("git").tempLayer instanceof ol.layer.Base) {
+				for (var i = 0; i < features.getLength(); i++) {
+					if (features.item(i).getId().search(".new") !== -1) {
+						selectSource.removeFeature(features.item(i));
+					} else {
+						features.item(i).setStyle(style);
+					}
+					that.featureRecord.remove(selectSource.get("git").tempLayer, features.item(i));
 				}
-			});
-
-		} else if (selectSource.get("git").tempLayer instanceof ol.layer.Base) {
-			for (var i = 0; i < features.getLength(); i++) {
-				if (features.item(i).getId().search(".new") !== -1) {
-					selectSource.removeFeature(features.item(i));
-				} else {
-					features.item(i).setStyle(style);
-				}
-				that.featureRecord.remove(selectSource.get("git").tempLayer, features.item(i));
 			}
-		}
-		this.interaction.select.getFeatures().clear();
-
+			that.interaction.select.getFeatures().clear();
+			deleteModal.close();
+		});
+		deleteModal.open();
 	} else {
-		console.error("select features");
+		console.error(this.translation.alertSelectFeature[this.locale]);
 	}
 };
 
@@ -1604,13 +1958,37 @@ gb.header.EditingTool.prototype.remove = function(layer) {
  * @method updateSelected
  * @return {ol.layer.Base}
  */
-gb.header.EditingTool.prototype.updateSelected = function(treeId) {
+gb.header.EditingTool.prototype.updateSelected = function() {
 	var source = undefined;
 	var tree = this.otree.getJSTree();
+	
+	var selectedLayer = $(this.treeElement).jstreeol3("get_selected_layer");
+	var treeId;
+	if (selectedLayer.length === 1) {
+		treeId = selectedLayer[0].get("treeid");
+	} else {
+		return;
+	}
+	
+	if(tree.get_node(treeId).state.hiding){
+		return;
+	}
+	
 	var layer = tree.get_LayerById(treeId);
 	
-	if(layer instanceof ol.layer.Group){
+	// 현재 편집중인 레이어의 zindex를 최상위로
+	this.moveUpEditingLayer_();
+	
+	// 선택한 노드가 그룹레이어 또는 이미지 레이어일 때 작업 중단
+	if(layer instanceof ol.layer.Group || layer instanceof ol.layer.Image){
 		return this.selectedSource || source;
+	}
+	
+	// 선택한 노드가 묶음 타일 레이어일 때 작업 중단
+	if(layer instanceof ol.layer.Tile){
+		if(layer.get("git").fake === "parent"){
+			return this.electedSource || source;
+		}
 	}
 	
 	var prevSelected = this.selectedSource;
@@ -1633,25 +2011,28 @@ gb.header.EditingTool.prototype.updateSelected = function(treeId) {
 	
 	if(this.getVectorSourceOfServer(treeId)){
 		source = this.getVectorSourceOfServer(treeId);
+	} else if(this.getVectorSourceOfVector(treeId)){
+		source = this.getVectorSourceOfVector(treeId);
 	} else {
-		if(layer instanceof ol.layer.Vector){
-			source = layer.getSource();
-			if(!layer.get("id")){
-				layer.set("id", layer.get("treeid"));
-			}
-			if(typeof source.get("git") !== "object"){
-				source.set("git", {
-					layerID: layer.get("id"),
-					treeID: layer.get("treeid"),
-					tempLayer: layer,
-					editable: layer.get("git").editable,
-					geometry: layer.get("git").geometry
-				});
-			}
-			if(!this.customVector_[layer.get("treeid")]){
-				this.customVector_[layer.get("treeid")] = source;
-			}
-		}
+//		if(layer instanceof ol.layer.Vector){
+//			source = layer.getSource();
+//			if(!layer.get("id")){
+//				layer.set("id", layer.get("treeid"));
+//			}
+//			if(typeof source.get("git") !== "object"){
+//				source.set("git", {
+//					layerID: layer.get("id"),
+//					treeID: layer.get("treeid"),
+//					tempLayer: layer,
+//					editable: layer.get("git").editable,
+//					geometry: layer.get("git").geometry
+//				});
+//			}
+//			
+//			if(!this.customVector_[layer.get("treeid")]){
+//				this.customVector_[layer.get("treeid")] = source;
+//			}
+//		}
 	}
 	
 	this.selectedSource = source;
@@ -1722,10 +2103,12 @@ gb.header.EditingTool.prototype.removeFeatureFromUnmanaged = function(layer) {
 				if (git["fake"] === "parent") {
 					// 가짜 그룹 레이어임
 					var layers = git["layers"];
-					for (var i = 0; i < layers.getLength(); i++) {
-						this.featureRecord.removeByLayer(layers.item(i).get("id"));
-						// that.tempVector.setMap(this.map);
-						this.removeFeatureFromUnmanaged(layers.item(i));
+					if (layers instanceof ol.Collection) {
+						for (var i = 0; i < layers.getLength(); i++) {
+							this.featureRecord.removeByLayer(layers.item(i).get("id"));
+							// that.tempVector.setMap(this.map);
+							this.removeFeatureFromUnmanaged(layers.item(i));
+						}						
 					}
 				} else if (git["fake"] === "child") {
 					var layerId = layer.get("id");
@@ -1951,11 +2334,11 @@ gb.header.EditingTool.prototype.isString = function(va) {
  * @return {Boolean} is Integer?
  */
 gb.header.EditingTool.prototype.isInteger = function(va) {
-	var result = false;
-	if (va == parseInt(va)) {
-		result = true;
+	var num = /^-?[0-9]+$/;
+	if (typeof va === "string") {
+		return num.test(va);
 	}
-	return result;
+	return false;
 }
 /**
  * Double인지 검사한다.
@@ -1966,14 +2349,11 @@ gb.header.EditingTool.prototype.isInteger = function(va) {
  * @return {Boolean} is Double?
  */
 gb.header.EditingTool.prototype.isDouble = function(va) {
-	var result = false;
+	var num = /^[-+]?[0-9]*\.?[0-9]+$/;
 	if (typeof va === "string") {
-		var p = parseFloat(va);
-		if (!isNaN(p)) {
-			result = true;
-		}
+		return num.test(va);
 	}
-	return result;
+	return false;
 }
 /**
  * Boolean인지 검사한다.
@@ -2015,15 +2395,26 @@ gb.header.EditingTool.prototype.isDate = function(va) {
  */
 gb.header.EditingTool.prototype.addSnappingLayer = function(layer) {
 	var success = false;
-	if (layer instanceof ol.layer.Group) {
-		var layers = layer.getLayers();
-		for (var i = 0; i < layers.getLength(); i++) {
-			this.addSnappingLayer(layers.item(i));
+	var array = undefined;
+	var git = undefined;
+	var jstree = this.otree ? this.otree.getJSTree() : undefined;
+	
+	if(layer instanceof ol.layer.Base){
+		if(layer.get("git") instanceof Object){
+			git = layer.get("git");
 		}
-		success = true;
-	} else if (layer instanceof ol.layer.Vector) {
+	}
+	
+	if (layer instanceof ol.layer.Group) {
+		array = layer.getLayers();
+		for (var i = 0; i < array.getLength(); i++) {
+			success = this.addSnappingLayer(array.item(i));
+			jstree.set_flag(jstree.get_node(layer.get("treeid")), "snapping", true);
+		}
+		return success;
+	} else if (layer instanceof ol.layer.Vector && layer.getType() === "VECTOR") {
 		for (var i = 0; i < this.snapVector.getLength(); i++) {
-			if (this.snapVector.item(i).get("id") === layer.get("id")) {
+			if (this.snapVector.item(i) === layer) {
 				success = true;
 				break;
 			}
@@ -2031,25 +2422,26 @@ gb.header.EditingTool.prototype.addSnappingLayer = function(layer) {
 		if (!success) {
 			this.snapVector.push(layer);
 			success = true;
+			jstree.set_flag(jstree.get_node(layer.get("treeid")), "snapping", true);
 		}
 	} else if (layer instanceof ol.layer.Tile) {
-
 		var treeid = layer.get("treeid");
-		if(!!this.vectorSourcesOfServer_[treeid]){
-			this.snapVector.push(this.vectorSourcesOfServer_[treeid].get("git").tempLayer);
-			success = true;
-		}
-
-	} else if (layer instanceof ol.layer.Layer) {
-		var git = layer.get("git");
-		if (git) {
-			if (git.hasOwnProperty("fake")) {
-				if (git.fake === "child") {
-					if (this.snapWMS.indexOf(layer.get("id")) === -1) {
-						this.snapWMS.push(layer.get("id"));
-						success = true;
-					}
+		
+		if(git !== undefined){
+			if(git.fake === "parent"){
+				array = git.layers.getArray();
+				for(var i = 0; i < array.length; i++){
+					success = this.addSnappingLayer(array[i]);
 				}
+				return success;
+			}
+		}
+		
+		if(!!this.vectorSourcesOfServer_[treeid]){
+			if(!jstree.get_node(treeid).state.snapping){
+				this.snapVector.push(this.vectorSourcesOfServer_[treeid].get("git").tempLayer);
+				success = true;
+				jstree.set_flag(jstree.get_node(treeid), "snapping", true);
 			}
 		}
 	}
@@ -2058,60 +2450,72 @@ gb.header.EditingTool.prototype.addSnappingLayer = function(layer) {
 /**
  * 스냅핑 레이어를 삭제한다.
  * 
- * @method addSnappingLayer()
+ * @method removeSnappingLayer()
  * @param {ol.layer.Base}
  */
 gb.header.EditingTool.prototype.removeSnappingLayer = function(layer) {
 	var that = this;
 	var success = false;
-	if (layer instanceof ol.layer.Group) {
-		var layers = layer.getLayers();
-		for (var i = 0; i < layers.getLength(); i++) {
-			this.removeSnappingLayer(layers.item(i));
+	var jstree = this.otree ? this.otree.getJSTree() : undefined;
+	
+	var treeid = layer.get("treeid");
+	var node = jstree.get_node(treeid);
+	var parents = node.parents;
+
+	var array = undefined;
+	var git = undefined;
+	
+	if(layer instanceof ol.layer.Base){
+		if(layer.get("git") instanceof Object){
+			git = layer.get("git");
 		}
-		success = true;
+	}
+	
+	if (layer instanceof ol.layer.Group) {
+		array = layer.getLayers();
+		for (var i = 0; i < array.getLength(); i++) {
+			success = this.removeSnappingLayer(array.item(i));
+		}
+		return success;
 	} else if (layer instanceof ol.layer.Vector) {
 		for (var i = 0; i < this.snapVector.getLength(); i++) {
-			if (this.snapVector.item(i).get("id") === layer.get("id")) {
+			if (this.snapVector.item(i) === layer) {
 				this.snapVector.removeAt(i);
 				success = true;
+				jstree.set_flag(jstree.get_node(layer.get("treeid")), "snapping", false);
 				break;
 			}
 		}
 	} else if (layer instanceof ol.layer.Tile) {
-
-		var treeid = layer.get("treeid");
-		if(!!this.vectorSourcesOfServer_[treeid]){
-			this.snapVector.pop(this.vectorSourcesOfServer_[treeid].get("git").tempLayer);
-			success = true;
-		}
-
-	} else if (layer instanceof ol.layer.Layer) {
-		var git;
-		if (layer) {
-			git = layer.get("git");
-		}
-		if (!!git) {
-			if (git.hasOwnProperty("fake")) {
-				if (git.fake === "child") {
-					if (this.snapWMS.indexOf(layer.get("id")) !== -1) {
-						this.snapWMS.splice(this.snapWMS.indexOf(layer.get("id")), 1);
-						success = true;
-					}
+		if(git !== undefined){
+			if(git.fake === "parent"){
+				array = git.layers.getArray();
+				for(var i = 0; i < array.length; i++){
+					success = this.removeSnappingLayer(array[i]);
 				}
-			} else {
-				if (this.snapWMS.indexOf(layer.get("id")) !== -1) {
-					this.snapWMS.splice(this.snapWMS.indexOf(layer.get("id")), 1);
-					success = true;
-				}
+				return success;
 			}
-		} else {
-			if (this.snapWMS.indexOf(layer.get("id")) !== -1) {
-				this.snapWMS.splice(this.snapWMS.indexOf(layer.get("id")), 1);
-				success = true;
+		}
+		
+		if(!!this.vectorSourcesOfServer_[treeid]){
+			this.snapVector.remove(this.vectorSourcesOfServer_[treeid].get("git").tempLayer);
+			success = true;
+			jstree.set_flag(jstree.get_node(treeid), "snapping", false);
+		}
+	}
+	
+	if(success){
+		for(var i = 0; i < parents.length; i++){
+			if(parents[i] === "#"){
+				continue;
+			}
+			
+			if(jstree.get_node(parents[i]).state.snapping){
+				jstree.set_flag(jstree.get_node(parents[i]), "snapping", false);
 			}
 		}
 	}
+	
 	return success;
 }
 /**
@@ -2250,10 +2654,26 @@ gb.header.EditingTool.prototype.addInteraction = function(options){
 		if(interaction.getActive()){
 			interaction.setActive(false);
 			that.deactiveBtn_(content);
+			if(selectActive){
+				that.deactiveAnotherInteraction(that.interaction.select);
+			}
 		} else {
 			if(interaction.setSelectFeatures instanceof Function){
 				interaction.setSelectFeatures(that.selected);
+			} else {
+				var prevSelected = that.selectedSource;
+				var prevTreeid;
+				if(prevSelected !== undefined){
+					if(!!prevSelected.get("git")){
+						prevTreeid = prevSelected.get("git").treeID || "";
+					}
+				}
+				
+				if(that.otree.getJSTree().get_node(prevTreeid)){
+					that.otree.getJSTree().set_flag(that.otree.getJSTree().get_node(prevTreeid), "editing", false);
+				}
 			}
+			
 			interaction.setActive(true);
 			that.activeBtn_(content);
 		}
@@ -2271,8 +2691,8 @@ gb.header.EditingTool.prototype.addInteraction = function(options){
 	adjustStyle(aTag, this.aStyle);
 	adjustStyle(liTag, this.liStyle);
 
-	if(this.translator[content]){
-		aTag.html(this.translator[content][this.locale]);
+	if(this.translation[content]){
+		aTag.html(this.translation[content][this.locale]);
 	} else {
 		aTag.html(content);
 	}
@@ -2328,28 +2748,76 @@ gb.header.EditingTool.prototype.deactiveAnotherInteraction = function(interactio
 gb.header.EditingTool.prototype.getTileLayersInMap = function(map){
 	var tileLayers = [];
 	var wmsLayers;
-
-	map.getLayers().forEach(function(layer){
+	
+	// wms 성능 고도화 시작
+	map.getLayers().forEach(function(e){
+		var layer, git, layers, temp;
+		
+		layer = e;
+		git = layer.get("git");
+		
 		if(layer instanceof ol.layer.Tile){
-			tileLayers.push(layer);
-		}
-		if(layer instanceof ol.layer.Group){
-			tileLayers.push(layer);
-			layer.getLayers().forEach(function(tile){
-				if(tile instanceof ol.layer.Tile){
-					tileLayers.push(tile);
-				}
-				if(tile instanceof ol.layer.Group){
-					tileLayers.push(tile);
-					tile.getLayers().forEach(function(node){
-						if(node instanceof ol.layer.Tile){
-							tileLayers.push(node);
+			if(git instanceof Object){
+				if(git.fake === "parent"){
+					if(git.layers instanceof ol.Collection){
+						layers = git.layers.getArray();
+						for(var i = 0; i < layers.length; i++){
+							tileLayers.push(layers[i]);
 						}
-					});
+					}
+				} else {
+					tileLayers.push(layer);
 				}
-			});
+			}
+		} else if(layer instanceof ol.layer.Group){
+			if(git instanceof Object){
+				if(git.allChildren){
+					temp = layer.getLayersArray();
+					for(var i = 0; i < temp.length; i++){
+						git = temp[i].get("git");
+						
+						if(git instanceof Object){
+							if(git.fake === "parent"){
+								if(git.layers instanceof ol.Collection){
+									layers = git.layers.getArray();
+									for(var i = 0; i < layers.length; i++){
+										tileLayers.push(layers[i]);
+									}
+								}
+							} else {
+								tileLayers.push(temp[i]);
+							}
+						}
+					}
+				}
+			}
 		}
 	});
+	// wms 성능 고도화 끝
+	
+	// 이전 코드 시작
+//	map.getLayers().forEach(function(layer){
+//		if(layer instanceof ol.layer.Tile){
+//			tileLayers.push(layer);
+//		}
+//		if(layer instanceof ol.layer.Group){
+//			tileLayers.push(layer);
+//			layer.getLayers().forEach(function(tile){
+//				if(tile instanceof ol.layer.Tile){
+//					tileLayers.push(tile);
+//				}
+//				if(tile instanceof ol.layer.Group){
+//					tileLayers.push(tile);
+//					tile.getLayers().forEach(function(node){
+//						if(node instanceof ol.layer.Tile){
+//							tileLayers.push(node);
+//						}
+//					});
+//				}
+//			});
+//		}
+//	});
+	// 이전 코드 끝
 
 	return tileLayers;
 }
@@ -2357,14 +2825,17 @@ gb.header.EditingTool.prototype.getTileLayersInMap = function(map){
 // yijun
 gb.header.EditingTool.prototype.getVectorVectorLayersInMap = function(collection, dish){
 	var that = this;
+	var source = undefined;
+	var temp = undefined;
 	collection.forEach(function(layer){
 		if (layer instanceof ol.layer.Vector) {
-			if (layer.get("renderMode").toLowerCase() !== "image") {
-				console.log(layer);
-				if (Array.isArray(dish)) {
-					dish.push(layer);
+			if (layer.get("renderMode").toLowerCase() === "image") {
+				source = layer.getSource();
+				temp = source.get("git") instanceof Object ? source.get("git").tempLayer : undefined;
+				if (Array.isArray(dish) && temp instanceof ol.layer.Vector) {
+					dish.push(temp);
 				} else {
-					console.error("리턴 객체는 배열이어야 합니다");
+					console.error(that.translation.returnMustArray[that.locale]);
 				}
 			}
 		} else if (layer instanceof ol.layer.Group) {
@@ -2384,7 +2855,7 @@ gb.header.EditingTool.prototype.getImageVectorLayersInMap = function(collection,
 				if (Array.isArray(dish)) {
 					dish.push(layer);
 				} else {
-					console.error("리턴 객체는 배열이어야 합니다");
+					console.error(that.translation.returnMustArray[that.locale]);
 				}	
 			}
 		} else if (layer instanceof ol.layer.Group) {
@@ -2402,7 +2873,7 @@ gb.header.EditingTool.prototype.loadWFS_ = function(){
 	var tree = this.otree.getJSTree();
 	var selectedLayer;
 	var vectorSource;
-
+	
 	for(var i in tileLayers){
 		if(typeof tileLayers[i].get("git") === "object"){
 			if(!this.getVectorSourceOfServer(tileLayers[i].get("treeid"))){
@@ -2414,29 +2885,30 @@ gb.header.EditingTool.prototype.loadWFS_ = function(){
 				selectedLayer = $(this.treeElement).jstreeol3("get_selected_layer");
 				if(selectedLayer.length === 1){
 					if(tileLayers[i].get("treeid") === selectedLayer[0].get("treeid")){
-						this.updateSelected(selectedLayer[0].get("treeid"));
+						this.updateSelected();
 						this.select(vectorSource);
 					}
 				}
 				
 				if(!!tree.get_node(tileLayers[i].get("treeid"))){
 					if(!tree.get_node(tileLayers[i].get("treeid")).state.hiding){
-						zidx = tileLayers[i].getZIndex();
-						if (!isNaN(parseInt(zidx))) {
-							vectorSource.get("git").tempLayer.setZIndex(zidx);	
-						}
 						vectorSource.get("git").tempLayer.setMap(this.map);
 					} else {
 						vectorSource.get("git").tempLayer.setMap(null);
 					}
+					
+					if(tree.get_node(tileLayers[i].get("treeid")).state.snapping){
+						this.snapVector.push(vectorSource.get("git").tempLayer);
+					}
 				}
 			} else {
 				if(!!tree.get_node(tileLayers[i].get("treeid"))){
+					
+					if(!this.getVectorSourceOfServer(tileLayers[i].get("treeid")).get("git")){
+						continue;
+					}
+					
 					if(!tree.get_node(tileLayers[i].get("treeid")).state.hiding){
-						zidx = tileLayers[i].getZIndex();
-						if (!isNaN(parseInt(zidx))) {
-							this.getVectorSourceOfServer(tileLayers[i].get("treeid")).get("git").tempLayer.setZIndex(zidx);
-						}
 						this.getVectorSourceOfServer(tileLayers[i].get("treeid")).get("git").tempLayer.setMap(this.map);
 					} else {
 						this.getVectorSourceOfServer(tileLayers[i].get("treeid")).get("git").tempLayer.setMap(null);
@@ -2445,15 +2917,25 @@ gb.header.EditingTool.prototype.loadWFS_ = function(){
 			}
 		}
 	}
-
-	for(var i in this.customVector_){
-		this.customVector_[i].get("git").tempLayer.setVisible(true);
-	}
+	
+	var ext = 
+		this.getMap()
+			.getView()
+			.calculateExtent(
+				this.getMap().getSize()
+			);
+	
+	this.loadSnappingLayer(ext);
+	
+//	for(var i in this.customVector_){
+//		this.customVector_[i].get("git").tempLayer.setVisible(true);
+//	}
 }
 
 // yijun
 gb.header.EditingTool.prototype.moveUpEditingLayer_ = function(){
 	var layers  = $(this.treeElement).jstreeol3("get_selected_layer");
+	var tree = this.otree.getJSTree();
 	var layer;
 	if (layers.length === 1) {
 		layer = layers[0];
@@ -2464,7 +2946,7 @@ gb.header.EditingTool.prototype.moveUpEditingLayer_ = function(){
 		var tlayer = git.tempLayer;
 		if (tlayer instanceof ol.layer.Vector) {
 			tlayer.setMap(null);
-			tlayer.setMap(this.map);	
+			tlayer.setMap(this.map);
 		}
 	}
 };
@@ -2489,7 +2971,7 @@ gb.header.EditingTool.prototype.loadVector_ = function(){
 				selectedLayer = $(this.treeElement).jstreeol3("get_selected_layer");
 				if(selectedLayer.length === 1){
 					if(vecLayers[i].get("treeid") === selectedLayer[0].get("treeid")){
-						this.updateSelected(selectedLayer[0].get("treeid"));
+						this.updateSelected();
 						this.select(vectorSource);
 					}
 				}
@@ -2520,10 +3002,10 @@ gb.header.EditingTool.prototype.loadVector_ = function(){
 			}
 		}
 	}
-
-// for(var i in this.customVector_){
-// this.customVector_[i].get("git").tempLayer.setVisible(true);
-// }
+	
+//	for(var i in this.customVector_){
+//		this.customVector_[i].get("git").tempLayer.setVisible(true);
+//	}
 }
 
 // hochul
@@ -2557,48 +3039,113 @@ gb.header.EditingTool.prototype.setVisibleWFS = function(bool){
 		}
 	}
 
-	for(var i in this.customVector_){
-		this.customVector_[i].get("git").tempLayer.setVisible(set);
-	}
+//	for(var i in this.customVector_){
+//		this.customVector_[i].get("git").tempLayer.setVisible(set);
+//	}
 }
 
 // hochul
 gb.header.EditingTool.prototype.setVisibleWMS = function(bool){
-	var tileLayers = this.getTileLayersInMap(this.map);
+//	var tileLayers = this.getTileLayersInMap(this.map);
 	var tree = this.otree.getJSTree();
+//	
+//	for(var i = 0; i < tileLayers.length; i++){
+//		if(!!tree.get_node(tileLayers[i].get("treeid"))){
+//			if(!tree.get_node(tileLayers[i].get("treeid")).state.hiding){
+//				zidx = tileLayers[i].getZIndex();
+//				var git = tileLayers[i].get("git");
+//				if (git !== undefined) {
+//					var tlayer = git.tempLayer;
+//					if (tlayer !== undefined) {
+//						tlayer.setZIndex(zidx);
+//					}
+//				}
+//				tileLayers[i].setVisible(bool);
+//			} else {
+//				tileLayers[i].setVisible(false);
+//			}
+//		}
+//	}
 	
-	for(var i = 0; i < tileLayers.length; i++){
-		if(!!tree.get_node(tileLayers[i].get("treeid"))){
-			if(!tree.get_node(tileLayers[i].get("treeid")).state.hiding){
-				zidx = tileLayers[i].getZIndex();
-				var git = tileLayers[i].get("git");
-				if (git !== undefined) {
-					var tlayer = git.tempLayer;
-					if (tlayer !== undefined) {
-						tlayer.setZIndex(zidx);
+	// wms 성능 고도화 시작
+	this.map.getLayers().forEach(function(e){
+		var layer, git, temp, zidx, tlayer;
+		
+		layer = e;
+		git = layer.get("git");
+		
+		if(layer instanceof ol.layer.Tile){
+			if(git instanceof Object){
+				if(git.fake !== "child"){
+					if(!!tree.get_node(layer.get("treeid"))){
+						if(!tree.get_node(layer.get("treeid")).state.hiding){
+							zidx = layer.getZIndex();
+							tlayer = git.tempLayer;
+							if (tlayer !== undefined) {
+								tlayer.setZIndex(zidx);
+							}
+							layer.setVisible(bool);
+						} else {
+							layer.setVisible(false);
+						}
 					}
 				}
-				tileLayers[i].setVisible(bool);
-			} else {
-				tileLayers[i].setVisible(false);
+			}
+		} else if(layer instanceof ol.layer.Group){
+			if(git instanceof Object){
+				if(git.allChildren){
+					temp = layer.getLayersArray();
+					for(var i = 0; i < temp.length; i++){
+						git = temp[i].get("git");
+						
+						if(git instanceof Object){
+							if(git.fake !== "child"){
+								if(!!tree.get_node(temp[i].get("treeid"))){
+									if(!tree.get_node(temp[i].get("treeid")).state.hiding){
+										zidx = temp[i].getZIndex();
+										tlayer = git.tempLayer;
+										if (tlayer !== undefined) {
+											tlayer.setZIndex(zidx);
+										}
+										temp[i].setVisible(bool);
+									} else {
+										temp[i].setVisible(false);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
-	}
+	});
+	// wms 성능 고도화 끝
 }
 
 // yijun
 gb.header.EditingTool.prototype.setVisibleVectorVector = function(bool){
 	var rootLayers = this.map.getLayers();
 	var dish = [];
+	var source = undefined;
 	var vecLayers = this.getVectorVectorLayersInMap(rootLayers, dish);
 	var tree = this.otree.getJSTree();
+	var set;
+	if(bool){
+		set = this.map;
+	} else {
+		set = null;
+	}
 	
 	for(var i = 0; i < vecLayers.length; i++){
-		if(!!tree.get_node(vecLayers[i].get("treeid"))){
-			if(!tree.get_node(vecLayers[i].get("treeid")).state.hiding){
-				vecLayers[i].setVisible(bool);
+		source = vecLayers[i].getSource();
+		if(!source){
+			continue;
+		}
+		if(!!tree.get_node(source.get("git").treeID)){
+			if(!tree.get_node(source.get("git").treeID).state.hiding){
+				vecLayers[i].setMap(set);
 			} else {
-				vecLayers[i].setVisible(false);
+				vecLayers[i].setMap(null);
 			}
 		}
 	}
@@ -2655,12 +3202,12 @@ gb.header.EditingTool.prototype.setVectorSourceOfServer = function(obj, layerId,
 			loader: function(extent, resolution, projection){
 
 				params = {
-						"serverName": git.geoserver,
-						"workspace": git.workspace,
-						"version" : "1.0.0",
-						"typeName" : layername,
-						"bbox" : extent.join(","),
-						"outputformat" : "application/json"
+					"serverName": git.geoserver,
+					"workspace": git.workspace,
+					"version" : gb.module.serviceVersion.WFS,
+					"typeName" : layername,
+					"bbox" : extent.join(","),
+					"outputformat" : "application/json"
 				};
 
 				$.ajax({
@@ -2695,28 +3242,34 @@ gb.header.EditingTool.prototype.setVectorSourceOfServer = function(obj, layerId,
 			var symbol = gb.style.LayerStyle.prototype.parseSymbolizer.call(this, sld);
 			var style = new ol.style.Style({
 				"fill": new ol.style.Fill({
-					"color": ol.color.asArray(symbol.fillRGBA)
+					"color": !!symbol.fillRGBA ? ol.color.asArray(symbol.fillRGBA) : null
 				}),
 				"stroke": new ol.style.Stroke({
-					"color": ol.color.asArray(symbol.strokeRGBA),
-					"width": symbol.strokeWidth,
-					"lineDash": symbol.strokeDashArray,
+					"color": ol.color.asArray(symbol.strokeRGBA || null),
+					"width": symbol.strokeWidth || null,
+					"lineDash": symbol.strokeDashArray || null,
 					"lineCap": "butt"
 				}),
 				"image": new ol.style.Circle({
-					"radius": !!symbol.pointSize ? parseFloat(symbol.pointSize) : undefined,
-							"fill": new ol.style.Fill({
-								"color": ol.color.asArray(symbol.fillRGBA)
-							}),
-							"stroke": new ol.style.Stroke({
-								"color": ol.color.asArray(symbol.strokeRGBA),
-								"width": symbol.strokeWidth,
-								"lineDash": symbol.strokeDashArray,
-								"lineCap": "butt"
-							})
+					"radius": !!symbol.pointSize ? parseFloat(symbol.pointSize)/2 : null,
+					"fill": new ol.style.Fill({
+						"color": !!symbol.fillRGBA ? ol.color.asArray(symbol.fillRGBA) : null
+					}),
+					"stroke": new ol.style.Stroke({
+						"color": !!symbol.strokeRGBA ? ol.color.asArray(symbol.strokeRGBA) : null,
+						"width": symbol.strokeWidth || null,
+						"lineDash": symbol.strokeDashArray || null,
+						"lineCap": "butt"
+					})
 				})
 			});
 			layer.setStyle(style);
+			if(gb.layer.Label !== undefined && git.labelActive){
+				layer.setStyle(new gb.layer.Label({
+					layer: layer,
+					labelOptions: git.labelOptions
+				}));
+			}
 		}
 
 		git.layerID = layerid;
@@ -2725,6 +3278,8 @@ gb.header.EditingTool.prototype.setVectorSourceOfServer = function(obj, layerId,
 		vectorSource.set("git", git);
 
 		return vectorSource;
+	} else {
+		console.log(treeid);
 	}
 	return null;
 }
@@ -2736,7 +3291,7 @@ gb.header.EditingTool.prototype.setVectorSourceOfVector = function(obj, layerId,
 	var layername = layerName;
 	var treeid = treeId;
 	var url = this.wfsURL;
-	if(!this.getVectorSourceOfServer(treeid)){
+	if(!this.getVectorSourceOfVector(treeid)){
 		var vlayer = this.otree.getJSTree().get_LayerById(treeId);
 		var vectorSource = vlayer instanceof ol.layer.Vector ? vlayer.getSource() : undefined;
 		console.log(layerid);
@@ -2813,7 +3368,7 @@ gb.header.EditingTool.prototype.editToolOpen = function(){
 	this.setVisibleImageVector(false);
 	
 	// 줌 레벨에 따른 실행 함수 결정
-	if(this.map.getView().getZoom() > 11){
+	if(this.checkActiveTool()){
 		// 화면확대 요구 메세지창 숨김
 		this.displayEditZoomHint(false);
 		// WFS 레이어 로드
@@ -2823,13 +3378,7 @@ gb.header.EditingTool.prototype.editToolOpen = function(){
 		// 벡터벡터 레이어 보이기
 		this.setVisibleVectorVector(true);
 		// 선택 레이어 업데이트
-		var selectedLayer = $(this.treeElement).jstreeol3("get_selected_layer");
-		if (selectedLayer.length ===1) {
-			var treeid = selectedLayer[0].get("treeid");
-			this.select(this.updateSelected(treeid));
-			// 현재 편집중인 레이어의 zindex를 최상위로
-			this.moveUpEditingLayer_();
-		}
+		this.select(this.updateSelected());
 	} else {
 		// 줌 레벨이 일정 이상이면 화면확대 요구 메세지창 생성
 		this.displayEditZoomHint(true);
@@ -2895,6 +3444,8 @@ gb.header.EditingTool.prototype.editToolClose = function(){
 	
 	this.selectSources.clear();
 	this.selectedSource = undefined;
+	this.vectorSourcesOfServer_ = {};
+	this.vectorSourcesOfVector_ = {};
 }
 
 // hochul
@@ -2914,7 +3465,7 @@ gb.header.EditingTool.prototype.displayEditZoomHint = function(bool){
 
 			var editZoomHintTag = $("<h1 class='edit-zoom-hint'>");
 			var icon = $("<span>").html("<i class='fas fa-exclamation-circle'></i>");
-			var text = $("<span>").html("Zoom in to edit");
+			var text = $("<span>").html(this.translation.editToolHint[this.locale]);
 
 			editZoomHintTag.css("margin-top", "6px");
 			editZoomHintTag.css("padding-left", "6px");
@@ -2926,20 +3477,34 @@ gb.header.EditingTool.prototype.displayEditZoomHint = function(bool){
 			
 			var that = this;
 			var icon = $("<i class='fas fa-plus'>");
-			var span = $("<span class='label'>").append(icon).append("편집하시려면 확대해주세요");
+			var span = $("<span class='label'>").append(icon).append(this.translation.editToolHint[this.locale]);
 			
 			var btn = $("<button class='zoom-in'>").css({
+				"position": "absolute",
 				"margin": "auto",
+				"left": "0",
+				"right": "0",
 				"width": "300px",
 				"height": "70px",
 				"font-size": "150%",
 				"border-radius": "8px",
 				"background": "rgba(0,0,0,0.5)",
-				"color": "#fff"
-			}).append(span).click(function(){
+				"color": "#fff",
+				"cursor": "default",
+				"pointer-events": "none"
+			}).append(span)/*.click(function(){
 				var view = that.map.getView();
-				view.setZoom(12);
-			});
+				var extent = view.calculateExtent();
+				var coordinates = [[[extent[0], extent[1]], [extent[2], extent[1]], [extent[2], extent[3]], [extent[0], extent[3]], [extent[0], extent[1]]]];
+				var geom = new ol.geom.Polygon(coordinates);
+				var area = ol.sphere.getArea(geom, {projection: view.getProjection().getCode()});
+				area = Math.round(area/1000000*100)/100;
+				
+				var zoomSqrt = Math.sqrt((gb.header.ACTIVEAREA)/area);
+				var zoomExtent = [extent[0]*zoomSqrt, extent[1]*zoomSqrt, extent[2]*zoomSqrt, extent[3]*zoomSqrt];
+				
+				view.fit(zoomExtent);
+			});*/
 			
 			var notice = $("<div id='zoomNotice' class='notice'>").css({
 				"position": "absolute",
@@ -2964,4 +3529,24 @@ gb.header.EditingTool.prototype.displayEditZoomHint = function(bool){
 // hochul
 gb.header.EditingTool.prototype.getSelectSources = function(){
 	return this.selectSources;
+}
+
+//hochul
+gb.header.EditingTool.prototype.checkActiveTool = function(){
+	var map = this.map;
+	var view = map.getView();
+	var extent = view.calculateExtent();
+	var zoom = view.getZoom();
+
+	var coordinates = [[[extent[0], extent[1]], [extent[2], extent[1]], [extent[2], extent[3]], [extent[0], extent[3]], [extent[0], extent[1]]]];
+	var geom = new ol.geom.Polygon(coordinates);
+	var area = ol.sphere.getArea(geom, {projection: view.getProjection().getCode()});
+	var active;
+	if((Math.round(area/1000000*100)/100) <= gb.header.ACTIVEAREA){
+		active = true;
+	} else {
+		active = false;
+	}
+	
+	return active;
 }

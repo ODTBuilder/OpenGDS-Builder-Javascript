@@ -18,6 +18,26 @@ gb.edit.FeatureRecord = function(obj) {
 	this.id = obj.id ? obj.id : false;
 	this.wfstURL = obj.wfstURL || '';
 	this.layerInfoURL = obj.layerInfoURL || '';
+	this.locale = obj.locale || "en";
+	
+	this.translation = {
+		"cancel" : {
+			"ko" : "취소",
+			"en" : "Cancel"
+		},
+		"save" : {
+			"ko" : "저장",
+			"en" : "Save"
+		},
+		"discard" : {
+			"ko" : "무시",
+			"en" : "Discard"
+		},
+		"saveHint" : {
+			"ko" : "변경사항을 저장하시겠습니까?",
+			"en" : "Do you want to save your changes?"
+		}
+	}
 	this.editTool = undefined;
 }
 /**
@@ -549,20 +569,20 @@ gb.edit.FeatureRecord.prototype.save = function(editTool){
 	var edit = editTool;
 	this.editTool = editTool;
 	
-	var row2 = $("<div>").addClass("row").append("변경사항을 저장하시겠습니까?")
+	var row2 = $("<div>").addClass("row").append(this.translation.saveHint[this.locale])
 
 	var well = $("<div>").addClass("well").append(row2);
 
 	var closeBtn = $("<button>").css({
 		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-default").text("Cancel");
+	}).addClass("gb-button").addClass("gb-button-default").text(this.translation.cancel[this.locale]);
 	var okBtn = $("<button>").css({
 		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-primary").text("Save");
+	}).addClass("gb-button").addClass("gb-button-primary").text(this.translation.save[this.locale]);
 	var discardBtn = $("<button>").css({
 		"float" : "right",
 		"background": "#e0e1e2 none"
-	}).addClass("gb-button").addClass("gb-button-default").text("Discard");
+	}).addClass("gb-button").addClass("gb-button-default").text(this.translation.discard[this.locale]);
 
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(discardBtn).append(okBtn).append(closeBtn);
 	var modalFooter = $("<div>").append(buttonArea);
@@ -572,7 +592,7 @@ gb.edit.FeatureRecord.prototype.save = function(editTool){
 		"width" : "100%"
 	});
 	var openSaveModal = new gb.modal.Base({
-		"title" : "저장",
+		"title" : this.translation.save[this.locale],
 		"width" : 540,
 		"height" : 250,
 		"autoOpen" : true,
@@ -631,24 +651,24 @@ gb.edit.FeatureRecord.prototype.closeEditTool = function(editTool){
 	var count = 0;
 	var edit = editTool;
 	
-	for(let i in this.created){
-		for(let j in this.created[i]){
+	for(var i in this.created){
+		for(var j in this.created[i]){
 			if(j !== "geomKey"){
 				count++;
 			}
 		}
 	}
 	
-	for(let i in this.modified){
-		for(let j in this.modified[i]){
+	for(var i in this.modified){
+		for(var j in this.modified[i]){
 			if(j !== "geomKey"){
 				count++;
 			}
 		}
 	}
 	
-	for(let i in this.removed){
-		for(let j in this.removed[i]){
+	for(var i in this.removed){
+		for(var j in this.removed[i]){
 			if(j !== "geomKey"){
 				count++;
 			}
@@ -676,7 +696,7 @@ gb.edit.FeatureRecord.prototype.sendWFSTTransaction = function(editTool){
 	if(Object.keys(this.modified).length !== 0){
 		layerid = Object.keys(this.modified)[0];
 		type = "modified";
-		for(let feature in this.modified[layerid]){
+		for(var feature in this.modified[layerid]){
 			if(feature === "geomKey"){
 				continue;
 			}
@@ -692,7 +712,7 @@ gb.edit.FeatureRecord.prototype.sendWFSTTransaction = function(editTool){
 		if(Object.keys(this.removed).length !== 0){
 			layerid = Object.keys(this.removed)[0];
 			type = "removed";
-			for(let feature in this.removed[layerid]){
+			for(var feature in this.removed[layerid]){
 				if(feature === "geomKey"){
 					continue;
 				}
@@ -708,7 +728,7 @@ gb.edit.FeatureRecord.prototype.sendWFSTTransaction = function(editTool){
 			if(Object.keys(this.created).length !== 0){
 				layerid = Object.keys(this.created)[0];
 				type = "created";
-				for(let feature in this.created[layerid]){
+				for(var feature in this.created[layerid]){
 					if(feature === "geomKey"){
 						continue;
 					}
@@ -733,7 +753,7 @@ gb.edit.FeatureRecord.prototype.sendWFSTTransaction = function(editTool){
 	repo = layerid.split(":")[2];
 	layername = "";
 	
-	for(let i in split){
+	for(var i in split){
 		if(i > 2){
 			layername += "_" + split[i];
 		}
@@ -747,7 +767,7 @@ gb.edit.FeatureRecord.prototype.sendWFSTTransaction = function(editTool){
 				"featureNS": workspace,
 				"featurePrefix": workspace,
 				"featureType": layername,
-				"version": "1.0.0"
+				"version": gb.module.serviceVersion.WFS
 			});
 			break;
 		case "modified":
@@ -763,7 +783,7 @@ gb.edit.FeatureRecord.prototype.sendWFSTTransaction = function(editTool){
 				"featureNS": workspace,
 				"featurePrefix": workspace,
 				"featureType": layername,
-				"version": "1.0.0"
+				"version": gb.module.serviceVersion.WFS
 			});
 			break;
 		default:
@@ -824,7 +844,7 @@ gb.edit.FeatureRecord.prototype.wfstCallback = function(array, type, options){
 				"featureNS": opt.workspace,
 				"featurePrefix": opt.workspace,
 				"featureType": opt.layername,
-				"version": "1.0.0"
+				"version": gb.module.serviceVersion.WFS
 			});
 			break;
 		case "modified":
@@ -832,7 +852,7 @@ gb.edit.FeatureRecord.prototype.wfstCallback = function(array, type, options){
 				"featureNS": opt.workspace,
 				"featurePrefix": opt.workspace,
 				"featureType": opt.layername,
-				"version": "1.0.0"
+				"version": gb.module.serviceVersion.WFS
 			});
 			break;
 		case "removed":
@@ -840,7 +860,7 @@ gb.edit.FeatureRecord.prototype.wfstCallback = function(array, type, options){
 				"featureNS": opt.workspace,
 				"featurePrefix": opt.workspace,
 				"featureType": opt.layername,
-				"version": "1.0.0"
+				"version": gb.module.serviceVersion.WFS
 			});
 			break;
 		default:

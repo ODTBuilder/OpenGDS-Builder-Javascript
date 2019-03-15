@@ -57,6 +57,7 @@ gb.layer.Navigator = function(obj) {
 
 gb.layer.Navigator.prototype.setFeatures = function(Layer){
 	var layer = Layer;
+	this.count = 0;
 	
 	if(layer instanceof ol.layer.Tile){
 		var git = layer.get("git");
@@ -69,7 +70,7 @@ gb.layer.Navigator.prototype.setFeatures = function(Layer){
 		return;
 	}
 	
-	this.count = 0;
+	
 	this.selectedLayer = layer;
 }
 
@@ -79,7 +80,7 @@ gb.layer.Navigator.prototype.requestFeatureList = function(serverName, workspace
 		serverName: serverName,
 		workspace: workspace,
 		typeName: layer,
-		version: "1.0.0",
+		version: gb.module.serviceVersion.WFS || "1.0.0",
 		outputformat: "application/json",
 		maxFeatures: this.maxFeatures,
 		startIndex: this.count
@@ -91,7 +92,31 @@ gb.layer.Navigator.prototype.requestFeatureList = function(serverName, workspace
 		contentType : "application/json; charset=UTF-8",
 		data: a,
 		dataType: "JSON",
+		beforeSend : function() {
+			that.naviWindow.append($("<div id='navigator-loading'>").css({
+				"z-index" : "10",
+				"position" : "absolute",
+				"left" : "0",
+				"top" : "0",
+				"width" : "100%",
+				"height" : "100%",
+				"text-align" : "center",
+				"background-color" : "rgba(0, 0, 0, 0.4)"
+			}).append($("<i>").addClass("fas fa-spinner fa-spin fa-5x").css({
+				"position" : "relative",
+				"top" : "50%",
+				"margin-top" : "-5em"
+			})));
+		},
+		complete : function() {
+			$("#navigator-loading").remove();
+		},
 		success: function(data, textStatus, jqXHR) {
+			if(that.count === data.totalFeatures){
+				that.count = data.totalFeatures - 1;
+				return;
+			}
+			
 			that.featureList = new ol.format.GeoJSON().readFeatures(JSON.stringify(data));
 			that.showFeatureInfo(that.featureList[0]);
 			that.open();
@@ -188,6 +213,9 @@ gb.layer.Navigator.prototype.close = function(){
 }
 
 gb.layer.Navigator.prototype.showFeatureInfo = function(feature) {
+	if(!feature){
+		return;
+	}
 	var fid = feature.getId();
 	$(this.td2).text(fid);
 	var prop = feature.getProperties();
@@ -204,20 +232,17 @@ gb.layer.Navigator.prototype.showFeatureInfo = function(feature) {
 	}
 	var geom = feature.getGeometry();
 	this.map.getView().fit(geom.getExtent(), this.map.getSize());
-	this.map.getView().setZoom(16);
 }
 
 gb.layer.Navigator.prototype.prev = function(){
 	var features = this.featureList;
 	
-	if (this.count <= 0){
-		return;
-	}
-	
 	if(this.selectedLayer instanceof ol.layer.Tile){
-		this.count--;
 		var git = this.selectedLayer.get("git");
-		this.requestFeatureList(git.geoserver, git.workspace, this.selectedLayer.get("name"));
+		if(this.count > 0){
+			this.count--;
+			this.requestFeatureList(git.geoserver, git.workspace, this.selectedLayer.get("name"));
+		}
 	} else if(this.selectedLayer instanceof ol.layer.Vector){
 		if (this.count > 0 && this.count <= features.length) {
 			this.count--;
@@ -238,8 +263,8 @@ gb.layer.Navigator.prototype.next = function(){
 	var features = this.featureList;
 	
 	if(this.selectedLayer instanceof ol.layer.Tile){
-		this.count++;
 		var git = this.selectedLayer.get("git");
+		this.count++;
 		this.requestFeatureList(git.geoserver, git.workspace, this.selectedLayer.get("name"));
 	} else if(this.selectedLayer instanceof ol.layer.Vector){
 		if (this.count >= 0 && this.count < features.length) {

@@ -18,7 +18,12 @@ if (!gb.interaction)
 		var that = this;
 		var options = opt_options ? opt_options : {};
 		
-		this.selected = options.selected;
+		this.featureRecord = options.featureRecord || undefined;
+		
+		this.editTool = options.editTool || undefined;
+		//this.coordinates = undefined;
+		
+		this.selected = this.editTool ? this.editTool.selected : undefined;
 		
 		/**
 		 * 임시 vector source
@@ -35,6 +40,8 @@ if (!gb.interaction)
 		this.on("drawstart", function(e){
 			var feature = e.feature;
 			var ringAdded = false;
+			var index = null;
+			var appendPolygon = new ol.geom.Polygon([]);
 			
 			if(!that.checkSelected()){
 				that.setActive(false);
@@ -45,6 +52,7 @@ if (!gb.interaction)
 				var b = feature.getGeometry();
 				var drawCoords = b.getCoordinates(false)[0];
 				var polygons = undefined;
+				var array = [];
 				
 				if(drawCoords.length > 2){
 					if(ringAdded === false){
@@ -66,14 +74,25 @@ if (!gb.interaction)
 								polygons = a.getPolygons();
 								for(var i = 0; i < polygons.length; i++){
 									if(polygons[i].intersectsCoordinate(b.getFirstCoordinate())){
-										polygons[i].appendLinearRing(
+										appendPolygon.setCoordinates(polygons[i].getCoordinates());
+										appendPolygon.appendLinearRing(
 											new ol.geom.LinearRing(
 												pushFirstElement(b.getCoordinates()[0])
 											)
 										);
+										index = i;
 										break;
 									}
 								}
+								if(index === null){
+									return false;
+								}
+								/*appendPolygon.setCoordinates(a.getCoordinates()[0]);
+								appendPolygon.appendLinearRing(
+									new ol.geom.LinearRing(
+										pushFirstElement(b.getCoordinates()[0])
+									)
+								);*/
 							}
 							
 							ringAdded = true;
@@ -91,20 +110,17 @@ if (!gb.interaction)
 							
 						} else if(a.getType() === "MultiPolygon"){
 							
-							polygons = a.getPolygons();
-							
-							for(var i = 0; i < polygons.length; i++){
-								if(polygons[i].intersectsCoordinate(b.getFirstCoordinate())){
-									coordElemntLength = polygons[i].getCoordinates().length;
-									coordsExt = a.getCoordinates()[i][0];
-									break;
-								}
-							}
+							coordElemntLength = appendPolygon.getCoordinates().length;
+							coordsExt = appendPolygon.getCoordinates()[0];
 						}
 						
 						if (coordElemntLength > 2) {
 							for (var i = 1; i < coordElemntLength - 1; i++) {
-								coordsInter.push(a.getCoordinates()[i]);
+								if(a.getType() === "Polygon"){
+									coordsInter.push(a.getCoordinates()[i]);
+								} else if(a.getType() === "MultiPolygon"){
+									coordsInter.push(a.getCoordinates()[index][i]);
+								}
 							}
 						}
 	
@@ -124,12 +140,19 @@ if (!gb.interaction)
 							a.setCoordinates(setCoords);
 						} else if(a.getType() === "MultiPolygon"){
 							polygons = a.getPolygons();
+							appendPolygon.setCoordinates(setCoords);
 							for(var i = 0; i < polygons.length; i++){
-								if(polygons[i].intersectsCoordinate(b.getFirstCoordinate())){
-									polygons[i].setCoordinates(setCoords);
-									break;
+								if(index === i){
+									array.push(appendPolygon.getCoordinates());
+								} else {
+									array.push(polygons[i].getCoordinates());
 								}
 							}
+							a.setCoordinates(array);
+							/*appendPolygon.setCoordinates(setCoords);
+							array = a.getCoordinates();
+							array.push(appendPolygon.getCoordinates());
+							that.coordinates = [appendPolygon.getCoordinates()];*/
 						}
 					}
 				}
@@ -137,7 +160,10 @@ if (!gb.interaction)
 		});
 		
 		this.on("drawend", function(e){
-			console.log(e);
+			/*var a = that.selected.getArray()[0].getGeometry();
+			a.setCoordinates(that.coordinates);*/
+			var updateFeature = that.selected.getArray()[0];
+			that.featureRecord.update(that.editTool.selectedSource.get("git").tempLayer, updateFeature);
 		});
 	};
 	ol.inherits(gb.interaction.HoleDraw, ol.interaction.Draw);

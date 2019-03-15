@@ -155,7 +155,8 @@ gb.interaction.MultiTransform.prototype.handleDownEvent = function(evt) {
 			this.flatInteriorPoint_ = [ x, y ];
 		}
 	}
-	this.dispatchEvent(new gb.interaction.MultiTransform.Event(gb.interaction.MultiTransformEventType.TRANSFORMSTART, feature, evt));
+	//this.dispatchEvent(new gb.interaction.MultiTransform.Event(gb.interaction.MultiTransformEventType.TRANSFORMSTART, feature, evt));
+	this.dispatchEvent(gb.interaction.MultiTransformEventType.TRANSFORMSTART);
 	return (!!feature && !!this.task_);
 };
 
@@ -191,7 +192,8 @@ gb.interaction.MultiTransform.prototype.handleDragEvent = function(evt) {
 			feature.getGeometry().scale(magni[1], magni[1], this.flatInteriorPoint_);
 		}
 	}
-	this.dispatchEvent(new gb.interaction.MultiTransform.Event(gb.interaction.MultiTransformEventType.TRANSFORMING, feature, evt));
+	//this.dispatchEvent(new gb.interaction.MultiTransform.Event(gb.interaction.MultiTransformEventType.TRANSFORMING, feature, evt));
+	this.dispatchEvent(gb.interaction.MultiTransformEventType.TRANSFORMING);
 	this.prevCursor_ = evt.coordinate;
 };
 
@@ -298,7 +300,8 @@ gb.interaction.MultiTransform.prototype.handleUpEvent = function(evt) {
 		this.flatInteriorPoint = null;
 		element.style.cursor = '';
 	}
-	this.dispatchEvent(new gb.interaction.MultiTransform.Event(gb.interaction.MultiTransformEventType.TRANSFORMEND, feature, evt));
+	//this.dispatchEvent(new gb.interaction.MultiTransform.Event(gb.interaction.MultiTransformEventType.TRANSFORMEND, feature, evt));
+	this.dispatchEvent(gb.interaction.MultiTransformEventType.TRANSFORMEND);
 	return false;
 };
 
@@ -446,7 +449,7 @@ gb.interaction.MultiTransform.prototype.getFeatures = function() {
  */
 gb.interaction.MultiTransform.prototype.selectTask_ = function(map, feature, cursor) {
 
-	const AREA = 6;
+	var AREA = 6;
 
 	var extent = feature.getGeometry().getExtent();
 	var scale = [];
@@ -583,7 +586,10 @@ gb.interaction.MultiTransform.prototype.flipAlgorithm_ = function(feature, direc
 	var extentIndex = null;
 	var geometry = feature.getGeometry();
 	var extent = feature.getGeometry().getExtent();
-	var coordi = feature.getGeometry().getFlatCoordinates();
+	var fcoordi = feature.getGeometry().getFlatCoordinates();
+	var coordi = feature.getGeometry().getCoordinates();
+	var newMultiCoordis = [];
+	var newCoordis = [];
 	var newCoordi = [];
 	var newGeometry = null;
 
@@ -599,27 +605,73 @@ gb.interaction.MultiTransform.prototype.flipAlgorithm_ = function(feature, direc
 		console.error('direction error');
 		return;
 	}
-
-	for (var i = 0; i < coordi.length / 2; i++) {
-		if (extentIndex === 1 || extentIndex === 3) {
-			if (coordi[2 * i + 1] !== extent[extentIndex]) {
-				newCoordi.push([ coordi[2 * i], 2 * extent[extentIndex] - coordi[2 * i + 1] ]);
+	
+	if (geometry instanceof ol.geom.LineString || geometry instanceof ol.geom.MultiLineString) {
+		for (var i = 0; i < fcoordi.length / 2; i++) {
+			if (extentIndex === 1 || extentIndex === 3) {
+				if (fcoordi[2 * i + 1] !== extent[extentIndex]) {
+					newCoordi.push([ fcoordi[2 * i], 2 * extent[extentIndex] - fcoordi[2 * i + 1] ]);
+				} else {
+					newCoordi.push([ fcoordi[2 * i], fcoordi[2 * i + 1] ]);
+				}
 			} else {
-				newCoordi.push([ coordi[2 * i], coordi[2 * i + 1] ]);
+				if (fcoordi[2 * i] !== extent[extentIndex]) {
+					newCoordi.push([ 2 * extent[extentIndex] - fcoordi[2 * i], fcoordi[2 * i + 1] ]);
+				} else {
+					newCoordi.push([ fcoordi[2 * i], fcoordi[2 * i + 1] ]);
+				}
 			}
-		} else {
-			if (coordi[2 * i] !== extent[extentIndex]) {
-				newCoordi.push([ 2 * extent[extentIndex] - coordi[2 * i], coordi[2 * i + 1] ]);
-			} else {
-				newCoordi.push([ coordi[2 * i], coordi[2 * i + 1] ]);
+		}
+	} else if (geometry instanceof ol.geom.Polygon) {
+		for (var i = 0; i < coordi.length; i++) {
+			newCoordi = [];
+			for (var j = 0; j < coordi[i].length; j++){
+				if (extentIndex === 1 || extentIndex === 3) {
+					if (coordi[i][j][1] !== extent[extentIndex]) {
+						newCoordi.push([ coordi[i][j][0], 2 * extent[extentIndex] - coordi[i][j][1] ]);
+					} else {
+						newCoordi.push([ coordi[i][j][0], coordi[i][j][1] ]);
+					}
+				} else {
+					if (coordi[i][j][0] !== extent[extentIndex]) {
+						newCoordi.push([ 2 * extent[extentIndex] - coordi[i][j][0], coordi[i][j][1] ]);
+					} else {
+						newCoordi.push([ coordi[i][j][0], coordi[i][j][1] ]);
+					}
+				}
 			}
+			newCoordis.push(newCoordi);
+		}
+	} else if (geometry instanceof ol.geom.MultiPolygon) {
+		for (var i = 0; i < coordi.length; i++) {
+			newCoordis = [];
+			for (var j = 0; j < coordi[i].length; j++){
+				newCoordi = [];
+				for (var k = 0; k < coordi[i][j].length; k++){
+					if (extentIndex === 1 || extentIndex === 3) {
+						if (coordi[i][j][k][1] !== extent[extentIndex]) {
+							newCoordi.push([ coordi[i][j][k][0], 2 * extent[extentIndex] - coordi[i][j][k][1] ]);
+						} else {
+							newCoordi.push([ coordi[i][j][k][0], coordi[i][j][k][1] ]);
+						}
+					} else {
+						if (coordi[i][j][k][0] !== extent[extentIndex]) {
+							newCoordi.push([ 2 * extent[extentIndex] - coordi[i][j][k][0], coordi[i][j][k][1] ]);
+						} else {
+							newCoordi.push([ coordi[i][j][k][0], coordi[i][j][k][1] ]);
+						}
+					}
+				}
+				newCoordis.push(newCoordi);
+			}
+			newMultiCoordis.push(newCoordis);
 		}
 	}
 
 	if (geometry instanceof ol.geom.MultiPolygon) {
-		newGeometry = new ol.geom.MultiPolygon([ [ newCoordi ] ]);
+		newGeometry = new ol.geom.MultiPolygon(newMultiCoordis);
 	} else if (geometry instanceof ol.geom.Polygon) {
-		newGeometry = new ol.geom.Polygon([ newCoordi ]);
+		newGeometry = new ol.geom.Polygon(newCoordis);
 	} else if (geometry instanceof ol.geom.MultiLineString) {
 		newGeometry = new ol.geom.MultiLineString([ newCoordi ]);
 	} else if (geometry instanceof ol.geom.LineString) {
@@ -654,24 +706,24 @@ gb.interaction.MultiTransformEventType = {
  *            mapBrowserPointerEvent Associated
  *            {@link ol.MapBrowserPointerEvent}.
  */
-gb.interaction.MultiTransform.Event = function(type, feature, mapBrowserPointerEvent) {
+/*gb.interaction.MultiTransform.Event = function(type, feature, mapBrowserPointerEvent) {
 
-//	ol.events.Event.call(this, type);
+	ol.events.condition.call(this, type);
 
-	/**
+	*//**
 	 * The features being modified.
 	 * 
 	 * @type {ol.Feature}
 	 * @api
-	 */
+	 *//*
 	this.feature = feature;
 
-	/**
+	*//**
 	 * Associated {@link ol.MapBrowserEvent}.
 	 * 
 	 * @type {ol.MapBrowserEvent}
 	 * @api
-	 */
+	 *//*
 	this.mapBrowserEvent = mapBrowserPointerEvent;
 };
-//ol.inherits(gb.interaction.MultiTransform.Event, ol.events.Event);
+ol.inherits(gb.interaction.MultiTransform.Event, ol.events.condition);*/

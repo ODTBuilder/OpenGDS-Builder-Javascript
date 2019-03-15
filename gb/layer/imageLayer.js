@@ -14,6 +14,7 @@ if (!gb.layer)
 	 * @version 0.01
 	 */
 	gb.layer.ImageLayer = function(obj) {
+		var that = this;
 		var options = obj;
 		
 		/**
@@ -133,13 +134,44 @@ if (!gb.layer)
 		
 		this.vector.setMap(this.map);
 		
+		// R키 입력한 상태로 객체그리기를 종료할 시 이미지 비율에 맞게 Geometry가 생성됨
+		var toggleKey = false;
+		$(window).bind("keypress.imageDraw", function(e){
+			if(e.keyCode === 114 || e.which === 114){
+				toggleKey = !toggleKey;
+			}
+		});
+		
+		function geometryFunction(coordinates, geometry){
+			var geometry = geometry;
+			var coordinates = coordinates;
+			
+			if(toggleKey){
+				var center = coordinates[0];
+				var last = coordinates[1];
+				var dx = Math.abs(center[0] - last[0]);
+				var ratio = (that.imageHeight || 0) / (that.imageWidth || Infinity);
+				var y = center[1] - dx*ratio;
+				var newCoordinates = [[[center[0], center[1]], [last[0], center[1]], [last[0], y], [center[0], y], [center[0], center[1]]]];
+				
+				if(geometry){
+					geometry.setCoordinates(newCoordinates);
+				} else {
+					geometry = new ol.geom.Polygon(newCoordinates);
+				}
+			} else {
+				geometry = ol.interaction.Draw.createBox()(coordinates, geometry);
+			}
+			return geometry;
+		}
+		
 		ol.interaction.Draw.call(this, {
 			type: "Circle",
-			geometryFunction: ol.interaction.Draw.createBox(),
+			geometryFunction: geometryFunction,
 			source: source
 		});
 		
-		var that = this;
+		var listener;
 		var startEvent = this.on("drawstart", function(evt){
 			that.vector.setMap(that.getMap());
 		});
@@ -179,7 +211,10 @@ if (!gb.layer)
 			
 			this.imageLayer.on("change", function(e){
 				console.log(e);
-			})
+			});
+			
+			ol.Observable.unByKey(listener);
+			$(window).unbind("keypress.imageDraw");
 		});
 		this.listener_.push(endEvent);
 		
@@ -201,7 +236,8 @@ if (!gb.layer)
 	
 	gb.layer.ImageLayer.prototype.createMenuBar = function(target){
 		if($.find("#imageLayerMenu").length !== 0){
-			$("#imageLayerMenu").remove();
+			this.removeMenuBar();
+			return;
 		}
 		
 		var that = this;
@@ -265,7 +301,7 @@ if (!gb.layer)
 	
 	gb.layer.ImageLayer.prototype.removeMenuBar = function(){
 		var features = this.vector.getSource().getFeatures();
-		for(let i = 0; i < features.length; i++){
+		for(var i = 0; i < features.length; i++){
 			features[i].setStyle([ new ol.style.Style({
 				fill: new ol.style.Fill({
 					color: 'rgba(255, 255, 255, 0)'
@@ -308,7 +344,7 @@ if (!gb.layer)
 		var features = this.vector.getSource().getFeatures();
 		var collection = new ol.Collection();
 		
-		for(let i = 0; i < features.length; i++){
+		for(var i = 0; i < features.length; i++){
 			features[i].setStyle([ new ol.style.Style({
 				fill: new ol.style.Fill({
 					color: 'rgba(255, 255, 255, 0.2)'
@@ -361,7 +397,7 @@ if (!gb.layer)
 		var features = this.vector.getSource().getFeatures();
 		var collection = new ol.Collection();
 		
-		for(let i = 0; i < features.length; i++){
+		for(var i = 0; i < features.length; i++){
 			features[i].setStyle([ new ol.style.Style({
 				fill: new ol.style.Fill({
 					color: 'rgba(255, 255, 255, 0.2)'
@@ -714,7 +750,7 @@ if (!gb.layer)
 	 */
 	gb.layer.Pointer.prototype.selectTask_ = function(map, feature, cursor) {
 
-		const AREA = 6;
+		var AREA = 6;
 
 		var extent = feature.getGeometry().getExtent();
 		var scale = [];

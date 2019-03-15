@@ -54,7 +54,7 @@ if (!gb.footer)
 		 * @type {Object.<string, Object<string, string>>}
 		 * @private
 		 */
-		this.translator = {
+		this.translation = {
 			"history": {
 				"en": "History",
 				"ko": "이력"
@@ -434,7 +434,7 @@ if (!gb.footer)
 		
 		var historyTitle = $("<div>").addClass("history-title");
 		this.adjustStyle_(historyTitle, this.elementStyle_.historyTitle);
-		historyTitle.text("History");
+		historyTitle.text(this.translation.history[this.locale]);
 		
 		var historyFunction = $("<div>").addClass("history-function");
 		this.adjustStyle_(historyFunction, this.elementStyle_.historyFunction);
@@ -447,7 +447,7 @@ if (!gb.footer)
 		
 		var logTitle = $("<div>").addClass("log-title");
 		this.adjustStyle_(logTitle, this.elementStyle_.logTitle);
-		logTitle.text("Log");
+		logTitle.text(this.translation.log[this.locale]);
 		
 		this.logContent = $("<div>").addClass("log-content");
 		this.adjustStyle_(this.logContent, this.elementStyle_.logContent);
@@ -459,7 +459,7 @@ if (!gb.footer)
 		this.setLabel();
 		this.adjustStyle_(this.label, this.elementStyle_.label);
 		
-		var line = this.input = $("<input id='commandInput' placeholder='Command Line'>").addClass("command-line");
+		var line = this.input = $("<input id='commandInput' placeholder='" + this.translation.commandLine[this.locale] + "'>").addClass("command-line");
 		this.adjustStyle_(line, this.elementStyle_.line);
 		line.keypress(function(e){
 			if(e.which === 13){
@@ -584,7 +584,7 @@ if (!gb.footer)
 	 */
 	gb.footer.CommandLine.prototype.downHistory = function(){
 		var text = "";
-		for(let i in this.workHistory_){
+		for(var i in this.workHistory_){
 			text += this.workHistory_[i].toString();
 			text += "\n";
 		}
@@ -613,7 +613,7 @@ if (!gb.footer)
 				}
 			}
 			
-			for(let i = 0; i < files.length; i++){
+			for(var i = 0; i < files.length; i++){
 				r.readAsText(files[i]);
 			}
 		}
@@ -624,10 +624,10 @@ if (!gb.footer)
 		
 		if(typeof text === "string"){
 			lines = text.split("\n").slice();
-			for(let i = 0; i < lines.length; i++){
+			for(var i = 0; i < lines.length; i++){
 				if(!!lines[i].trim()){
 					cmds = lines[i].split(",");
-					for(let j = 0; j < cmds.length; j++){
+					for(var j = 0; j < cmds.length; j++){
 						this.executeCommand(cmds[j].trim());
 					}
 				}
@@ -812,7 +812,7 @@ if (!gb.footer)
 	function getFeatureByServer(workId, layerId, featureId){
 		var params = {
 			"service" : "WFS",
-			"version" : "1.0.0",
+			"version" : gb.module.serviceVersion.WFS,
 			"request" : "GetFeature",
 			"typeName" : layerId,
 			"outputformat" : "text/javascript",

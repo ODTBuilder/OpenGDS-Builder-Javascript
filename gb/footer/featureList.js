@@ -30,6 +30,26 @@ if (!gb.footer)
 		
 		this.getFeatureURL = options.getFeatureURL || '';
 		
+		this.locale = options.locale || "en";
+		this.translation = {
+			"notNullHint" : {
+				"ko" : "빈 값이 허용되지않습니다.",
+				"en" : "null values ​​are not allowed."
+			},
+			"intValueHint" : {
+				"ko" : "정수 타입의 값을 입력해야합니다.",
+				"en" : "You must enter a value for Integer type."
+			},
+			"doubleValueHint" : {
+				"ko" : "실수 타입의 값을 입력해야합니다.",
+				"en" : "You must enter a value for double type."
+			},
+			"boolValueHint" : {
+				"ko" : "Boolean 타입의 값을 입력해야합니다.",
+				"en" : "You must enter a value for boolean type."
+			}
+		}
+		
 		/**
 		 * 현재 선택된 레이어의 JSTree ID
 		 */
@@ -39,6 +59,11 @@ if (!gb.footer)
 		 * 현재 선택된 레이어
 		 */
 		this.selectedLayer = undefined;
+		
+		/**
+		 * 현재 선택된 객체
+		 */
+		this.selectedFeature = undefined;
 		
 		/**
 		 * feature 요청 parameter
@@ -139,7 +164,7 @@ if (!gb.footer)
 			altEditor: true,
 			buttons: [{
 				extend: "selected",
-				text: "Edit",
+				text: "<i class='fas fa-edit fa-lg' style=color: #bfbfbf;'></i>",
 				name: "edit"
 			}]
 		});
@@ -157,12 +182,19 @@ if (!gb.footer)
 		
 		this.footerTag.on("footeropen", function(){
 			var isEdit = gb? (gb.module ? gb.module.isEditing : undefined) : undefined;
-			
+			var tree = $('.gb-article-body.jstreeol3').length === 1 ? $('.gb-article-body.jstreeol3') : undefined;
 			if(isEdit instanceof Object){
 				if(isEdit.get()){
 					that.close();
 					isEdit.alert();
 					return
+				}
+			}
+			
+			if(tree){
+				var layers = tree.jstreeol3("get_selected_layer");
+				if(layers.length === 1){
+					that.updateFeatureList(layers[0]);
 				}
 			}
 			
@@ -229,9 +261,7 @@ if (!gb.footer)
 		var that = this;
 		var num = ++this.countId;
 		
-		var table = $("<table>").attr("id", this.tableId + num).css({
-			width: "100%"
-		});
+		var table = $("<table>").attr("id", this.tableId + num).css("width", "100%");
 		
 		table.on("click", "tr", function(){
 			var data = that.dataTable.row(this).data();
@@ -244,7 +274,6 @@ if (!gb.footer)
 			}
 			
 			that.map.getView().fit(data[0].getGeometry().getExtent(), that.map.getSize());
-			that.map.getView().setZoom(14);
 		});
 		
 		this.createFooter({
@@ -266,8 +295,6 @@ if (!gb.footer)
 		$(document).off("click", "#addRowBtn");
 		$(document).off("click", "#editRowBtn");
 		$(document).off("click", "#deleteRowBtn");
-		$("#altEditor-modal").off("edited");
-		$("#altEditor-modal").remove();
 	}
 	
 	/**
@@ -354,15 +381,29 @@ if (!gb.footer)
 	gb.footer.FeatureList.prototype.searchTable = function(column, value){
 		var that = this;
 		var col = column,
-			val = value;
+			val = value,
+			vectorData = {};
 		var list = this.attrList;
 		var treeid = this.selectedTreeId;
+		var features = list[treeid].features;
+		this.startIndex = 0;
 		
 		if(!this.parameters){
+			features = list[treeid].all;
+			if(val === ""){
+				list[treeid].searchResults = undefined;
+			} else {
+				for(var i in features){
+					if(features[i].get(col).includes(val)){
+						vectorData[i] = features[i]
+					}
+				}
+				list[treeid].searchResults = vectorData;
+			}
+			this.updateTable(treeid);
 			return;
 		}
 		
-		this.startIndex = 0;
 		this.parameters.startIndex = this.startIndex;
 		
 		if(!val){
@@ -389,6 +430,15 @@ if (!gb.footer)
 						data[format[i].getId()] = format[i];
 					}
 					
+					if(format.length === 0){
+						col.push("No Data");
+						data[0] = {
+							get: function(e){
+								return "No Data";
+							}
+						};
+					}
+					
 					list[treeid].col = col;
 					list[treeid].features = data;
 					
@@ -413,8 +463,25 @@ if (!gb.footer)
 		var that = this;
 		this.selectedTreeId = treeid;
 		
+		var layer = that.selectedLayer;
+		var git = layer.get("git") || {};
+		var attribute = git.attribute;
+		var opt = {};
+		
+		for(var i = 0; i < attribute.length; i++){
+			opt[attribute[i].fieldName] = {};
+			opt[attribute[i].fieldName].unique = attribute[i].isUnique || false;
+			opt[attribute[i].fieldName].nullable = attribute[i].nullable || false;
+			opt[attribute[i].fieldName].type = attribute[i].type || "String";
+		}
+		
 		var col = this.attrList[treeid].col;
-		var features = this.attrList[treeid].features;
+		var features;
+		if(!this.attrList[treeid].searchResults){
+			features = this.attrList[treeid].features;
+		} else {
+			features = this.attrList[treeid].searchResults;
+		}
 		var column = [],
 			data= [];
 		var select = $("<select>").addClass("gb-form").css({
@@ -445,19 +512,62 @@ if (!gb.footer)
 			}
 		});
 		
+		var pattern, errorMsg;
 		for(var i = 0; i < col.length; i++){
 			if(col[i] === "geometry"){
 				column.push({
 					title: col[i],
-					visible: false
+					visible: false,
+					type: "hidden"
 				});
 			} else {
+				if(opt[col[i]].type === "Integer" || opt[col[i]].type === "Number" || opt[col[i]].type === "Long"){
+					errorMsg = this.translation.intValueHint[this.locale];
+					if(opt[col[i]].nullable){
+						pattern = "^-?[0-9]*$";
+					} else {
+						pattern = "^-?[0-9]+$";
+						errorMsg += "\n" + this.translation.notNullHint[this.locale];
+					}
+					
+				} else if(opt[col[i]].type === "Double"){
+					errorMsg = this.translation.doubleValueHint[this.locale];
+					if(opt[col[i]].nullable){
+						pattern = "^([-+]?[0-9]*\.?[0-9]+)*$";
+					} else {
+						pattern = "^([-+]?[0-9]*\.?[0-9]+)+$";
+						errorMsg += "\n" + this.translation.notNullHint[this.locale];
+					}
+				} else if(opt[col[i]].type === "Boolean"){
+					if(opt[col[i]].nullable){
+						pattern = "^true|false$";
+					} else {
+						pattern = "^(true|false)*$";
+					}
+					errorMsg = this.translation.boolValueHint[this.locale];
+				} else {
+					if(opt[col[i]].nullable){
+						pattern = ".*";
+					} else {
+						pattern = ".+";
+						errorMsg = this.translation.notNullHint[this.locale];
+					}
+				}
 				column.push({
-					title: col[i]
+					title: col[i],
+					pattern: pattern,
+					errorMsg: errorMsg
 				});
 				
 				select.append($("<option>").val(col[i]).text(col[i]));
 			}
+		}
+		
+		if(col.length === 0){
+			column.push({
+				title: "No Data"
+			});
+			data.push(["No Data"]);
 		}
 		
 		for(var id in features){
@@ -488,18 +598,57 @@ if (!gb.footer)
 			scrollCollapse: true,
 			dom: "Bfrtip",
 			select: "single",
-			responsive: true,
+			responsive: false,
 			altEditor: true,
 			buttons: [{
 				extend: "selected",
-				text: "Edit",
+				text: "<i class='fas fa-edit fa-lg' style=color: #bfbfbf;'></i>",
 				name: "edit"
 			}
 			/*{
 				extend: "selected",
 				text: "Delete",
 				name: "delete"
-			}*/]
+			}*/],
+			onEditRow: function(datatable, rowdata, success, error){
+				var feature, keys;
+				for(var i in rowdata){
+					if(rowdata[i] instanceof ol.Feature){
+						feature = rowdata[i];
+						keys = rowdata[i].getKeys();
+						continue;
+					}
+					
+					if(feature instanceof ol.Feature){
+						feature.set(keys[i], rowdata[i]);
+					}
+				}
+				
+				if(!(feature instanceof ol.Feature)){
+					return;
+				}
+				
+				var layerInfo = that.attrList[that.selectedTreeId];
+				var geomKey = that.attrList[that.selectedTreeId].geomKey;
+				
+				if(!!geomKey){
+					feature.setGeometryName(geomKey);
+					feature.set(geomKey, feature.get("geometry"));
+				}
+				
+				if(layerInfo.serverName){
+					if(!that.editedFeature[that.selectedTreeId]){
+						that.editedFeature[that.selectedTreeId] = {};
+						that.editedFeature[that.selectedTreeId].serverName = layerInfo.serverName;
+						that.editedFeature[that.selectedTreeId].workspace = layerInfo.workspace;
+						that.editedFeature[that.selectedTreeId].layerName = layerInfo.layerName;
+					}
+					
+					that.editedFeature[that.selectedTreeId].feature = feature;
+				}
+				
+				success(rowdata);
+			}
 		});
 		
 		this.footerTag.find(".dt-buttons").css({"z-index": "3"});
@@ -509,47 +658,12 @@ if (!gb.footer)
 		this.footerTag.find(".footer-header").append(select);
 		
 		$("#" + this.tableId + this.countId).parent().scroll(function(){
-			if($(this).scrollTop() + $(this).height() == $(this).children(":first").height()){
+			if($(this).scrollTop() + $(this)[0].clientHeight == $(this).children(":first").height()){
 				if(that.scrollTop !== $(this).scrollTop()){
 					that.scrollTop = $(this).scrollTop();
 					that.nextFeatureList();
 				}
 			}
-		})
-		
-		$("#altEditor-modal").on("edited", function(e, data){
-			var feature, keys;
-			var layer = that.attrList[that.selectedTreeId];
-			var geomKey = that.attrList[that.selectedTreeId].geomKey;
-				
-			for(let i = 0; i < data.length; i++){
-				if(data[i] instanceof ol.Feature){
-					feature = data[i];
-					keys = data[i].getKeys();
-				}
-			}
-			
-			for(let i = 0; i < keys.length; i++){
-				if(keys[i] === "geometry"){
-					continue;
-				}
-				feature.set(keys[i], data[i]);
-			}
-			
-			if(!that.editedFeature[that.selectedTreeId]){
-				that.editedFeature[that.selectedTreeId] = {};
-				that.editedFeature[that.selectedTreeId].serverName = layer.serverName;
-				that.editedFeature[that.selectedTreeId].workspace = layer.workspace;
-				that.editedFeature[that.selectedTreeId].layerName = layer.layerName;
-			}
-			
-			if(!!geomKey){
-				feature.setGeometryName(geomKey);
-				feature.set(geomKey, feature.get("geometry"));
-				feature.unset("geometry");
-			}
-			
-			that.editedFeature[that.selectedTreeId].feature = feature;
 		});
 		
 		this.tableElement.find("tbody > tr").css("background-color", "transparent");
@@ -558,6 +672,24 @@ if (!gb.footer)
 	}
 	
 	gb.footer.FeatureList.prototype.updateFeatureList = function(layer){
+		this.startIndex = 0;
+		this.scrollTop = 0;
+		
+		this.contentTag.append($("<div id='feature-list-loading'>").css({
+			"z-index" : "10",
+			"position" : "absolute",
+			"left" : "0",
+			"top" : "0",
+			"width" : "100%",
+			"height" : "100%",
+			"text-align" : "center",
+			"background-color" : "rgba(0, 0, 0, 0.4)"
+		}).append($("<i>").addClass("fas fa-spinner fa-spin fa-5x").css({
+			"position" : "relative",
+			"top" : "50%",
+			"margin-top" : "-5em"
+		})));
+		
 		var options = layer.get("git") || {};
 		
 		var list = this.attrList;
@@ -568,8 +700,10 @@ if (!gb.footer)
 		this.parameters = undefined;
 		
 		if(layer instanceof ol.layer.Vector){
-			var data = {},
+			var data = [],
+				paging = {},
 				col = [],
+				count = 0,
 				features = layer.getSource().getFeatures();
 			
 			list[treeid] = {};
@@ -579,11 +713,17 @@ if (!gb.footer)
 					col = features[i].getKeys();
 					list[treeid].geomKey = features[i].getGeometryName();
 				}
-				data[features[i].getId()] = features[i];
+				data.push(features[i]);
+				if(count < this.maxFeatures){
+					paging[features[i].getId()] = features[i];
+				}
+				count++;
 			}
 			list[treeid].col = col;
-			list[treeid].features = data;
+			list[treeid].features = paging;
+			list[treeid].all = data;
 			this.updateTable(treeid);
+			$("#feature-list-loading").remove();
 			return;
 		}
 		
@@ -610,12 +750,10 @@ if (!gb.footer)
 			return;
 		}
 		
-		this.startIndex = 0;
-		this.scrollTop = 0;
 		this.parameters = {
 			"serverName": geoserver,
 			"workspace": workspace,
-			"version" : "1.0.0",
+			"version" : gb.module.serviceVersion.WFS,
 			"typeName" : layerName,
 			"outputformat" : "application/json",
 			"maxFeatures": this.maxFeatures,
@@ -652,20 +790,53 @@ if (!gb.footer)
 				
 				that.requestLayerInfo(geoserver, workspace, layerName, treeid);
 				that.updateTable(treeid);
+				$("#feature-list-loading").remove();
 				//that.setTitle(layerName);
 			},
 			error: function(jqXHR, textStatus, errorThrown){
+				$("#feature-list-loading").remove();
 				console.log(errorThrown);
 			}
 		});
 	}
 	
 	gb.footer.FeatureList.prototype.nextFeatureList = function(){
-		if(!this.parameters){
-			return;
-		}
 		var that = this;
 		this.startIndex = this.startIndex + this.maxFeatures;
+		var list = this.attrList;
+		
+		if(!this.parameters){
+			var all = list[this.selectedTreeId].all,
+				data = [];
+			var props;
+			
+			if(this.startIndex > all.length){
+				return;
+			}
+			
+			for(var i = this.startIndex; i < this.startIndex + this.maxFeatures; i++){
+				if(i >= all.length){
+					break;
+				}
+				var arr = [];
+				props = all[i].getProperties();
+				for(var j in props){
+					if(j === "geometry"){
+						arr.push(all[i]);
+					} else {
+						arr.push(props[j]);
+					}
+				}
+				data.push(arr);
+			}
+			
+			this.dataTable.rows.add(data).draw();
+			this.tableElement.find("tbody > tr").css("background-color", "transparent");
+			this.footerTag.find("label").css("color", "#DDD");
+			$("#" + this.tableId + this.countId).parent().scrollTop(this.scrollTop);
+			return;
+		}
+		
 		this.parameters.startIndex = this.startIndex;
 		
 		$.ajax({
@@ -747,7 +918,7 @@ if (!gb.footer)
 				"featureNS": featureInfo[treeid].workspace,
 				"featurePrefix": featureInfo[treeid].workspace,
 				"featureType": featureInfo[treeid].layerName,
-				"version": "1.0.0"
+				"version": gb.module.serviceVersion.WFS
 			});
 			
 			param = {
