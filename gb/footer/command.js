@@ -415,7 +415,7 @@ if (!gb.footer)
 	
 	/**
 	 * command layout안에 내용 element를 생성한다.
-	 * @method createContent
+	 * @method gb.footer.CommandLine#createContent
 	 */
 	gb.footer.CommandLine.prototype.createContent = function(){
 		var that = this;
@@ -525,7 +525,7 @@ if (!gb.footer)
 	
 	/**
 	 * 명령어 입력 도움글 설정
-	 * @method setLabel
+	 * @method gb.footer.CommandLine#setLabel
 	 * @param {string} label 명령어 입력 도움글
 	 */
 	gb.footer.CommandLine.prototype.setLabel = function(label){
@@ -538,7 +538,7 @@ if (!gb.footer)
 	
 	/**
 	 * input에 입력된 모든 값을 저장한 변수를 초기화한다.
-	 * @method resetParams
+	 * @method gb.footer.CommandLine#resetParams
 	 */
 	gb.footer.CommandLine.prototype.resetParams = function(){
 		for(var i in this.params_){
@@ -548,7 +548,7 @@ if (!gb.footer)
 	
 	/**
 	 * input에 입력된 값을 저장
-	 * @method pushParam
+	 * @method gb.footer.CommandLine#pushParam
 	 * @param {string} value input에 입력된 값
 	 * @return {number}
 	 */
@@ -567,7 +567,7 @@ if (!gb.footer)
 	
 	/**
 	 * 작업 이력을 저장
-	 * @method pushWorkHistory
+	 * @method gb.footer.CommandLine#pushWorkHistory
 	 * @param {string[]} list - input에 입력된 값들의 배열
 	 */
 	gb.footer.CommandLine.prototype.pushWorkHistory = function(list){
@@ -580,7 +580,7 @@ if (!gb.footer)
 	
 	/**
 	 * 작업 이력 다운로드
-	 * @method downHistory
+	 * @method gb.footer.CommandLine#downHistory
 	 */
 	gb.footer.CommandLine.prototype.downHistory = function(){
 		var text = "";
@@ -597,7 +597,7 @@ if (!gb.footer)
 	
 	/**
 	 * 작업 이력 업로드
-	 * @method uploadHistory
+	 * @method gb.footer.CommandLine#uploadHistory
 	 * @param {DOM} input - 파일을 포함하고 있는 DOM 객체
 	 */
 	gb.footer.CommandLine.prototype.uploadHistory = function(input){
@@ -868,7 +868,7 @@ if (!gb.footer)
 	
 	/**
 	 * 명령어 자동 완성 기능 활성화
-	 * @method autocomplete
+	 * @method gb.footer.CommandLine#autocomplete
 	 */
 	gb.footer.CommandLine.prototype.autocomplete = function(){
 		var that = this;
