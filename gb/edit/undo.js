@@ -63,10 +63,10 @@ gb.edit.Undo = function(obj) {
 			return;
 		}
 		
-		if((e.keyCode === 26 || e.which === 26) && e.shiftKey){
+		if((e.keyCode === 90 || e.which === 90) && e.shiftKey){
 			that.undo();
 			console.log("execute undo");
-		} else if((e.keyCode === 25 || e.which === 25) && e.shiftKey){
+		} else if((e.keyCode === 89 || e.which === 89) && e.shiftKey){
 			that.redo();
 			console.log("execute redo");
 		}
