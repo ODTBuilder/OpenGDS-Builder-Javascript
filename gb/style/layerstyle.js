@@ -1,17 +1,17 @@
 /**
- * 레이어 스타일 패널 객체를 정의한다.
+ * @classdesc 레이어 스타일 패널 객체를 정의한다.
  * 
  * @class gb.style.LayerStyle
  * @memberof gb.style
  * @param {Object}
  *            obj - 생성자 옵션을 담은 객체
- * @param {Boolean}
- *            obj.autoOpen - 패널을 선언과 동시에 표출 할 것인지 선택
+ * @param {boolean}
+ *            [obj.autoOpen=false] - 패널을 선언과 동시에 표출 할 것인지 선택
  * @param {ol.layer.Base}
  *            obj.layer - 스타일을 변경할 레이어 객체
- * @version 0.01
- * @author yijun.so
- * @date 2018. 06.04
+ * @param {string}
+ *            [obj.locale="en"] - 사용할 언어 ko | en
+ * @author SOYIJUN
  */
 var gb;
 if (!gb)
@@ -24,93 +24,234 @@ gb.style.LayerStyle = function(obj) {
 	obj.height = 420;
 	obj.positionX = 380;
 	obj.positionY = 535;
-	gb.panel.Base.call(this, obj);
+	gb.panel.PanelBase.call(this, obj);
 	var options = obj ? obj : {};
 	this.layer = options.layer instanceof ol.layer.Base ? options.layer : undefined;
+	this.locale = options.locale ? options.locale : "en";
 	this.geom = undefined;
-
+	/**
+	 * @private
+	 * @type {gb.panel.PanelBase}
+	 */
+	this.labelPanel = undefined;
+	/**
+	 * @private
+	 * @type {Object}
+	 */
+	this.translation = {
+		"choose" : {
+			"ko" : "레이어를 선택하세요.",
+			"en" : "Choose a layer."
+		},
+		"outline" : {
+			"ko" : "외곽선",
+			"en" : "Outline"
+		},
+		"fill" : {
+			"ko" : "채우기",
+			"en" : "Fill"
+		},
+		"width" : {
+			"ko" : "너비",
+			"en" : "Width"
+		},
+		"radius" : {
+			"ko" : "반지름",
+			"en" : "Radius"
+		},
+		"outstyle" : {
+			"ko" : "외곽선 스타일",
+			"en" : "Outline Style"
+		},
+		"opacity" : {
+			"ko" : "투명도",
+			"en" : "Opacity"
+		},
+		"label" : {
+			"ko" : "레이블",
+			"en" : "Label"
+		},
+		"close" : {
+			"ko" : "닫기",
+			"en" : "Close"
+		},
+		"ok" : {
+			"ko" : "확인",
+			"en" : "OK"
+		}
+	};
+	/**
+	 * @private
+	 * @type {Object}
+	 */
 	this.jstreeNode = undefined;
+	/**
+	 * @private
+	 * @type {Object}
+	 */
 	this.legendInfo = undefined;
-
-	this.layerName = $("<div>").text("Choose a layer").css({
-		"margin-bottom" : "8px",
-		"overflow-x" : "hidden",
-		"text-overflow" : "ellipsis",
-		"font-size" : "1.1em",
-		"font-weight" : "bold"
-	});
-
-	this.lineLabel = $("<div>").text("Outline");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.layerName = $("<div>").text(this.translation.choose[this.locale]).addClass("gb-layerstyle-layer-name");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.lineLabel = $("<div>").text(this.translation.outline[this.locale]);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.linePicker = $("<input>").attr({
 		"type" : "text"
 	});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.lineContent = $("<div>").append(this.linePicker);
-	this.lineArea = $("<div>").append(this.lineLabel).append(this.lineContent).css({
-		"margin-bottom" : "5px"
-	});
-
-	this.fillLabel = $("<div>").text("Fill");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.lineArea = $("<div>").append(this.lineLabel).append(this.lineContent).addClass("gb-layerstyle-select-area");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.fillLabel = $("<div>").text(this.translation.fill[this.locale]);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.fillPicker = $("<input>").attr({
 		"type" : "text"
 	});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.fillContent = $("<div>").append(this.fillPicker);
-	this.fillArea = $("<div>").append(this.fillLabel).append(this.fillContent).css({
-		"margin-bottom" : "5px"
-	});
-
-	this.widthLabel = $("<div>").text("Width");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.fillArea = $("<div>").append(this.fillLabel).append(this.fillContent).addClass("gb-layerstyle-select-area");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.widthLabel = $("<div>").text(this.translation.width[this.locale]);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.widthInput = $("<input>").attr({
 		"type" : "number",
 		"min" : "1"
-	}).css({
-		"width" : "175px",
-		"height" : "26px"
-	}).val("1");
-	this.widthContent = $("<div>").append(this.widthInput);
-	this.widthArea = $("<div>").append(this.widthLabel).append(this.widthContent).css({
-		"margin-bottom" : "5px"
-	});
+	}).addClass("gb-layerstyle-text-area").val("1");
 
-	this.radLabel = $("<div>").text("Radius");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.widthContent = $("<div>").append(this.widthInput);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.widthArea = $("<div>").append(this.widthLabel).append(this.widthContent).addClass("gb-layerstyle-select-area");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.radLabel = $("<div>").text(this.translation.radius[this.locale]);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.radInput = $("<input>").attr({
 		"type" : "number",
 		"min" : "0"
-	}).css({
-		"width" : "175px",
-		"height" : "26px"
-	}).val("5");
+	}).addClass("gb-layerstyle-text-area").val("5");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.radContent = $("<div>").append(this.radInput);
-	this.radArea = $("<div>").append(this.radLabel).append(this.radContent).css({
-		"margin-bottom" : "5px"
-	});
-
-	this.outlineLabel = $("<div>").text("Outline Style");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.radArea = $("<div>").append(this.radLabel).append(this.radContent).addClass("gb-layerstyle-select-area");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.outlineLabel = $("<div>").text(this.translation.outstyle[this.locale]);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.outline1 = $("<option>").attr({
 		"value" : "outline1"
 	}).text("─────────────────────");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.outline2 = $("<option>").attr({
 		"value" : "outline2",
 		"dash" : "5,5"
 	}).text("- - - - - - - - - - - - - - - - - - - - - - - - -");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.outline3 = $("<option>").attr({
 		"value" : "outline3",
 		"dash" : "8,5,1,5"
 	}).text("─ · ─ · ─ · ─ · ─ · ─ · ─ · ─ · ─ · ─ ·");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.outline4 = $("<option>").attr({
 		"value" : "outline4",
 		"dash" : "8,5,1,5,1,5"
 	}).text("─ · · ─ · · ─ · · ─ · · ─ · · ─ · · ─ · · ─");
-	this.outlineInput = $("<select>").append(this.outline1).append(this.outline2).append(this.outline3).append(this.outline4).css({
-		"width" : "175px",
-		"height" : "26px"
-	});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.outlineInput = $("<select>").append(this.outline1).append(this.outline2).append(this.outline3).append(this.outline4).addClass(
+			"gb-layerstyle-text-area");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.outlineContent = $("<div>").append(this.outlineInput);
-	this.outlineArea = $("<div>").append(this.outlineLabel).append(this.outlineContent).css({
-		"margin-bottom" : "5px"
-	});
-
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.outlineArea = $("<div>").append(this.outlineLabel).append(this.outlineContent).addClass("gb-layerstyle-select-area");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.opaFigure = $("<span>");
-	this.opaLabel = $("<div>").append("Opacity: ").append(this.opaFigure);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.opaLabel = $("<div>").append(this.translation.opacity[this.locale] + ": ").append(this.opaFigure);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.opaPicker = $("<input>").attr({
 		"type" : "range",
 		"min" : "0",
@@ -121,175 +262,182 @@ gb.style.LayerStyle = function(obj) {
 		$(that.opaFigure).empty();
 		$(that.opaFigure).text($(this).val());
 	});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.opaContent = $("<div>").append(this.opaPicker);
-	this.opaArea = $("<div>").append(this.opaLabel).append(this.opaContent).css({
-		"margin-bottom" : "5px"
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.opaArea = $("<div>").append(this.opaLabel).append(this.opaContent).addClass("gb-layerstyle-select-area");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.checkboxInput = $("<input type='checkbox' tabindex='0'>").css(gb.geoserver.CHECKBOXINPUT).change(function() {
+		var bool = that.createWFSLabelPanel(this.checked);
+		if (!bool) {
+			this.checked = false;
+		}
 	});
-	
-	this.checkboxInput = 
-		$("<input type='checkbox' tabindex='0'>")
-			.css(gb.geoserver.CHECKBOXINPUT)
-			.change(function(){
-				var bool = that.createWFSLabelPanel(this.checked);
-				if(!bool){
-					this.checked = false;
-				}
-			});
-	
-	var checkboxLabel = $("<label>").text("Label");
-	this.checkboxDiv = $("<div>").append(this.checkboxInput).append(checkboxLabel);
 
-	this.saveBtn = $("<button>").text("OK").addClass("gb-button").addClass("gb-button-primary").click(function() {
-		that.updateStyle();
-	});
-	this.btnArea = $("<div>").append(this.saveBtn).css({
-		"float" : "right",
-		"margin" : "5px",
-		"position" : "absolute",
-		"bottom" : 0,
-		"right" : 0
-	});
+	var checkboxLabel = $("<label>").text(this.translation.label[this.locale]);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.checkboxDiv = $("<div>").append(this.checkboxInput).append(checkboxLabel);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.saveBtn = $("<button>").text(this.translation.ok[this.locale]).addClass("gb-button").addClass("gb-button-primary").click(
+			function() {
+				that.updateStyle();
+			});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.btnArea = $("<div>").addClass("gb-layerstyle-button-area").append(this.saveBtn);
+
+	$(this.panelBody).addClass("gb-layerstyle-body");
 	$(this.panelBody).append(this.layerName).append(this.fillArea).append(this.lineArea).append(this.widthArea).append(this.radArea)
 			.append(this.outlineArea).append(this.opaArea).append(this.checkboxDiv).append(this.btnArea);
-	$(this.panelBody).css({
-		"padding" : "8px"
-	});
-	$("body").append(this.panel);
 
+	$("body").append(this.panel);
+	// 선색깔 설정을 위한 스펙트럼 객체 선언
 	$(this.linePicker).spectrum({
 		showInput : true,
 		showAlpha : true,
 		preferredFormat : "rgb"
 	});
-
+	// 면색깔 설정을 위한 스펙트럼 객체 선언
 	$(this.fillPicker).spectrum({
 		showInput : true,
 		showAlpha : true,
 		preferredFormat : "rgb"
 	});
-
-	$(this.lineContent).find(".sp-replacer").css({
-		"width" : "175px"
-	});
-	$(this.lineContent).find(".sp-preview").css({
-		"width" : "149px"
-	});
-	$(this.fillContent).find(".sp-replacer").css({
-		"width" : "175px"
-	});
-	$(this.fillContent).find(".sp-preview").css({
-		"width" : "149px"
-	});
+	// 레이어 스타일 패널 크기에 맞게 너비 수정
+	$(this.lineContent).find(".sp-replacer").addClass("gb-layerstyle-replacer-area");
+	$(this.lineContent).find(".sp-preview").addClass("gb-layerstyle-preview-area");
+	$(this.fillContent).find(".sp-replacer").addClass("gb-layerstyle-replacer-area");
+	$(this.fillContent).find(".sp-preview").addClass("gb-layerstyle-preview-area");
 
 	var temp = this.getLayer();
 	if (temp instanceof ol.layer.Base) {
 		this.setLayer(temp);
 	}
 };
-gb.style.LayerStyle.prototype = Object.create(gb.panel.Base.prototype);
+gb.style.LayerStyle.prototype = Object.create(gb.panel.PanelBase.prototype);
 gb.style.LayerStyle.prototype.constructor = gb.style.LayerStyle;
 
 /**
  * WFS 라벨 설정 페널을 생성한다.
  * 
- * @method gb.style.LayerStyle#labelPanel
+ * @private
+ * @method gb.style.LayerStyle#createWFSLabelPanel
+ * @param {boolean}
+ *            bool - 레이블 패널을 열어 둘것인지 확인
  */
 gb.style.LayerStyle.prototype.createWFSLabelPanel = function(bool) {
 	var that = this;
-	if(!bool){
-		if(this.labelPanel){
+	if (!bool) {
+		if (this.labelPanel) {
 			this.labelPanel.close();
 		}
 		return false;
 	}
-	
+
 	var git = this.layer.get("git");
 	if (git["fake"] === "parent") {
 		return false;
 	}
-	
+
 	var labelOptions = git.labelOptions || {};
 	var attrs = [];
 	var temp;
-	if(this.layer instanceof ol.layer.Tile){
+	if (this.layer instanceof ol.layer.Tile) {
 		temp = git instanceof Object ? git.attribute : [];
-		for(var i = 0; i < temp.length; i++){
+		for (var i = 0; i < temp.length; i++) {
 			attrs.push(temp[i].fieldName);
 		}
-	} else if(this.layer instanceof ol.layer.Vector){
+	} else if (this.layer instanceof ol.layer.Vector) {
 		temp = git instanceof Object ? git.attribute : [];
-		for(var i = 0; i < temp.length; i++){
+		for (var i = 0; i < temp.length; i++) {
 			attrs.push(temp[i].fieldName);
 		}
 	}
 	var options = {
-		"Attribute": attrs,
-		"Text": ["normal", "hide", "shorten", "wrap"],
-		"MaxResolution": ["38400", "19200", "9600", "4800", "2400", "1200", "600", "300", "150", "75", "32", "16", "8"],
-		"Align": ["center", "end", "left", "reight", "start"],
-		"Baseline": ["alphabetic", "bottom", "hanging", "ideographic", "middle", "top"],
-		"Rotation": ["0", "0.785398164", "1.570796327"],
-		"Font": ["Arial", "'Courier New'", "Verdana"],
-		"Weight": ["normal", "bold"],
-		"Placement": ["point", "line"],
-		"MaxAngle": ["0.7853981633974483", "2.0943951023931953", "6.283185307179586"],
-		"Size": "12px",
-		"OffsetX": "0",
-		"OffsetY": "0",
-		"FillColor": "blue",
-		"OutlineColor": "#ffffff",
-		"OutlineWidth": "3"
+		"Attribute" : attrs,
+		"Text" : [ "normal", "hide", "shorten", "wrap" ],
+		"MaxResolution" : [ "38400", "19200", "9600", "4800", "2400", "1200", "600", "300", "150", "75", "32", "16", "8" ],
+		"Align" : [ "center", "end", "left", "right", "start" ],
+		"Baseline" : [ "alphabetic", "bottom", "hanging", "ideographic", "middle", "top" ],
+		"Rotation" : [ "0", "0.785398164", "1.570796327" ],
+		"Font" : [ "Arial", "'Courier New'", "Verdana" ],
+		"Weight" : [ "normal", "bold" ],
+		"Placement" : [ "point", "line" ],
+		"MaxAngle" : [ "0.7853981633974483", "2.0943951023931953", "6.283185307179586" ],
+		"Size" : "12px",
+		"OffsetX" : "0",
+		"OffsetY" : "0",
+		"FillColor" : "blue",
+		"OutlineColor" : "#ffffff",
+		"OutlineWidth" : "3"
 	}
-	
+
 	var tr, key, value, select, option;
 	var tbody = $("<tbody>");
-	var table = $("<table>").css("width", "100%").append(tbody);
-	
-	if(!this.labelPanel){
-		this.labelPanel = new gb.panel.Base({
+	var table = $("<table>").addClass("gb-layerstyle-label-area").append(tbody);
+
+	if (!this.labelPanel) {
+		this.labelPanel = new gb.panel.PanelBase({
 			"width" : "auto",
 			"height" : "420",
 			"positionX" : "572",
 			"positionY" : "535"
 		});
-		
+
 		this.labelPanel.panelHead.remove();
 		$("body").append(this.labelPanel.panel);
 		this.labelPanel.panel.css("overflow", "auto");
-		
-		this.closeBtn.on("click", function(){
+
+		this.closeBtn.on("click", function() {
 			that.labelPanel.close();
 		});
 	}
-	
-	for(var i in options){
-		key = $("<td>").css(gb.edit.TDKEYSTYLE).text(i);
-		if(options[i] instanceof Array){
-			select = $("<select>").addClass("gb-form").attr("id", "label" + i).css(gb.edit.SELECTSTYLE);
-			for(var j = 0; j < options[i].length; j++){
+
+	for ( var i in options) {
+		key = $("<td>").addClass("gb-modifylayerproperties-td-key").text(i);
+		if (options[i] instanceof Array) {
+			select = $("<select>").addClass("gb-form").attr("id", "label" + i).addClass("gb-modifylayerproperties-select");
+			for (var j = 0; j < options[i].length; j++) {
 				option = $("<option>").val(options[i][j]).text(options[i][j]);
 				select.append(option);
 				if (options[i][j] === labelOptions[i.charAt(0).toLowerCase() + i.slice(1)]) {
 					option.attr("selected", "selected");
 				}
 			}
-			value = $("<td>").css(gb.edit.TDSTYLE).append(select);
+			value = $("<td>").addClass("gb-modifylayerproperties-td").append(select);
 		} else {
-			value = $("<td>").css(gb.edit.TDSTYLE).append($("<input>").addClass("layer-prop-input").attr({
+			value = $("<td>").addClass("gb-modifylayerproperties-td").append($("<input>").addClass("layer-prop-input").attr({
 				"id" : "label" + i,
 				"value" : labelOptions[i.charAt(0).toLowerCase() + i.slice(1)] || options[i],
 				"type" : "text",
 				"readonly" : false
-			}).css(gb.edit.INPUTSTYLE));
+			}).addClass("gb-modifylayerproperties-input"));
 		}
-		
-		tr = $("<tr>").css(gb.edit.TRSTYLE).append(key).append(value);
+
+		tr = $("<tr>").addClass("gb-modifylayerproperties-tr").append(key).append(value);
 		tbody.append(tr);
 	}
-	
+
 	this.labelPanel.panelBody.find("table").remove();
 	this.labelPanel.panelBody.append(table);
-	
+
 	this.labelPanel.open();
 	return true;
 }
@@ -297,10 +445,12 @@ gb.style.LayerStyle.prototype.createWFSLabelPanel = function(bool) {
 /**
  * 선택한 스타일을 레이어에 적용 시킨다.
  * 
+ * @private
  * @method gb.style.LayerStyle#updateStyle
  */
 gb.style.LayerStyle.prototype.updateStyle = function() {
 	var layer = this.getLayer();
+	// 레이어 스타일 패널에서 선택한 옵션값 추출후 오픈레이어스 스타일 객체 생성
 	var style = new ol.style.Style(
 			{
 				"fill" : this.geom === "Polygon" || this.geom === "MultiPolygon" ? new ol.style.Fill({
@@ -332,8 +482,8 @@ gb.style.LayerStyle.prototype.updateStyle = function() {
 					})
 				}) : undefined
 			});
-	var labelOptions = {};;
-	if(this.checkboxInput.prop("checked")){
+	var labelOptions = {};
+	if (this.checkboxInput.prop("checked")) {
 		labelOptions.attribute = $("#labelAttribute").find("option:selected").val();
 		labelOptions.align = $("#labelAlign").find("option:selected").val();
 		labelOptions.baseline = $("#labelBaseline").find("option:selected").val();
@@ -352,25 +502,25 @@ gb.style.LayerStyle.prototype.updateStyle = function() {
 		labelOptions.maxResolution = $("#labelMaxResolution").find("option:selected").val();
 	}
 	var opacity = parseFloat($(this.opaPicker).val());
-	
+
 	if (layer instanceof ol.layer.Vector) {
 		if (layer.get("git") === undefined || layer.get("git") === null) {
 			return;
 		}
-		
+
 		layer.setStyle(style);
-		if(gb.layer.Label !== undefined && this.checkboxInput.prop("checked")){
+		if (gb.layer.Label !== undefined && this.checkboxInput.prop("checked")) {
 			layer.setStyle(new gb.layer.Label({
-				layer: layer,
-				labelOptions: labelOptions
+				layer : layer,
+				labelOptions : labelOptions
 			}));
-			
+
 			layer.get("git").labelOptions = labelOptions;
 			layer.get("git").labelActive = true;
 		} else {
 			layer.get("git").labelActive = false;
 		}
-		
+
 		var lsource = layer.getSource();
 		if (lsource !== undefined) {
 			var git = lsource.get("git");
@@ -380,12 +530,12 @@ gb.style.LayerStyle.prototype.updateStyle = function() {
 			}
 			if (vectorLayer !== undefined) {
 				vectorLayer.setStyle(style);
-				if(gb.layer.Label !== undefined && this.checkboxInput.prop("checked")){
+				if (gb.layer.Label !== undefined && this.checkboxInput.prop("checked")) {
 					vectorLayer.setStyle(new gb.layer.Label({
-						layer: vectorLayer,
-						labelOptions: labelOptions
+						layer : vectorLayer,
+						labelOptions : labelOptions
 					}));
-					
+
 					git.labelOptions = labelOptions;
 					git.labelActive = true;
 				} else {
@@ -407,10 +557,10 @@ gb.style.LayerStyle.prototype.updateStyle = function() {
 
 		if (vectorLayer !== undefined) {
 			vectorLayer.setStyle(style);
-			if(gb.layer.Label !== undefined && this.checkboxInput.prop("checked")){
+			if (gb.layer.Label !== undefined && this.checkboxInput.prop("checked")) {
 				vectorLayer.setStyle(new gb.layer.Label({
-					layer: vectorLayer,
-					labelOptions: labelOptions
+					layer : vectorLayer,
+					labelOptions : labelOptions
 				}));
 			}
 		}
@@ -496,7 +646,7 @@ gb.style.LayerStyle.prototype.updateStyle = function() {
 				sldBody += '</Graphic>' + '</PointSymbolizer>'
 			}
 
-			if(this.checkboxInput.prop("checked")){
+			if (this.checkboxInput.prop("checked")) {
 				sldBody += '<TextSymbolizer>';
 				sldBody += '<Geometry>';
 				sldBody += '<ogc:Function name="centroid">';
@@ -516,19 +666,19 @@ gb.style.LayerStyle.prototype.updateStyle = function() {
 				sldBody += '<CssParameter name="fill">#990099</CssParameter>';
 				sldBody += '</Fill>';
 				sldBody += '</TextSymbolizer>';
-				
+
 				git.labelOptions = labelOptions;
 				git.labelActive = true;
 			} else {
 				git.labelActive = false;
 			}
-			
+
 			sldBody += '</Rule></FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>';
-			
+
 			source.updateParams({
 				'SLD_BODY' : sldBody
 			});
-			
+
 			layer.setOpacity(opacity);
 			this.close();
 			this.createWFSLabelPanel(false);
@@ -542,6 +692,7 @@ gb.style.LayerStyle.prototype.updateStyle = function() {
 /**
  * 선택한 스타일을 레이어에 적용 시킨다.
  * 
+ * @private
  * @method gb.style.LayerStyle#applyStyle
  */
 gb.style.LayerStyle.prototype.applyStyle = function() {
@@ -579,12 +730,12 @@ gb.style.LayerStyle.prototype.applyStyle = function() {
 		});
 
 		layer.setStyle(style);
-		if(gb.layer.Label !== undefined && this.checkboxInput.prop("checked")){
+		if (gb.layer.Label !== undefined && this.checkboxInput.prop("checked")) {
 			layer.setStyle(new gb.layer.Label({
-				layer: layer
+				layer : layer
 			}));
 		}
-		
+
 	} else if (layer instanceof ol.layer.Tile) {
 		var git = layer.get("git");
 		if (git["fake"] === "parent") {
@@ -701,13 +852,13 @@ gb.style.LayerStyle.prototype.applyStyle = function() {
  * RGB 색상코드를 16진수 색상코드로 변환한다.
  * 
  * @method gb.style.LayerStyle#hexFromRGB
- * @param {Number}
+ * @param {number}
  *            r - R 계열 수치
- * @param {Number}
+ * @param {number}
  *            g- G 계열 수치
- * @param {Number}
+ * @param {number}
  *            b - B 계열 수치
- * @return {String} RGB코드
+ * @return {string} RGB코드
  */
 gb.style.LayerStyle.prototype.hexFromRGB = function(r, g, b) {
 	// 받아온 파라미터를 16진수로 변환한다
@@ -725,9 +876,9 @@ gb.style.LayerStyle.prototype.hexFromRGB = function(r, g, b) {
  * 16진수 색상코드를 RGB 색상코드로 변환한다.
  * 
  * @method gb.style.LayerStyle#decimalFromHex
- * @param {String}
+ * @param {string}
  *            hex - 16진수 RGB 색상코드
- * @return {String} RGB 색상코드
+ * @return {string} RGB 색상코드
  */
 gb.style.LayerStyle.decimalFromHex = function(hex) {
 	// r코드 획득
@@ -749,9 +900,9 @@ gb.style.LayerStyle.decimalFromHex = function(hex) {
 /**
  * SLD의 스타일 설정값을 추출한다.
  * 
+ * @private
  * @method gb.style.LayerStyle#parseSymbolizer
- * 
- * @param {String}
+ * @param {string}
  *            sld - 레이어의 SLD
  * @return {Object} 스타일 정보를 가진 객체
  */
@@ -777,10 +928,9 @@ gb.style.LayerStyle.prototype.parseSymbolizer = function(sld) {
 			fillOpacity = fill.substring(fill.indexOf('<CssParameter name="fill-opacity">') + 34, fill.indexOf("</CssParameter>"));
 		}
 		console.log(fillOpacity);
-		
-		obj["fillRGBA"] = "rgba(" + (!fillRGBColorCode ? "120,120,120" : fillRGBColorCode) +
-			"," + (!fillOpacity ? "1" : fillOpacity) + ")";
-		
+
+		obj["fillRGBA"] = "rgba(" + (!fillRGBColorCode ? "120,120,120" : fillRGBColorCode) + "," + (!fillOpacity ? "1" : fillOpacity) + ")";
+
 		symbol = symbol.substring(symbol.indexOf("</Fill>") + 7);
 	} else if (sld.indexOf("<LineSymbolizer>") !== -1) {
 		symbol = sld.substring(sld.indexOf("<LineSymbolizer>") + 16, sld.indexOf("</LineSymbolizer>"));
@@ -817,9 +967,9 @@ gb.style.LayerStyle.prototype.parseSymbolizer = function(sld) {
 		if (fill.indexOf('<CssParameter name="fill-opacity">') !== -1) {
 			fillOpacity = fill.substring(fill.indexOf('<CssParameter name="fill-opacity">') + 34, fill.indexOf("</CssParameter>"));
 		}
-		
+
 		obj["fillRGBA"] = "rgba(" + (!fillRGBColorCode ? "120,120,120" : fillRGBColorCode) + "," + (!fillOpacity ? "1" : fillOpacity) + ")";
-		
+
 		mark = mark.substring(mark.indexOf("</Fill>") + 7);
 	}
 
@@ -843,8 +993,9 @@ gb.style.LayerStyle.prototype.parseSymbolizer = function(sld) {
 		if (!!strokeOpacity) {
 			stroke = stroke.substring(stroke.indexOf("</CssParameter>") + 15);
 		}
-		obj["strokeRGBA"] = "rgba(" + (!strokeRGBColorCode ? "120,120,120" : strokeRGBColorCode) + "," + (!strokeOpacity ? "1" : strokeOpacity) + ")";
-		
+		obj["strokeRGBA"] = "rgba(" + (!strokeRGBColorCode ? "120,120,120" : strokeRGBColorCode) + ","
+				+ (!strokeOpacity ? "1" : strokeOpacity) + ")";
+
 		var strokeWidth;
 		if (stroke.indexOf('<CssParameter name="stroke-width">') !== -1) {
 			strokeWidth = stroke.substring(stroke.indexOf('<CssParameter name="stroke-width">') + 34, stroke.indexOf("</CssParameter>"));
@@ -873,9 +1024,9 @@ gb.style.LayerStyle.prototype.parseSymbolizer = function(sld) {
 /**
  * SLD의 폴리곤 스타일 설정값을 추출한다.
  * 
+ * @private
  * @method gb.style.LayerStyle#parsePolygonSymbolizer
- * 
- * @param {String}
+ * @param {string}
  *            sld - 레이어의 SLD
  * @return {Object} 스타일 정보를 가진 객체
  */
@@ -968,9 +1119,9 @@ gb.style.LayerStyle.prototype.parsePolygonSymbolizer = function(sld) {
 /**
  * SLD의 라인스트링 스타일 설정값을 추출한다.
  * 
+ * @private
  * @method gb.style.LayerStyle#parseLineStringSymbolizer
- * 
- * @param {String}
+ * @param {string}
  *            sld - 레이어의 SLD
  * @return {Object} 스타일 정보를 가진 객체
  */
@@ -1032,9 +1183,9 @@ gb.style.LayerStyle.prototype.parseLineSymbolizer = function(sld) {
 /**
  * SLD의 포인트 스타일 설정값을 추출한다.
  * 
+ * @private
  * @method gb.style.LayerStyle#parsePointSymbolizer
- * 
- * @param {String}
+ * @param {string}
  *            sld - 레이어의 SLD
  * @return {Object} 스타일 정보를 가진 객체
  */
@@ -1139,6 +1290,7 @@ gb.style.LayerStyle.prototype.parsePointSymbolizer = function(sld) {
 /**
  * 변경할 범례 icon을 설정한다.
  * 
+ * @private
  * @method gb.style.LayerStyle#setLegend
  * @param {Object}
  *            obj - JSTree node 객체
@@ -1153,13 +1305,10 @@ gb.style.LayerStyle.prototype.setLegend = function(obj, settings) {
 /**
  * 범례 icon을 변경.
  * 
+ * @private
  * @method gb.style.LayerStyle#updateLegend
- * @param {Object}
- *            obj - JSTree node 객체
- * @param {Object}
- *            settings - 범례 icon 정보
  */
-gb.style.LayerStyle.prototype.updateLegend = function(sld) {
+gb.style.LayerStyle.prototype.updateLegend = function() {
 	if (!this.jstreeNode) {
 		return;
 	}
@@ -1168,10 +1317,10 @@ gb.style.LayerStyle.prototype.updateLegend = function(sld) {
 	var layer = this.layer;
 	var git = layer.get("git");
 
-	if(layer instanceof ol.layer.Image){
+	if (layer instanceof ol.layer.Image) {
 		return;
 	}
-	
+
 	var fill = 'rgba(' + $(this.fillPicker).spectrum("get").toRgb().r + ', ' + $(this.fillPicker).spectrum("get").toRgb().g + ', '
 			+ $(this.fillPicker).spectrum("get").toRgb().b + ', '
 			+ (typeof $(this.fillPicker).spectrum("get").toRgb().a === "number" ? $(this.fillPicker).spectrum("get").toRgb().a : 1) + ')';
@@ -1209,15 +1358,15 @@ gb.style.LayerStyle.prototype.setLayer = function(layer) {
 	if (git !== undefined && git !== null) {
 		this.geom = git.geometry;
 	}
-	
+
 	var style = undefined;
 	if (layer instanceof ol.layer.Vector) {
 		style = layer.getStyle();
 		if (style instanceof ol.style.Style || style instanceof Function) {
-			if (style instanceof Function){
-				if(style() instanceof Array){
+			if (style instanceof Function) {
+				if (style() instanceof Array) {
 					style = style()[0];
-				} else if(style() instanceof ol.style.Style){
+				} else if (style() instanceof ol.style.Style) {
 					style = style();
 				}
 			}
@@ -1353,14 +1502,14 @@ gb.style.LayerStyle.prototype.setLayer = function(layer) {
 		if (git["fake"] === "parent") {
 			return;
 		}
-		
-		if(git.tempLayer){
+
+		if (git.tempLayer) {
 			style = git.tempLayer.getStyle();
-			if(style instanceof Function){
+			if (style instanceof Function) {
 				style = style();
 			}
 		}
-		
+
 		var source = layer.getSource();
 		var params = source.getParams();
 		if (params.hasOwnProperty("SLD_BODY")) {
@@ -1400,7 +1549,7 @@ gb.style.LayerStyle.prototype.setLayer = function(layer) {
 			}
 		}
 	}
-	
+
 	if (this.geom === "LineString" || this.geom === "MultiLineString") {
 		$(this.fillArea).hide();
 	} else {
@@ -1412,7 +1561,7 @@ gb.style.LayerStyle.prototype.setLayer = function(layer) {
 	} else {
 		$(this.radArea).hide();
 	}
-	
+
 	if (layer instanceof ol.layer.Image) {
 		$(this.fillArea).hide();
 		$(this.radArea).hide();
@@ -1424,27 +1573,26 @@ gb.style.LayerStyle.prototype.setLayer = function(layer) {
 		$(this.widthArea).show();
 		$(this.lineArea).show();
 	}
-	
-	if(git instanceof Object){
-		if(git.labelActive){
+
+	if (git instanceof Object) {
+		if (git.labelActive) {
 			this.checkboxInput.prop("checked", true);
 		} else {
 			this.checkboxInput.prop("checked", false);
 		}
 		this.checkboxInput.trigger("change");
 	}
-	
-	/*if(gb.module.isEditing.get()){
-		this.checkboxDiv.css("display", "block");
-	} else {
-		this.checkboxDiv.css("display", "none");
-	}*/
+
+	/*
+	 * if(gb.module.isEditing.get()){ this.checkboxDiv.css("display", "block"); }
+	 * else { this.checkboxDiv.css("display", "none"); }
+	 */
 };
 /**
  * 패널에 레이어 이름을 표시한다.
  * 
  * @method gb.style.LayerStyle#setLayerName
- * @param {String}
+ * @param {string}
  *            name - 표시할 레이어의 이름
  */
 gb.style.LayerStyle.prototype.setLayerName = function(name) {

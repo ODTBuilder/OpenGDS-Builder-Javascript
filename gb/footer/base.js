@@ -13,11 +13,11 @@ if (!gb.footer)
  * @memberof gb.footer
  * @constructor
  * @param {Object} obj - gb.footer.FooterBase 생성 기본 옵션
- * @param {DOM} obj.targetElement - footer를 생성할 element
+ * @param {HTMLElement} obj.targetElement - footer를 생성할 element
  * @param {boolean} [obj.isDisplay=false] - Default display
  * @param {string} [obj.toggleTarget=.footer-toggle-btn] - footer 토글 이벤트 element 클래스명
  * @param {string} [obj.title] - footer 제목
- * @param {DOM} [obj.content=$("<h4>content area</h4>")] - footer 내용
+ * @param {HTMLElement} [obj.content=$("<h4>content area</h4>")] - footer 내용
  * @author KIM HOCHUL
  * @date 2019. 03. 18
  * @version 0.01
@@ -26,30 +26,30 @@ gb.footer.FooterBase = function(obj) {
 	/**
 	 * 최상위 element
 	 * @private
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 */
-	this.footerTag = $("<footer>");
+	this.footerTag = $("<footer>").addClass("gb-footerbase");
 	
 	/**
 	 * 내용 element
 	 * @private
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 */
 	this.contentTag = undefined;
 	
 	// element style 정의
-	this.footerStyle = {
-		"position": "absolute",
-		"z-index": "3",
-		"padding": "5px",
-		"bottom": "0",
-		"left": "0",
-		"right": "0",
-		"height": "30%",
-		"background": "linear-gradient(to bottom, rgba(52,71,98,0.8) 0%,rgba(38,35,35,0.8) 100%)",
-		"box-shadow": "0px 0px 20px rgba(0,0,0, 0.5)",
-		"color": "#DDD"
-	};
+//	this.footerStyle = {
+//		"position": "absolute",
+//		"z-index": "3",
+//		"padding": "5px",
+//		"bottom": "0",
+//		"left": "0",
+//		"right": "0",
+//		"height": "30%",
+//		"background": "linear-gradient(to bottom, rgba(52,71,98,0.8) 0%,rgba(38,35,35,0.8) 100%)",
+//		"box-shadow": "0px 0px 20px rgba(0,0,0, 0.5)",
+//		"color": "#DDD"
+//	};
 	
 	this.titleAreaStyle = {
 		"height": "20%",
@@ -67,12 +67,12 @@ gb.footer.FooterBase = function(obj) {
 	var options = obj || {};
 	this.isDisplay = options.isDisplay ? true : false;
 	this.toggleTarget = options.toggleTarget || ".footer-toggle-btn";
-	this.targetElement = options.targetElement;
-	if(this.targetElement === null || this.targetElement === undefined){
+	this.targetElement = $(options.targetElement);
+	if(this.targetElement.length === 0){
 		console.error("gb.footer.FooterBase: targetElement is a required field");
 	}
 	this.title = options.title;
-	this.content = options.content || $("<h4>content area</h4>");
+	this.content = $(options.content) || $("<h4>content area</h4>");
 	
 	this.createFooter({
 		title: this.title,
@@ -141,7 +141,7 @@ gb.footer.FooterBase.prototype.adjustStyle_ = function(element, style){
  * @method gb.footer.FooterBase#createContent
  * @param {Object} opt - footer Tag 내부에 정의할 element 정보
  * @param {string} opt.title - footer Title
- * @param {DOM} opt.content - footer Content
+ * @param {HTMLElement} opt.content - footer Content
  */
 gb.footer.FooterBase.prototype.createFooter = function(opt){
 	
@@ -150,18 +150,18 @@ gb.footer.FooterBase.prototype.createFooter = function(opt){
 	// footer Tag 초기화
 	this.footerTag.empty();
 	
-	this.adjustStyle_(this.footerTag, this.footerStyle);
+//	this.adjustStyle_(this.footerTag, this.footerStyle);
 	
-	var titleArea = $("<div class='footer-header'>");
-	this.adjustStyle_(titleArea, this.titleAreaStyle);
+	var titleArea = $("<div>").addClass(opt.titleClass || "gb-footerbase-wrapper-title");
+//	this.adjustStyle_(titleArea, this.titleAreaStyle);
 	
-	this.contentTag = $("<div class='footer-content'>");
-	this.adjustStyle_(this.contentTag, this.contentAreaStyle);
+	this.contentTag = $("<div>").addClass(opt.contentClass || "gb-footerbase-wrapper-content");
+//	this.adjustStyle_(this.contentTag, this.contentAreaStyle);
 	
 	this.title = opt.title || "";
 	
-	this.titleTag = $("<h3>");
-	this.adjustStyle_(this.titleTag, this.titleStyle);
+	this.titleTag = $("<h3>").addClass("gb-footerbase-title");
+//	this.adjustStyle_(this.titleTag, this.titleStyle);
 	this.titleTag.text(this.title);
 	
 	titleArea.append(this.titleTag);

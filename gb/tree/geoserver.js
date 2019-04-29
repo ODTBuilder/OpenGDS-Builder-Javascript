@@ -4,34 +4,45 @@
  */
 
 /**
- * 지오서버 레이어 목록을 표시한다.
+ * @classdescs 지오서버 레이어 목록을 표시하는 객체
  * 
  * @class gb.tree.GeoServer
  * @memberof gb.tree
  * @param {Object}
  *            obj - 생성자 옵션을 담은 객체
- * @param {String |
- *            Element} obj.append - 영역 본문이 삽입될 부모 노드의 ID 또는 Class 또는 Element
- * @param {jstreeol3}
- *            jstree - 클라이언트 레이어 트리 객체
+ * @param {string}
+ *            [obj.locale="en"] - 사용할 언어 ko | en
+ * @param {HTMLElement}
+ *            obj.append - 영역 본문이 삽입될 부모 노드의 HTMLElement
+ * @param {gb.tree.Openlayers}
+ *            obj.cliendTree - 클라이언트 레이어 트리 객체
  * @param {ol.Map}
- *            obj.map - 편집 영역을 담당하는 ol.Map
+ *            obj.map - 편집 영역의 ol.Map
  * @param {gb.geoserver.UploadSHP}
  *            obj.uploadSHP - SHP 파일 업로드 객체
  * @param {Object}
  *            obj.url - 요청을 처리하기 위한 URL 객체
- * @param {String}
+ * @param {string}
  *            obj.url.getTree - 지오서버 트리 구조를 요청하기 위한 URL
- * @param {String}
+ * @param {string}
  *            obj.url.addGeoServer - 지오서버를 추가하기 위한 URL
- * @param {String}
+ * @param {string}
  *            obj.url.deleteGeoServer - 지오서버를 삭제하기 위한 URL
- * @param {String}
+ * @param {string}
+ *            obj.url.deleteGeoServerLayer - 지오서버 레이어를 삭제하기 위한 URL
+ * @param {string}
  *            obj.url.getMapWMS - WMS 레이어를 요청하기 위한 URL
+ * @param {string}
+ *            obj.url.getLayerInfo - WMS 레이어 세부 정보를 요청하기 위한 URL
+ * @param {string}
+ *            obj.url.getWFSFeature - WMS 레이어의 피처 세부 정보를 요청하기 위한 URL
+ * @param {string}
+ *            obj.url.switchGeoGigBranch - GeoGig 데이터저장소의 연결 브랜치 변경을 요청하기 위한 URL
+ * @param {string}
+ *            obj.url.geoserverInfo - GeoServer 정보를 요청하기 위한 URL
+ * @param {gb.edit.ModifyLayerProperties}
+ *            obj.properties - GeoServer 레이어 속성 편집 객체
  * @author SOYIJUN
- * @date 2018.07.02
- * @version 0.01
- * 
  */
 gb.tree.GeoServer = function(obj) {
 	var that = this;
@@ -45,6 +56,7 @@ gb.tree.GeoServer = function(obj) {
 	this.deleteGeoServerURL = url.deleteGeoServer ? url.deleteGeoServer : undefined;
 	this.deleteGeoServerLayerURL = url.deleteGeoServerLayer ? url.deleteGeoServerLayer : undefined;
 	this.geoserverInfoURL = url.geoserverInfo ? url.geoserverInfo : undefined;
+	
 	this.getTreeURL = url.getTree ? url.getTree : undefined;
 	this.getMapWMS = url.getMapWMS ? url.getMapWMS : undefined;
 	this.getWFSFeature = url.getWFSFeature ? url.getWFSFeature : undefined;
@@ -56,9 +68,21 @@ gb.tree.GeoServer = function(obj) {
 	this.height = options.height || undefined;
 	this.downloadGeoserver = url.downloadGeoserver || undefined;
 
+	/**
+	 * @private
+	 * @type {Array.<string>}
+	 */
 	this.loadingList = [];
+	/**
+	 * @private
+	 * @type {Array.<number>}
+	 */
 	this.loadingNumber = [];
 
+	/**
+	 * @private
+	 * @type {Object}
+	 */
 	this.translation = {
 			"400" : {
 				"ko" : "요청값 잘못입력",
@@ -297,37 +321,52 @@ gb.tree.GeoServer = function(obj) {
 				"en" : "Except for layers that have already been imported."
 			}
 	};
-	this.panelTitle = $("<p>").text("GeoServer").css({
-		"margin" : "0",
-		"float" : "left"
-	});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.panelTitle = $("<p>").text("GeoServer");
 	var addIcon = $("<i>").addClass("fas").addClass("fa-plus");
-	this.addBtn = $("<button>").addClass("gb-button-clear").append(addIcon).css({
-		"float" : "right"
-	}).click(function() {
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.addBtn = $("<button>").addClass("gb-button-clear").addClass("gb-button-float-right").append(addIcon).click(function() {
 		that.openAddGeoServer();
 	});
 	var refIcon = $("<i>").addClass("fas").addClass("fa-sync-alt");
-	this.refBtn = $("<button>").addClass("gb-button-clear").append(refIcon).css({
-		"float" : "right"
-	}).click(function() {
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.refBtn = $("<button>").addClass("gb-button-clear").addClass("gb-button-float-right").append(refIcon).click(function() {
 		that.refreshList();
 	});
 	var searchIcon = $("<i>").addClass("fas").addClass("fa-search");
-	this.searchBtn = $("<button>").addClass("gb-button-clear").append(searchIcon).css({
-		"float" : "right"
-	}).click(function() {
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.searchBtn = $("<button>").addClass("gb-button-clear").addClass("gb-button-float-right").append(searchIcon).click(function() {
 		that.openSearchBar();
 	});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.titleArea = $("<div>").append(this.panelTitle).append(this.searchBtn).append(this.refBtn).append(this.addBtn);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.searchInput = $("<input>").attr({
 		"type" : "text"
-	}).css({
-		"border" : "0",
-		"border-bottom" : "solid 1px #909090",
-		"background-color" : "transparent",
-		"width" : "90%"
 	});
+
+	/**
+	 * @private
+	 * @type {(boolean|function)}
+	 */
 	this.tout = false;
 	$(this.searchInput).keyup(function() {
 		var root = that.getJSTree().get_node("#");
@@ -346,42 +385,62 @@ gb.tree.GeoServer = function(obj) {
 		}
 	});
 	var closeIcon = $("<i>").addClass("fas").addClass("fa-times");
-	this.closeSearchBtn = $("<button>").addClass("gb-button-clear").append(closeIcon).css({
-		"float" : "right"
-	}).click(function() {
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.closeSearchBtn = $("<button>").addClass("gb-button-clear").addClass("gb-button-float-right").append(closeIcon).click(function() {
 		$(that.searchInput).val("");
 		that.getJSTree().search("");
 		that.closeSearchBar();
 	});
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.searchArea = $("<div>").css({
 		"display" : "none"
 	}).append(this.searchInput).append(this.closeSearchBtn);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
 	this.panelHead = $("<div>").addClass("gb-article-head").append(this.titleArea).append(this.searchArea);
-	this.panelBody = $("<div>").addClass("gb-article-body").css({
-		"overflow-y" : "auto"
-	});
-	this.panel = $("<div>").addClass("gb-article").css({
-		"margin" : "0"
-	}).append(this.panelHead).append(this.panelBody);
-	if (typeof options.append === "string") {
-		$(options.append).append(this.panel);
-	} else if ($(options.append).is("div")) {
-		$(options.append).append(this.panel);
-	}
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.panelBody = $("<div>").addClass("gb-article-body");
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.article = $("<div>").addClass("gb-article").append(this.panelHead).append(this.panelBody);
+	/**
+	 * @private
+	 * @type {HTMLElement}
+	 */
+	this.panel = $("<div>").addClass("gb-geoserver-body").append(this.article);
 
+	$(options.append).append(this.panel);
+
+	// 높이 설정됨
 	if (!this.height) {
+		// 로드시 계산
 		$(document).ready(function() {
 			var parentHeight = $(that.panel).parent().innerHeight();
 			var headHeight = $(that.panel).find(".gb-article-head").outerHeight();
 			var bodyHeight = parentHeight - headHeight;
 			$(that.panelBody).outerHeight(bodyHeight);
 		});
+		// 리사이즈시 계산
 		$(window).resize(function() {
 			var parentHeight = $(that.panel).parent().innerHeight();
 			var headHeight = $(that.panel).find(".gb-article-head").outerHeight();
 			var bodyHeight = parentHeight - headHeight;
 			$(that.panelBody).outerHeight(bodyHeight);
 		});
+		// 로드이후 시간차를 두고 한번 더 계산
 		setTimeout(function() {
 			var parentHeight = $(that.panel).parent().innerHeight();
 			var headHeight = $(that.panel).find(".gb-article-head").outerHeight();
@@ -391,7 +450,7 @@ gb.tree.GeoServer = function(obj) {
 	} else {
 		$(this.panelBody).outerHeight(this.height);
 	}
-
+// 지오서버 구조를 트리 형태로 보여줄 jstree 선언
 	$(this.panelBody).jstree(
 			{
 				"core" : {
@@ -400,53 +459,9 @@ gb.tree.GeoServer = function(obj) {
 					"themes" : {
 						"stripes" : true
 					},
-					/*
-					 * 'data' : [ { "id" : "geoserver1", "parent" : "#", "text" :
-					 * "geoserver1", "type" : "geoserver" }, { "id" :
-					 * "workspace1", "parent" : "geoserver1", "text" :
-					 * "workspace1", "type" : "workspace" }, { "id" :
-					 * "datastore1", "parent" : "workspace1", "text" :
-					 * "datastore1", "type" : "datastore" }, { "id" : "layer1",
-					 * "parent" : "datastore1", "text" : "layer1", "type" :
-					 * "polygon" }, { "id" : "layer2", "parent" : "datastore1",
-					 * "text" : "layer2", "type" : "linestring" }, { "id" :
-					 * "layer3", "parent" : "datastore1", "text" : "layer3",
-					 * "type" : "point" }, { "id" : "raster1", "parent" :
-					 * "datastore1", "text" : "raster1", "type" : "raster" } ]
-					 */
-
 					"data" : {
 						'url' : function(node) {
 							var url = that.getGetTreeURL();
-							// if (node.id === "#") {
-							// url = that.getGetTreeURL() +
-							// "&type=server";
-							// } else if (node.type === "workspace") {
-							// url = that.getGetTreeURL() +
-							// "&type=workspace" +
-							// "&parent=" + node.parent + "&serverName="
-							// +
-							// node.parent;
-							// } else if (node.type === "datastore") {
-							// url = that.getGetTreeURL() +
-							// "&type=datastore" +
-							// "&parent=" + node.parent + "&serverName="
-							// + node.parents[1];
-							// } else if (node.type === "point" ||
-							// node.type ===
-							// "multipoint" || node.type ===
-							// "linestring"
-							// || node.type === "multilinestring" ||
-							// node.type
-							// === "polygon" || node.type ===
-							// "multipolygon") {
-							// url = that.getGetTreeURL() +
-							// "&type=layer" +
-							// "&parent=" + node.parent + "&serverName="
-							// +
-							// node.parents[2];
-							// }
-							// return that.getGetTreeURL();
 							console.log(url);
 							return url;
 						},
@@ -467,21 +482,10 @@ gb.tree.GeoServer = function(obj) {
 								obj["serverName"] = node.parents[1];
 								obj["node"] = node.id
 							}
-							// else if (node.type === "point" ||
-							// node.type ===
-							// "multipoint" || node.type ===
-							// "linestring"
-							// || node.type === "multilinestring" ||
-							// node.type
-							// === "polygon" || node.type ===
-							// "multipolygon") {
-							//
-							// }
 							console.log(obj);
 							return obj;
 						}
 					}
-
 				},
 				"geoserver" : {
 					"map" : this.map instanceof ol.Map ? this.map : undefined,
@@ -495,8 +499,7 @@ gb.tree.GeoServer = function(obj) {
 					show_only_matches : true
 				},
 				"contextmenu" : {
-					items : function(o, cb) { // Could be an object
-						// directly
+					items : function(o, cb) { 
 						var totalObj = {};
 						if (o.type === "geoserver") {
 							var infoObj = {
@@ -513,11 +516,6 @@ gb.tree.GeoServer = function(obj) {
 										return result;
 									},
 									"label" : that.translation.info[that.locale],
-									/*
-									 * ! "shortcut" : 113, "shortcut_label" :
-									 * 'F2', "icon" : "glyphicon
-									 * glyphicon-leaf",
-									 */
 									"action" : function(data) {
 										var isEdit = gb? (gb.module ? gb.module.isEditing : undefined) : undefined;
 										var inst = $.jstree.reference(data.reference), obj = inst.get_node(data.reference);
@@ -570,37 +568,18 @@ gb.tree.GeoServer = function(obj) {
 												if (nowBranch === data.item.label) {
 
 												} else {
-													var msg1 = $("<div>").text(that.translation.switchbr1[that.locale]).css({
-														"text-align" : "center",
-														"font-size" : "16px",
-														"word-break" : "keep-all"
-													});
-													var msg2 = $("<div>").text(that.translation.switchbr2[that.locale]).css({
-														"text-align" : "center",
-														"font-size" : "16px",
-														"word-break" : "keep-all"
-													});
-													var msg3 = $("<div>").text(that.translation.switchbr3[that.locale]).css({
-														"text-align" : "center",
-														"font-size" : "16px",
-														"word-break" : "keep-all"
-													});
-													var msg4 = $("<div>").text(data.item.label).css({
-														"text-align" : "center",
-														"font-size" : "24px"
-													});
-													var closeBtn = $("<button>").css({
-														"float" : "right"
-													}).addClass("gb-button").addClass("gb-button-default").text(that.translation.cancel[that.locale]);
-													var okBtn = $("<button>").css({
-														"float" : "right"
-													}).addClass("gb-button").addClass("gb-button-primary").text(that.translation.switch[that.locale]);
+													var msg1 = $("<div>").addClass("gb-geoserver-msg16").text(that.translation.switchbr1[that.locale]);
+													var msg2 = $("<div>").addClass("gb-geoserver-msg16").text(that.translation.switchbr2[that.locale]);
+													var msg3 = $("<div>").addClass("gb-geoserver-msg16").text(that.translation.switchbr3[that.locale]);
+													var msg4 = $("<div>").addClass("gb-geoserver-msg24").text(data.item.label);
+													var closeBtn = $("<button>").addClass("gb-button").addClass("gb-button-default").addClass("gb-button-float-right").text(that.translation.cancel[that.locale]);
+													var okBtn = $("<button>").addClass("gb-button").addClass("gb-button-primary").addClass("gb-button-float-right").text(that.translation.switch[that.locale]);
 
 													var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
 													var modalFooter = $("<div>").append(buttonArea);
 
 													var gBody = $("<div>").append(msg1).append(msg2).append(msg3).append(msg4);
-													var switchModal = new gb.modal.Base({
+													var switchModal = new gb.modal.ModalBase({
 														"title" : that.translation.brswitch[that.locale],
 														"width" : 414,
 														"height" : 228,
@@ -1326,9 +1305,11 @@ gb.tree.GeoServer = function(obj) {
 
 										var inst = $.jstree.reference(data.reference), obj = inst.get_node(data.reference);
 										if (obj.type === "geoserver") {
+											// 선택한 노드가 서버이면 삭제창 출력
 											that.openDeleteGeoServer(obj.id);
 										} else if (obj.type === "point" || obj.type === "multipoint" || obj.type === "linestring"
 											|| obj.type === "multilinestring" || obj.type === "polygon" || obj.type === "multipolygon") {
+											// 선택한 노드가 레이어면
 											var nodes = inst.get_selected(true);
 											var server = [];
 											var ws = [];
@@ -1340,30 +1321,36 @@ gb.tree.GeoServer = function(obj) {
 												var node = nodes[i];
 												console.log(node);
 												if (node.type === "geoserver") {
+													// 서버 배열에 현재 노드가 없으면 추가
 													if (server.indexOf(node.id) === -1) {
 														server.push(node.id);
 													}
 												} else if (node.type === "workspace") {
+													// 워크스페이스 없으면 추가
 													if (ws.indexOf(node.id) === -1) {
 														ws.push(node.id);
 													}
 												} else if (node.type === "datastore") {
+													// 데이터스토어 없으면 추가
 													if (ds.indexOf(node.id) === -1) {
 														ds.push(node.id);
 													}
 												} else if (node.type === "point" || node.type === "multipoint" || node.type === "linestring"
 													|| node.type === "multilinestring" || node.type === "polygon"
 														|| node.type === "multipolygon") {
+													// 레이어 없으면 추가
 													if (layers.indexOf(node.id) === -1) {
 														layers.push(node.id);
 														layerstxt.push(node.text);
 													}
 												}
 											}
+											// 삭제할 노드가 복수로 여러 타입이 섞여있으면 불가
 											if (server.length > 0 || ws.length > 0 || ds.length > 0) {
 												isValid = false;
 												that.messageModal(that.translation.err[that.locale], that.translation.nodelsamestore[that.locale]);
 											} else {
+												// 레이어만 선택했을 경우
 												for (var i = 0; i < layers.length; i++) {
 													var layerNode = inst.get_node(layers[i]);
 													var serverId = inst.get_node(layerNode.parents[2]);
@@ -1378,12 +1365,15 @@ gb.tree.GeoServer = function(obj) {
 													if (ds.indexOf(storeId.id) === -1) {
 														ds.push(storeId.id);
 													}
+													// 서버 두 개 이상 선택 불가
 													if (server.length > 1) {
 														isValid = false;
 													}
+													// 워크스페이스 두 개 이상 선택 불가
 													if (ws.length > 1) {
 														isValid = false;
 													}
+													// 데이터스토어 두 개 이상 선택 불가
 													if (ds.length > 1) {
 														isValid = false;
 													}
@@ -1392,7 +1382,7 @@ gb.tree.GeoServer = function(obj) {
 													var sendServer = inst.get_node(server[0]);
 													var sendws = inst.get_node(ws[0]);
 													var sendds = inst.get_node(ds[0]);
-
+													// 선택 레이어들 삭제
 													that.openDeleteGeoServerLayer(sendServer.text, sendws.text, sendds.text, layerstxt);
 												} else {
 													that.messageModal(that.translation.err[that.locale], that.translation.nodelsamestore[that.locale]);
@@ -1547,6 +1537,8 @@ gb.tree.GeoServer.prototype.getJSTree = function() {
  * jstree 객체를 설정한다.
  * 
  * @method gb.tree.GeoServer#setJSTree
+ * @param {$.jstree}
+ *            jstree - GeoServer 목록을 표출할 jsTree 객체
  */
 gb.tree.GeoServer.prototype.setJSTree = function(jstree) {
 	this.jstree = jstree;
@@ -1556,7 +1548,7 @@ gb.tree.GeoServer.prototype.setJSTree = function(jstree) {
  * loadingNumber 객체를 반환한다.
  * 
  * @method gb.tree.GeoServer#getLoadingNumber
- * @return {Object} 로딩할 노드목록을 가진 객체
+ * @return {Array.<number>} 로딩할 노드목록을 가진 객체
  */
 gb.tree.GeoServer.prototype.getLoadingNumber = function() {
 	return this.loadingNumber;
@@ -1566,15 +1558,19 @@ gb.tree.GeoServer.prototype.getLoadingNumber = function() {
  * loadingNumber 객체를 설정한다.
  * 
  * @method gb.tree.GeoServer#setLoadingNumber
+ * @param {number}
+ *            idx - 남은 레이어 로딩 개수를 설정할 인덱스
+ * @param {number}
+ *            num - 남은 레이어 로딩 개수
  */
 gb.tree.GeoServer.prototype.setLoadingNumber = function(idx, num) {
 	this.loadingNumber[idx] = num;
 };
 
 /**
- * loadingNumber 객체를 설정한다.
+ * loadingNumber 객체를 초기화한다.
  * 
- * @method gb.tree.GeoServer#setLoadingNumber
+ * @method gb.tree.GeoServer#initLoadingNumber
  */
 gb.tree.GeoServer.prototype.initLoadingNumber = function() {
 	this.loadingNumber = [];
@@ -1584,7 +1580,7 @@ gb.tree.GeoServer.prototype.initLoadingNumber = function() {
  * loadingList 객체를 반환한다.
  * 
  * @method gb.tree.GeoServer#getLoadingList
- * @return {Object} 로딩할 노드목록을 가진 객체
+ * @return {Object} 로딩할 레이어 목록을 가진 객체
  */
 gb.tree.GeoServer.prototype.getLoadingList = function() {
 	return this.loadingList;
@@ -1594,6 +1590,8 @@ gb.tree.GeoServer.prototype.getLoadingList = function() {
  * loadingList 객체를 설정한다.
  * 
  * @method gb.tree.GeoServer#setLoadingList
+ * @param {Array.
+ *            <Object>} list - 로딩할 레이어 목록
  */
 gb.tree.GeoServer.prototype.setLoadingList = function(list) {
 	this.loadingList = list;
@@ -1603,6 +1601,10 @@ gb.tree.GeoServer.prototype.setLoadingList = function(list) {
  * loadingList 목록에 추가한다.
  * 
  * @method gb.tree.GeoServer#addLoadingList
+ * @param {number}
+ *            idx - 레이어 식별자가 저장될 배열의 인덱스
+ * @param {string}
+ *            nodeId - 레이어 식별자
  */
 gb.tree.GeoServer.prototype.addNodeToLoadingList = function(idx, nodeId) {
 	var list = this.getLoadingList();
@@ -1618,18 +1620,24 @@ gb.tree.GeoServer.prototype.addNodeToLoadingList = function(idx, nodeId) {
 };
 
 /**
- * loadingList 객체를 설정한다.
+ * loadingList 객체를 초기화한다.
  * 
- * @method gb.tree.GeoServer#setLoadingList
+ * @method gb.tree.GeoServer#initLoadingList
  */
 gb.tree.GeoServer.prototype.initLoadingList = function() {
 	this.loadingList = [];
 };
 
 /**
- * loadingList 객체에 노드를 추가한다.
+ * loadingList, loadingNumber 객체에 로딩 정보를 변경한다
  * 
- * @method gb.tree.GeoServer#setLoadingList
+ * @method gb.tree.GeoServer#changeNodeOnLoadingList
+ * @param {number}
+ *            idx - 로딩 정보가 저장된 인덱스
+ * @param {string}
+ *            nodeId - 레이어 식별자
+ * @param {boolean}
+ *            flag - 증감여부 (true 감소, false 증가)
  */
 gb.tree.GeoServer.prototype.changeNodeOnLoadingList = function(idx, nodeId, flag) {
 	var that = this;
@@ -1640,6 +1648,7 @@ gb.tree.GeoServer.prototype.changeNodeOnLoadingList = function(idx, nodeId, flag
 		// that.setLoadingNumber(idx, 0);
 		// }
 		if (flag) {
+			// 0보다크면 감소
 			if (that.getLoadingNumber()[idx] > 0) {
 				that.setLoadingNumber(idx, (that.getLoadingNumber()[idx] - 1));
 			}
@@ -1659,119 +1668,52 @@ gb.tree.GeoServer.prototype.changeNodeOnLoadingList = function(idx, nodeId, flag
  */
 gb.tree.GeoServer.prototype.openAddGeoServer = function() {
 	var that = this;
-	var gName = $("<div>").text(that.translation["name"][that.locale]+": ").css({
-		"display" : "table-cell",
-		"width" : "20%",
-		"text-align" : "right",
-		"vertical-align" : "middle"
-	});
+	var gName = $("<div>").addClass("gb-geoserver-add-label").text(that.translation["name"][that.locale]+": ");
 	var gNameInput = $("<input>").attr({
 		"type" : "text",
 		"placeholder" : "EX) Geoserver",
-	}).css({
-		"width" : "83%",
-		"border" : "none",
-		"border-bottom" : "solid 1px #a9a9a9",
-		"margin-left" : "8px"
-	});
-	var gNameInputDiv = $("<div>").append(gNameInput).css({
-		"display" : "table-cell",
-		"width" : "80%",
-		"vertical-align" : "middle"
-	});
-	var gNameArea = $("<div>").append(gName).append(gNameInputDiv).css({
-		"display" : "table-row"
-	});
+	}).addClass("gb-geoserver-add-input");
+	var gNameInputDiv = $("<div>").append(gNameInput).addClass("gb-geoserver-add-input-cell");
+	var gNameArea = $("<div>").append(gName).append(gNameInputDiv).addClass("gb-geoserver-add-row");
 
-	var gURL = $("<div>").text("URL: ").css({
-		"display" : "table-cell",
-		"width" : "20%",
-		"text-align" : "right",
-		"vertical-align" : "middle"
-	});
+	var gURL = $("<div>").text("URL: ").addClass("gb-geoserver-add-label");
 	var gURLInput = $("<input>").attr({
 		"type" : "text",
 		"placeholder" : "EX) http://127.0.0.1:9990/geoserver"
-	}).css({
-		"width" : "83%",
-		"border" : "none",
-		"border-bottom" : "solid 1px #a9a9a9",
-		"margin-left" : "8px"
-	});
-	var gURLInputDiv = $("<div>").append(gURLInput).css({
-		"display" : "table-cell",
-		"width" : "80%",
-		"vertical-align" : "middle"
-	});
-	var gURLArea = $("<div>").append(gURL).append(gURLInputDiv).css({
-		"display" : "table-row"
-	});
+	}).addClass("gb-geoserver-add-input");
+	var gURLInputDiv = $("<div>").append(gURLInput).addClass("gb-geoserver-add-input-cell");
+	var gURLArea = $("<div>").append(gURL).append(gURLInputDiv).addClass("gb-geoserver-add-row");
 
-	var gID = $("<div>").text(that.translation["id"][that.locale]+": ").css({
-		"display" : "table-cell",
-		"width" : "20%",
-		"text-align" : "right",
-		"vertical-align" : "middle"
-	});
+	var gID = $("<div>").text(that.translation["id"][that.locale]+": ").addClass("gb-geoserver-add-label");
 	var gIDInput = $("<input>").attr({
 		"type" : "text",
 		"placeholder" : "EX) admin"
-	}).css({
-		"width" : "83%",
-		"border" : "none",
-		"border-bottom" : "solid 1px #a9a9a9",
-		"margin-left" : "8px"
-	});
-	var gIDInputDiv = $("<div>").append(gIDInput).css({
-		"display" : "table-cell",
-		"width" : "80%",
-		"vertical-align" : "middle"
-	});
-	var gIDArea = $("<div>").append(gID).append(gIDInputDiv).css({
-		"display" : "table-row"
-	});
+	}).addClass("gb-geoserver-add-input");
+	var gIDInputDiv = $("<div>").append(gIDInput).addClass("gb-geoserver-add-input-cell");
+	var gIDArea = $("<div>").append(gID).append(gIDInputDiv).addClass("gb-geoserver-add-row");
 
-	var gPass = $("<div>").text(that.translation["password"][that.locale]+": ").css({
-		"display" : "table-cell",
-		"width" : "20%",
-		"text-align" : "right",
-		"vertical-align" : "middle"
-	});
+	var gPass = $("<div>").text(that.translation["password"][that.locale]+": ").addClass("gb-geoserver-add-label");
 	var gPassInput = $("<input>").attr({
 		"type" : "password",
 		"placeholder" : "EX) geoserver"
-	}).css({
-		"width" : "83%",
-		"border" : "none",
-		"border-bottom" : "solid 1px #a9a9a9",
-		"margin-left" : "8px"
-	});
-	var gPassInputDiv = $("<div>").append(gPassInput).css({
-		"display" : "table-cell",
-		"width" : "80%",
-		"vertical-align" : "middle"
-	});
-	var gPassArea = $("<div>").append(gPass).append(gPassInputDiv).css({
-		"display" : "table-row"
-	});
+	}).addClass("gb-geoserver-add-input");
+	var gPassInputDiv = $("<div>").append(gPassInput).addClass("gb-geoserver-add-input-cell");
+	var gPassArea = $("<div>").append(gPass).append(gPassInputDiv).addClass("gb-geoserver-add-row");
 
-	var closeBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-default").text(that.translation["close"][that.locale]);
-	var okBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-primary").text(that.translation["add"][that.locale]);
+	gNameInput.val("geo42");
+	gURLInput.val("http://175.116.181.42:9990/geoserver");
+	gIDInput.val("admin");
+	gPassInput.val("geoserver");
+	
+	var closeBtn = $("<button>").addClass("gb-button").addClass("gb-button-default").addClass("gb-button-float-right").text(that.translation["close"][that.locale]);
+	var okBtn = $("<button>").addClass("gb-button").addClass("gb-button-primary").addClass("gb-button-float-right").text(that.translation["add"][that.locale]);
 
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
 	var modalFooter = $("<div>").append(buttonArea);
 
-	var gBody = $("<div>").append(gNameArea).append(gURLArea).append(gIDArea).append(gPassArea).css({
-		"display" : "table",
-		"padding" : "10px",
-		"width" : "100%",
-		"height" : "250px"
-	});
-	var addGeoServerModal = new gb.modal.Base({
+	var gBody = $("<div>").addClass("gb-geoserver-add-table").append(gNameArea).append(gURLArea).append(gIDArea).append(gPassArea);
+
+	var addGeoServerModal = new gb.modal.ModalBase({
 		"title" : that.translation["addgeoserver"][that.locale],
 		"width" : 540,
 		"height" : 400,
@@ -1791,15 +1733,15 @@ gb.tree.GeoServer.prototype.openAddGeoServer = function() {
  * GeoServer를 등록한다.
  * 
  * @method gb.tree.GeoServer#addGeoServer
- * @param {String}
+ * @param {string}
  *            name - 지오서버의 이름
- * @param {String}
+ * @param {string}
  *            url - 지오서버의 URL
- * @param {String}
+ * @param {string}
  *            id - 지오서버 접속을 위한 ID
- * @param {String}
+ * @param {string}
  *            password - 지오서버 접속을 위한 비밀번호
- * @param {gb.modal.Base}
+ * @param {gb.modal.ModalBase}
  *            modal - 완료 후 창을 닫을 모달 객체
  */
 gb.tree.GeoServer.prototype.addGeoServer = function(name, url, id, password, modal) {
@@ -1819,7 +1761,6 @@ gb.tree.GeoServer.prototype.addGeoServer = function(name, url, id, password, mod
 		url : this.getAddGeoServerURL() + "&" + jQuery.param(params),
 		method : "POST",
 		contentType : "application/json; charset=UTF-8",
-		// data : params,
 		beforeSend : function() {
 			$("body").css("cursor", "wait");
 			that.showSpinner(true, modal);
@@ -1844,29 +1785,19 @@ gb.tree.GeoServer.prototype.addGeoServer = function(name, url, id, password, mod
  * GeoServer 삭제 확인창을 연다.
  * 
  * @method gb.tree.GeoServer#openDeleteGeoServer
+ * @param {string}
+ *            geoserver - 목록에서 삭제할 GeoServer 이름
  */
 gb.tree.GeoServer.prototype.openDeleteGeoServer = function(geoserver) {
 	var that = this;
 	console.log("open delete geoserver");
-	var msg1 = $("<div>").text(this.translation.removegeomsg[this.locale]).css({
-		"text-align" : "center",
-		"font-size" : "16px",
-		"word-break" : "keep-all"
-	});
-	var msg2 = $("<div>").text('"' + geoserver + '"').css({
-		"text-align" : "center",
-		"font-size" : "24px",
-		"word-break" : "keep-all"
-	});
+	var msg1 = $("<div>").text(this.translation.removegeomsg[this.locale]).addClass("gb-geoserver-msg16");
+	var msg2 = $("<div>").text('"' + geoserver + '"').addClass("gb-geoserver-msg24");
 	var body = $("<div>").append(msg1).append(msg2);
-	var closeBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-default").text(this.translation.cancel[this.locale]);
-	var okBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-primary").text(this.translation.remove[this.locale]);
+	var closeBtn = $("<button>").addClass("gb-button-float-right").addClass("gb-button").addClass("gb-button-default").text(this.translation.cancel[this.locale]);
+	var okBtn = $("<button>").addClass("gb-button-float-right").addClass("gb-button").addClass("gb-button-primary").text(this.translation.remove[this.locale]);
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
-	var deleteModal = new gb.modal.Base({
+	var deleteModal = new gb.modal.ModalBase({
 		"title" : this.translation.removegeo[this.locale],
 		"width" : 340,
 		"height" : 200,
@@ -1887,12 +1818,12 @@ gb.tree.GeoServer.prototype.openDeleteGeoServer = function(geoserver) {
  * GeoServer를 삭제한다.
  * 
  * @method gb.tree.GeoServer#deleteGeoServer
- * @param {String}
+ * @param {string}
  *            geoserver - 삭제할 지오서버의 이름
- * @param {gb.modal.Base}
- *            callback - 완료후 창을 닫을 모달 객체
+ * @param {gb.modal.ModalBase}
+ *            modal - 완료후 닫을 모달 객체
  */
-gb.tree.GeoServer.prototype.deleteGeoServer = function(geoserver, callback) {
+gb.tree.GeoServer.prototype.deleteGeoServer = function(geoserver, modal) {
 	var that = this;
 	console.log("delete geoserver");
 	var params = {
@@ -1911,7 +1842,7 @@ gb.tree.GeoServer.prototype.deleteGeoServer = function(geoserver, callback) {
 		},
 		success : function(data) {
 			console.log(data);
-			callback.close();
+			modal.close();
 			if (data === true) {
 				that.refreshList();
 			}
@@ -1925,6 +1856,14 @@ gb.tree.GeoServer.prototype.deleteGeoServer = function(geoserver, callback) {
  * GeoServer 레이어 삭제 확인창을 연다.
  * 
  * @method gb.tree.GeoServer#openDeleteGeoServerLayer
+ * @param {string}
+ *            server - 지오서버 이름
+ * @param {string}
+ *            work - 작업공간 이름
+ * @param {string}
+ *            store - 데이터저장소 이름
+ * @param {string}
+ *            layer - 레이어 이름
  */
 gb.tree.GeoServer.prototype.openDeleteGeoServerLayer = function(server, work, store, layer) {
 	var that = this;
@@ -1938,30 +1877,18 @@ gb.tree.GeoServer.prototype.openDeleteGeoServerLayer = function(server, work, st
 			todel = '"' + layer[0] + '" ';
 		}
 	}
-	var msg1 = $("<div>").css({
-		"text-align" : "center",
-		"font-size" : "16px",
-		"word-break" : "keep-all"
-	});
+	var msg1 = $("<div>").addClass("gb-geoserver-msg16");
 	if (layer.length > 1) {
 		$(msg1).text(that.translation.removelayermsg2[that.locale]);
 	} else {
 		$(msg1).text(that.translation.removelayermsg1[that.locale]);
 	}
-	var msg2 = $("<div>").text(todel).css({
-		"text-align" : "center",
-		"font-size" : "24px",
-		"word-break" : "keep-all"
-	});
+	var msg2 = $("<div>").text(todel).addClass("gb-geoserver-msg24");
 	var body = $("<div>").append(msg1).append(msg2);
-	var closeBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-default").text(that.translation.cancel[that.locale]);
-	var okBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-primary").text(that.translation.remove[that.locale]);
+	var closeBtn = $("<button>").addClass("gb-button-float-right").addClass("gb-button").addClass("gb-button-default").text(that.translation.cancel[that.locale]);
+	var okBtn = $("<button>").addClass("gb-button-float-right").addClass("gb-button").addClass("gb-button-primary").text(that.translation.remove[that.locale]);
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
-	var deleteModal = new gb.modal.Base({
+	var deleteModal = new gb.modal.ModalBase({
 		"title" : that.translation.removelayer[that.locale],
 		"width" : 340,
 		"height" : 225,
@@ -1982,16 +1909,18 @@ gb.tree.GeoServer.prototype.openDeleteGeoServerLayer = function(server, work, st
  * GeoServer Layer 를 삭제한다.
  * 
  * @method gb.tree.GeoServer#deleteGeoServerLayer
- * @param {String}
+ * @param {string}
  *            geoserver - 삭제할 레이어의 지오서버 이름
- * @param {String}
+ * @param {string}
  *            work - 삭제할 레이어의 지오서버 워크스페이스 이름
- * @param {String}
- *            layer - 삭제할 레이어의 이름
- * @param {gb.modal.Base}
- *            callback - 완료후 창을 닫을 모달 객체
+ * @param {string}
+ *            store - 삭제할 레이어의 데이터저장소 이름
+ * @param {(string|Array.
+ *            <string>)} layer - 삭제할 레이어의 이름
+ * @param {gb.modal.ModalBase}
+ *            modal - 완료후 창을 닫을 모달 객체
  */
-gb.tree.GeoServer.prototype.deleteGeoServerLayer = function(geoserver, work, store, layer, callback) {
+gb.tree.GeoServer.prototype.deleteGeoServerLayer = function(geoserver, work, store, layer, modal) {
 	var that = this;
 	console.log("delete geoserver layer");
 	var params = {
@@ -2014,7 +1943,7 @@ gb.tree.GeoServer.prototype.deleteGeoServerLayer = function(geoserver, work, sto
 		},
 		success : function(data, status, xhr) {
 			console.log(data);
-			callback.close();
+			modal.close();
 			if (data === true) {
 				that.refreshList();
 			}
@@ -2065,6 +1994,7 @@ gb.tree.GeoServer.prototype.closeSearchBar = function() {
  * 지오서버 추가를 위한 URL을 반환한다.
  * 
  * @method gb.tree.GeoServer#getAddGeoServerURL
+ * @return {string} GeoServer 추가 URL
  */
 gb.tree.GeoServer.prototype.getAddGeoServerURL = function() {
 	return this.addGeoServerURL;
@@ -2073,6 +2003,8 @@ gb.tree.GeoServer.prototype.getAddGeoServerURL = function() {
  * 지오서버 추가를 위한 URL을 설정한다.
  * 
  * @method gb.tree.GeoServer#setAddGeoServerURL
+ * @param {string}
+ *            url - GeoServer 추가 URL
  */
 gb.tree.GeoServer.prototype.setAddGeoServerURL = function(url) {
 	this.addGeoServerURL = url;
@@ -2081,6 +2013,7 @@ gb.tree.GeoServer.prototype.setAddGeoServerURL = function(url) {
  * 지오서버 삭제를 위한 URL을 반환한다.
  * 
  * @method gb.tree.GeoServer#getDeleteGeoServerURL
+ * @return {string} GeoServer 삭제 URL
  */
 gb.tree.GeoServer.prototype.getDeleteGeoServerURL = function() {
 	return this.deleteGeoServerURL;
@@ -2090,6 +2023,8 @@ gb.tree.GeoServer.prototype.getDeleteGeoServerURL = function() {
  * 지오서버 삭제를 위한 URL을 설정한다.
  * 
  * @method gb.tree.GeoServer#setDeleteGeoServerURL
+ * @param {string}
+ *            url - GeoServer 삭제 URL
  */
 gb.tree.GeoServer.prototype.setDeleteGeoServerURL = function(url) {
 	this.deleteGeoServerURL = url;
@@ -2099,6 +2034,7 @@ gb.tree.GeoServer.prototype.setDeleteGeoServerURL = function(url) {
  * 지오서버 정보 조회를 위한 URL을 반환한다.
  * 
  * @method gb.tree.GeoServer#getGeoServerInfoURL
+ * @return {string} GeoServer 정보 조회 URL
  */
 gb.tree.GeoServer.prototype.getGeoServerInfoURL = function() {
 	return this.geoserverInfoURL;
@@ -2108,6 +2044,8 @@ gb.tree.GeoServer.prototype.getGeoServerInfoURL = function() {
  * 지오서버 정보 조회를 위한 URL을 설정한다.
  * 
  * @method gb.tree.GeoServer#setGeoServerInfoURL
+ * @param {string}
+ *            url - GeoServer 정보 조회 URL
  */
 gb.tree.GeoServer.prototype.setGeoServerInfoURL = function(url) {
 	this.geoserverInfoURL = url;
@@ -2117,14 +2055,27 @@ gb.tree.GeoServer.prototype.setGeoServerInfoURL = function(url) {
  * 지오서버 레이어 삭제를 위한 URL을 반환한다.
  * 
  * @method gb.tree.GeoServer#getDeleteGeoServerLayerURL
+ * @return {string} GeoServer 레이어 삭제 URL
  */
 gb.tree.GeoServer.prototype.getDeleteGeoServerLayerURL = function() {
 	return this.deleteGeoServerLayerURL;
 };
 /**
+ * 지오서버 레이어 삭제를 위한 URL을 설정한다.
+ * 
+ * @method gb.tree.GeoServer#setDeleteGeoServerLayerURL
+ * @param {string}
+ *            url - GeoServer 레이어 삭제 URL
+ */
+gb.tree.GeoServer.prototype.setDeleteGeoServerLayerURL = function(url) {
+	this.deleteGeoServerLayerURL = url;
+};
+
+/**
  * 지오서버 트리구조 요청을 위한 URL을 반환한다.
  * 
  * @method gb.tree.GeoServer#getGetTreeURL
+ * @return {string} GeoServer 트리구조 요청 URL
  */
 gb.tree.GeoServer.prototype.getGetTreeURL = function() {
 	return this.getTreeURL;
@@ -2133,14 +2084,18 @@ gb.tree.GeoServer.prototype.getGetTreeURL = function() {
  * 지오서버 트리구조 요청을 위한 URL을 설정한다.
  * 
  * @method gb.tree.GeoServer#setGetTreeURL
+ * @param {string}
+ *            url - GeoServer 트리구조 요청 URL
  */
 gb.tree.GeoServer.prototype.setGetTreeURL = function(url) {
 	this.getTreeURL = url;
 };
+
 /**
  * 데이터스토어 타겟 브랜치 전환 요청을 위한 URL을 반환한다.
  * 
  * @method gb.tree.GeoServer#getSwitchGeoGigBranchURL
+ * @return {string} 브랜치 변경 URL
  */
 gb.tree.GeoServer.prototype.getSwitchGeoGigBranchURL = function() {
 	return this.switchGeoGigBranchURL;
@@ -2149,54 +2104,50 @@ gb.tree.GeoServer.prototype.getSwitchGeoGigBranchURL = function() {
  * 데이터스토어 타겟 브랜치 전환 요청을 위한 URL을 설정한다.
  * 
  * @method gb.tree.GeoServer#setSwitchGeoGigBranchURL
+ * @param {string}
+ *            url - 브랜치 변경 URL
  */
 gb.tree.GeoServer.prototype.setSwitchGeoGigBranchURL = function(url) {
 	this.switchGeoGigBranchURL = url;
+};
+
+/**
+ * SHP 파일 업로드 객체를 반환한다.
+ * 
+ * @method gb.tree.GeoServer#getUploadSHP
+ * @return {gb.geoserver.UploadSHP} SHP 업로드 객체
+ */
+gb.tree.GeoServer.prototype.getUploadSHP = function() {
+	return this.uploadSHP;
 };
 /**
  * SHP 파일 업로드 객체를 설정한다.
  * 
  * @method gb.tree.GeoServer#setUploadSHP
+ * @param {gb.geoserver.UploadSHP}
+ *            upload - SHP 업로드 객체
  */
 gb.tree.GeoServer.prototype.setUploadSHP = function(upload) {
 	this.uploadSHP = upload;
-};
-/**
- * SHP 파일 업로드 객체를 반환한다.
- * 
- * @method gb.tree.GeoServer#getUploadSHP
- */
-gb.tree.GeoServer.prototype.getUploadSHP = function() {
-	return this.uploadSHP;
 };
 
 /**
  * 오류 메시지 창을 생성한다.
  * 
  * @method gb.tree.GeoServer#messageModal
- * @param {String}
+ * @param {string}
  *            title - 모달의 타이틀
- * @param {String}
+ * @param {string}
  *            msg - 보여줄 메세지
- * @param {Number}
- *            height - 모달의 높이(px)
  */
 gb.tree.GeoServer.prototype.messageModal = function(title, msg) {
 	var that = this;
-	var msg1 = $("<div>").append(msg).css({
-		"text-align" : "center",
-		"font-size" : "16px",
-		"margin-top" : "18px",
-		"margin-bottom" : "18px",
-		"word-break" : "keep-all"
-	});
+	var msg1 = $("<div>").append(msg).addClass("gb-geoserver-msgmodal-body");
 	var body = $("<div>").append(msg1);
-	var okBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-primary").text("OK");
+	var okBtn = $("<button>").addClass("gb-button-float-right").addClass("gb-button").addClass("gb-button-primary").text("OK");
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn);
 
-	var modal = new gb.modal.Base({
+	var modal = new gb.modal.ModalBase({
 		"title" : title,
 		"width" : 310,
 		"autoOpen" : true,
@@ -2212,12 +2163,16 @@ gb.tree.GeoServer.prototype.messageModal = function(title, msg) {
  * GeoGig 저장소의 타겟 브랜치를 변경한다.
  * 
  * @method gb.tree.GeoServer#switchBranch
- * @param {Object}
- *            server - 작업 중인 서버 노드
- * @param {Object}
- *            repo - 작업 중인 리포지토리 노드
- * @param {Object}
- *            branch - 작업 중인 브랜치 노드
+ * @param {string}
+ *            server - 작업 중인 GeoServer 이름
+ * @param {string}
+ *            work - 작업 중인 작업공간 이름
+ * @param {string}
+ *            store - 작업 중인 데이터저장소 이름
+ * @param {string}
+ *            branch - 작업 중인 브랜치 이름
+ * @param {gb.modal.ModalBase}
+ *            modal - 완료 후 닫을 모달 객체
  */
 gb.tree.GeoServer.prototype.switchBranch = function(server, work, store, branch, modal) {
 	var that = this;
@@ -2263,15 +2218,15 @@ gb.tree.GeoServer.prototype.switchBranch = function(server, work, store, branch,
  * 노드를 마지막 자식 노드까지 로드한다.
  * 
  * @method gb.tree.GeoServer#openNodeRecursive
- * @param {Number}
+ * @param {number}
  *            idx - 레이어 목록에서 선택한 노드들의 인덱스
  * @param {Object}
  *            node - 열려는 노드
  * @param {Object}
  *            topNode - 레이어 목록에서 선택한 노드
- * @param {Function}
+ * @param {function}
  *            afterOpen - 로드후 실행할 콜백함수
- * @param {Boolean}
+ * @param {boolean}
  *            each - 각 노드를 불러왔을 때마다 콜백 함수를 실행할지 지정
  */
 gb.tree.GeoServer.prototype.openNodeRecursive = function(idx, node, topNode, afterOpen, each) {
@@ -2319,13 +2274,9 @@ gb.tree.GeoServer.prototype.openNodeRecursive = function(idx, node, topNode, aft
 /**
  * GeoGig 저장소의 타겟 브랜치를 변경한다.
  * 
- * @method gb.tree.GeoServer#switchBranch
- * @param {Object}
- *            server - 작업 중인 서버 노드
- * @param {Object}
- *            repo - 작업 중인 리포지토리 노드
- * @param {Object}
- *            branch - 작업 중인 브랜치 노드
+ * @method gb.tree.GeoServer#errorModal
+ * @param {string}
+ *            code - 오류 코드
  */
 gb.tree.GeoServer.prototype.errorModal = function(code) {
 	var that = this;
@@ -2333,137 +2284,38 @@ gb.tree.GeoServer.prototype.errorModal = function(code) {
 };
 
 /**
- * 레파지토리 정보 확인창을 생성한다.
+ * GeoServer 정보 확인창을 생성한다.
  * 
- * @method gb.versioning.Repository#removeLayerModal
- * @param {Object}
- *            server - 작업 중인 서버 노드
- * @param {Object}
- *            repo - 작업 중인 리포지토리 노드
- * @param {Object}
- *            branch - 작업 중인 브랜치 노드
+ * @method gb.versioning.Repository#geoserverInfoModal
+ * @param {string}
+ *            serverName - 작업 중인 서버 노드
  */
 gb.tree.GeoServer.prototype.geoserverInfoModal = function(serverName) {
 	var that = this;
 
-	var geoserverkey = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "30%",
-		"vertical-align" : "middle"	,
-		"text-align" : "right",
-		"padding": "0.785714em", 
-		"background": "rgba(0, 0, 0, 0.03)", 
-		"font-weight": "700",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	}).text("GeoServer "+this.translation.version[this.locale]);
-	var geoserverval = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "70%",
-		"word-break":" break-word",
-		"vertical-align" : "middle"	,
-		"padding": "0.785714em",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	});
-	var row1 = $("<div>").css({
-		"display" : "table-row"
-	}).append(geoserverkey).append(geoserverval);
+	var geoserverkey = $("<div>").addClass("gb-geoserver-info-key").text("GeoServer "+this.translation.version[this.locale]);
+	var geoserverval = $("<div>").addClass("gb-geoserver-info-value");
+	var row1 = $("<div>").addClass("gb-geoserver-info-row").append(geoserverkey).append(geoserverval);
 
-	var geotoolskey = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "30%",
-		"vertical-align" : "middle"	,
-		"text-align" : "right",
-		"padding": "0.785714em", 
-		"background": "rgba(0, 0, 0, 0.03)", 
-		"font-weight": "700",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	}).text("GeoTools "+this.translation.version[this.locale]);
-	var geotoolsval = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "70%",
-		"word-break":" break-word",
-		"vertical-align" : "middle"	,
-		"padding": "0.785714em",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	});
-	var row2 = $("<div>").css({
-		"display" : "table-row"
-	}).append(geotoolskey).append(geotoolsval);
+	var geotoolskey = $("<div>").addClass("gb-geoserver-info-key").text("GeoTools "+this.translation.version[this.locale]);
+	var geotoolsval = $("<div>").addClass("gb-geoserver-info-value");
+	var row2 = $("<div>").addClass("gb-geoserver-info-row").append(geotoolskey).append(geotoolsval);
 
-	var cachekey = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "30%",
-		"vertical-align" : "middle"	,
-		"text-align" : "right",
-		"padding": "0.785714em", 
-		"background": "rgba(0, 0, 0, 0.03)", 
-		"font-weight": "700",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	}).text("GeoWebCache "+this.translation.version[this.locale]);
-	var cacheval = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "70%",
-		"word-break":" break-word",
-		"vertical-align" : "middle"	,
-		"padding": "0.785714em",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	});
-	var row3 = $("<div>").css({
-		"display" : "table-row"
-	}).append(cachekey).append(cacheval);
+	var cachekey = $("<div>").addClass("gb-geoserver-info-key").text("GeoWebCache "+this.translation.version[this.locale]);
+	var cacheval = $("<div>").addClass("gb-geoserver-info-value");
+	var row3 = $("<div>").addClass("gb-geoserver-info-row").append(cachekey).append(cacheval);
 
-	var idkey = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "30%",
-		"vertical-align" : "middle"	,
-		"text-align" : "right",
-		"padding": "0.785714em", 
-		"background": "rgba(0, 0, 0, 0.03)", 
-		"font-weight": "700",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	}).text(this.translation.id[this.locale]);
-	var idval = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "70%",
-		"word-break":" break-word",
-		"vertical-align" : "middle"	,
-		"padding": "0.785714em",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	});
-	var row4 = $("<div>").css({
-		"display" : "table-row"
-	}).append(idkey).append(idval);
+	var idkey = $("<div>").addClass("gb-geoserver-info-key").text(this.translation.id[this.locale]);
+	var idval = $("<div>").addClass("gb-geoserver-info-value");
+	var row4 = $("<div>").addClass("gb-geoserver-info-row").append(idkey).append(idval);
 
-	var urlkey = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "30%",
-		"vertical-align" : "middle"	,
-		"text-align" : "right",
-		"padding": "0.785714em", 
-		"background": "rgba(0, 0, 0, 0.03)", 
-		"font-weight": "700",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	}).text("URL");
-	var urlval = $("<div>").css({
-		"display" : "table-cell",
-		"width" : "70%",
-		"word-break":" break-word",
-		"vertical-align" : "middle"	,
-		"padding": "0.785714em",
-		"border-bottom": "1px solid rgba(0, 0, 0, 0.1)"
-	});
-	var row5 = $("<div>").css({
-		"display" : "table-row"
-	}).append(urlkey).append(urlval);
+	var urlkey = $("<div>").addClass("gb-geoserver-info-key").text("URL");
+	var urlval = $("<div>").addClass("gb-geoserver-info-value");
+	var row5 = $("<div>").addClass("gb-geoserver-info-row").append(urlkey).append(urlval);
 
-	var tb = $("<div>").css({
-		"display" : "table",
-		"width" : "100%"
-	}).append(row1).append(row2).append(row3).append(row4).append(row5);
+	var tb = $("<div>").addClass("gb-geoserver-info-table").append(row1).append(row2).append(row3).append(row4).append(row5);
 	var body = $("<div>").append(tb);
-	var closeBtn = $("<button>").css({
-		"float" : "right"
-	}).addClass("gb-button").addClass("gb-button-default").text(this.translation.close[this.locale]);
+	var closeBtn = $("<button>").addClass("gb-button-float-right").addClass("gb-button").addClass("gb-button-default").text(this.translation.close[this.locale]);
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(closeBtn);
 
 	var params = {
@@ -2511,7 +2363,7 @@ gb.tree.GeoServer.prototype.geoserverInfoModal = function(serverName) {
 		that.errorModal(xhr.responseJSON.status);
 	});
 
-	var removeModal = new gb.modal.Base({
+	var removeModal = new gb.modal.ModalBase({
 		"title" : this.translation.serverinfo[this.locale],
 		"width" : 574,
 		"autoOpen" : true,
@@ -2527,25 +2379,14 @@ gb.tree.GeoServer.prototype.geoserverInfoModal = function(serverName) {
  * 스피너를 보여준다.
  * 
  * @method gb.tree.GeoServer#showSpinner
- * @param {Boolean}
+ * @param {boolean}
  *            show - 스피너 표시 유무
+ * @param {gb.modal.ModalBase}
+ *            modal - 스피너를 보이거나 숨길 모달 객체
  */
 gb.tree.GeoServer.prototype.showSpinner = function(show, modal) {
 	if (show) {
-		var spinnerArea = $("<div>").addClass("gb-spinner-wrap").css({
-			"z-index" : "10",
-			"position" : "absolute",
-			"left" : "0",
-			"top" : "0",
-			"width" : "100%",
-			"height" : "100%",
-			"text-align" : "center",
-			"background-color" : "rgba(0, 0, 0, 0.4)"
-		}).append($("<i>").addClass("fas fa-spinner fa-spin fa-5x").css({
-			"position" : "relative",
-			"top" : "50%",
-			"margin-top" : "-5em"
-		}));
+		var spinnerArea = $("<div>").addClass("gb-spinner-wrap").addClass("gb-spinner-body").append($("<i>").addClass("fas fa-spinner fa-spin fa-5x").addClass("gb-spinner-position"));
 		$(modal.modal).append(spinnerArea);
 	} else {
 		$(modal.modal).find(".gb-spinner-wrap").remove();
