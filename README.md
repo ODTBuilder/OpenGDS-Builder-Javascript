@@ -188,8 +188,11 @@ OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuild
 ** 위와 같은 방식을 통해 Editing Tool 메뉴에 새로운 기능을 추가할 수 있습니다.</br>
 ** icon 이미지는 fontawesome(https://fontawesome.com/icons)을 사용하였습니다.</br>
 ### 5. 사용 라이브러리
-fontawesosme 5.0.9 (MIT License)</br>
-bootstrap 3.3.2 (MIT License)</br>
+jQuery 2.2.2 (MIT License)</br>
+DataTables 1.10.13 (MIT License)</br>
+AltEditor 2.0 (MIT License)</br>
+Fontawesosme 5.0.9 (MIT License)</br>
+Bootstrap 3.3.2 (MIT License)</br>
 spectrum 1.8.0 (MIT License)</br>
 shp2geojson (MIT License)</br>
 proj4js 2.2.1 (MIT License)</br>
