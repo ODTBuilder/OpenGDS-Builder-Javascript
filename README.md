@@ -7,7 +7,7 @@ OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuild
 이 라이브러리들을 다운로드하여 기능별로 사용할 수 있으며 확장이 가능합니다.
 
 # 특징
-- 이 라이브러리들은 jQuery, Openlayers3, JSTree, Proj4js를 사용하여 개발되었습니다.<br>
+- 이 라이브러리들은 jQuery, Openlayers3, JSTree, Proj4js등을 사용하여 개발되었습니다.<br>
 - 원하는 기능만을 선언하여 사용할 수 있어 편리합니다.<br>
 - 공간 데이터를 웹브라우저상에서 쉽고 빠르게 관리할 수 있습니다.<br>
 - 오픈소스 기반으로 개발되어 확장성이 뛰어납니다.<br><br>
@@ -188,7 +188,11 @@ OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuild
 ** 위와 같은 방식을 통해 Editing Tool 메뉴에 새로운 기능을 추가할 수 있습니다.</br>
 ** icon 이미지는 fontawesome(https://fontawesome.com/icons)을 사용하였습니다.</br>
 ### 5. 사용 라이브러리
-Proj4js 2.2.1 (MIT License)</br>
+fontawesosme 5.0.9 (MIT License)</br>
+bootstrap 3.3.2 (MIT License)</br>
+spectrum 1.8.0 (MIT License)</br>
+shp2geojson (MIT License)</br>
+proj4js 2.2.1 (MIT License)</br>
 jsTree 3.3.3, 3.3.7 (MIT License)</br>
 ol-geocoder 3.2.0 (MIT License)</br>
 Openlayers3 v5.3.0 (FreeBSD) www.openlayers.org</br>
