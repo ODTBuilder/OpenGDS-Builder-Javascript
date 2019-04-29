@@ -4,12 +4,12 @@
  */
 
 /**
+ * @classdesc
  * 오픈레이어스 레이어 목록을 표시한다.
- * 
  * @class gb.tree.OpenLayers
  * @memberof gb.tree
  * @param {Object} obj - 생성자 옵션을 담은 객체
- * @param {DOM} obj.append - 영역 본문이 삽입될 부모 노드의 ID 또는 Class 또는 Element
+ * @param {HTMLElement} obj.append - 영역 본문이 삽입될 부모 노드의 ID 또는 Class 또는 Element
  * @param {ol.Map} obj.map - 편집 영역을 담당하는 ol.Map
  * @param {Object} obj.url - 요청 주소 정보
  * @param {string} obj.url.getLegend - WMS 범례 이미지를 요청할 URL
@@ -273,19 +273,16 @@ gb.tree.OpenLayers = function(obj) {
 	
 	/**
 	 * Openlayers Tree 제목
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
-	this.panelTitle = $("<p>").text("Now editing").css({
-		"margin" : "0",
-		"float" : "left"
-	});
+	this.panelTitle = $("<p>").text("Now editing").addClass("gb-openlayers-title");
 	
 	
 	var addIcon = $("<i>").addClass("fas").addClass("fa-plus");
 	/**
 	 * 레이어 추가 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.addBtn = $("<button>").addClass("gb-button-clear").append(addIcon).css({
@@ -303,7 +300,7 @@ gb.tree.OpenLayers = function(obj) {
 	var createGroupIcon = $("<i>").addClass("fas").addClass("fa-folder-open");
 	/**
 	 * 그룹 레이어 추가 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.createGroupBtn = $("<button>").addClass("gb-button-clear").append(createGroupIcon).css({
@@ -315,7 +312,7 @@ gb.tree.OpenLayers = function(obj) {
 	var importFileIcon = $("<i>").addClass("far fa-lg").addClass("fa-file-archive");
 	/**
 	 * 레이어 파일 불러오기 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.importFileBtn = $("<button>").addClass("gb-button-clear").append(importFileIcon).css({
@@ -327,7 +324,7 @@ gb.tree.OpenLayers = function(obj) {
 	var addImgIcon = $("<i>").addClass("far fa-lg").addClass("fa-file-image");
 	/**
 	 * 이미지 파일 불러오기 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.addImgBtn = $("<button>").addClass("gb-button-clear").append(addImgIcon).css({
@@ -339,7 +336,7 @@ gb.tree.OpenLayers = function(obj) {
 	var refIcon = $("<i>").addClass("fas").addClass("fa-sync-alt");
 	/**
 	 * Openlayers Tree 새로고침 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.refBtn = $("<button>").addClass("gb-button-clear").append(refIcon).css({
@@ -357,7 +354,7 @@ gb.tree.OpenLayers = function(obj) {
 	var searchIcon = $("<i>").addClass("fas").addClass("fa-search");
 	/**
 	 * Openlayers Tree 노드 검색 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.searchBtn = $("<button>").addClass("gb-button-clear").append(searchIcon).css({
@@ -368,7 +365,7 @@ gb.tree.OpenLayers = function(obj) {
 
 	/**
 	 * Openlayers Tree 노드 검색 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.titleArea = $("<div>").append(this.panelTitle).append(this.searchBtn).append(this.refBtn).append(this.addImgBtn).append(
@@ -376,22 +373,17 @@ gb.tree.OpenLayers = function(obj) {
 
 	/**
 	 * Openlayers Tree 노드 검색 input element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.searchInput = $("<input>").attr({
 		"type" : "text"
-	}).css({
-		"border" : "0",
-		"border-bottom" : "solid 1px #909090",
-		"background-color" : "transparent",
-		"width" : "90%"
-	});
+	}).addClass("gb-openlayers-search-input");
 	
 	var closeIcon = $("<i>").addClass("fas").addClass("fa-times");
 	/**
 	 * Openlayers Tree 노드 검색창 닫기 버튼 element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.closeSearchBtn = $("<button>").addClass("gb-button-clear").append(closeIcon).css({
@@ -404,7 +396,7 @@ gb.tree.OpenLayers = function(obj) {
 	
 	/**
 	 * Openlayers Tree 노드 검색 layout element
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.searchArea = $("<div>").css({
@@ -413,14 +405,14 @@ gb.tree.OpenLayers = function(obj) {
 	
 	/**
 	 * Openlayers Tree 패널 header
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.panelHead = $("<div>").addClass("gb-article-head").append(this.titleArea).append(this.searchArea);
 	
 	/**
 	 * Openlayers Tree 패널 body
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.panelBody = $("<div>").addClass("gb-article-body").css({
@@ -429,7 +421,7 @@ gb.tree.OpenLayers = function(obj) {
 	
 	/**
 	 * Openlayers Tree 패널 layout
-	 * @type {DOM}
+	 * @type {HTMLElement}
 	 * @private
 	 */
 	this.panel = $("<div>").addClass("gb-article").css({
@@ -504,7 +496,9 @@ gb.tree.OpenLayers = function(obj) {
 					}),
 					"layerRecord" : undefined,
 					"featureRecord" : options.frecord,
-					"style" : new gb.style.LayerStyle({}),
+					"style" : new gb.style.LayerStyle({
+						"locale" : this.locale
+					}),
 					"editingTool" : this.editingTool
 				},
 				"search" : {
@@ -639,26 +633,21 @@ gb.tree.OpenLayers = function(obj) {
 							}
 						};
 						
-						/*totalObj["count"] = {
-							"separator_before" : false,
-							"icon" : "fa fa-eye",
-							"separator_after" : false,
-							"_disabled" : false, // (this.check("delete_node",
-							// data.reference,
-							// this.get_parent(data.reference),
-							// "")),
-							"label" : that.translation.countOfFeature[that.locale],
-							"action" : function(data) {
-								console.log(data);
-								var inst = $.jstreeol3.reference(data.reference),
-									obj = inst.get_node(data.reference);
-								var layers = inst.get_selected();
-								for (var i = 0; i < layers.length; i++) {
-									var node = inst.get_node(layers[i]);
-									var layer = inst.get_LayerById(layers[i]);
-								}
-							}
-						};*/
+						/*
+						 * totalObj["count"] = { "separator_before" : false,
+						 * "icon" : "fa fa-eye", "separator_after" : false,
+						 * "_disabled" : false, // (this.check("delete_node", //
+						 * data.reference, // this.get_parent(data.reference), //
+						 * "")), "label" :
+						 * that.translation.countOfFeature[that.locale],
+						 * "action" : function(data) { console.log(data); var
+						 * inst = $.jstreeol3.reference(data.reference), obj =
+						 * inst.get_node(data.reference); var layers =
+						 * inst.get_selected(); for (var i = 0; i <
+						 * layers.length; i++) { var node =
+						 * inst.get_node(layers[i]); var layer =
+						 * inst.get_LayerById(layers[i]); } } };
+						 */
 						
 						if(o.type !== "Raster"){
 							totalObj["snap"] = {
@@ -966,7 +955,7 @@ gb.tree.OpenLayers.prototype.constructor = gb.tree.OpenLayers;
  * jstree가 적용된 jquery 객체를 반환한다.
  * @method gb.tree.OpenLayers#getJSTreeElement
  * @function
- * @return {DOM}
+ * @return {HTMLElement}
  */
 gb.tree.OpenLayers.prototype.getJSTreeElement = function() {
 	return $(this.panelBody);
@@ -1140,7 +1129,7 @@ gb.tree.OpenLayers.prototype.openAddLayer = function() {
 		"display" : "table",
 		"width" : "100%"
 	});
-	var addGeoServerModal = new gb.modal.Base({
+	var addGeoServerModal = new gb.modal.ModalBase({
 		"title" : this.translation.addLayer[this.locale],
 		"width" : 540,
 		"autoOpen" : true,
@@ -1259,7 +1248,7 @@ gb.tree.OpenLayers.prototype.openAddLayer = function() {
  * @method gb.tree.OpenLayers#getAttrForm
  * @function
  * @param {boolean} bool - Not Null, Unique 조건 설정 가시화 여부. true일 시 Not Null, Unique 조건 설정 불가.
- * @return {DOM}
+ * @return {HTMLElement}
  */
 gb.tree.OpenLayers.getAttrForm = function(bool) {
 	var addBtn = 
@@ -1406,7 +1395,7 @@ gb.tree.OpenLayers.prototype.createUploadModal = function() {
 		"width" : "100%"
 	});
 
-	var addGeoServerModal = new gb.modal.Base({
+	var addGeoServerModal = new gb.modal.ModalBase({
 		"title" : this.translation.addLayer[this.locale],
 		"width" : 540,
 		"height" : 280,
@@ -1593,12 +1582,9 @@ gb.tree.OpenLayers.prototype.createImageModal = function() {
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
 	var modalFooter = $("<div>").append(buttonArea);
 
-	var gBody = $("<div>").append(uploadBtn).append(fileInfo).append(preview).css({
-		"display" : "table",
-		"width" : "100%"
-	});
+	var gBody = $("<div>").append(uploadBtn).append(fileInfo).append(preview).addClass("gb-openlayers-table");
 
-	var addGeoServerModal = new gb.modal.Base({
+	var addGeoServerModal = new gb.modal.ModalBase({
 		"title" : this.translation.addLayer[this.locale],
 		"width" : 540,
 		"height" : 460,
@@ -1660,7 +1646,7 @@ gb.tree.OpenLayers.prototype.openDeleteLayer = function(layer) {
 		"float" : "right"
 	}).addClass("gb-button").addClass("gb-button-primary").text(this.translation["delete"][this.locale]);
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
-	var deleteModal = new gb.modal.Base({
+	var deleteModal = new gb.modal.ModalBase({
 		"title" : this.translation.deleteLayer[this.locale],
 		"width" : 310,
 		"height" : 200,
@@ -1761,7 +1747,7 @@ gb.tree.OpenLayers.prototype.vectorLayerInfo = function(layer) {
 	
 	var buttonArea = $("<span>").addClass("gb-modal-buttons").append(closeBtn);
 
-	var modal = this.layerPropModal = new gb.modal.Base({
+	var modal = this.layerPropModal = new gb.modal.ModalBase({
 		"title" : "Properties",
 		"width" : "700px",
 		"autoOpen" : true,
@@ -1879,7 +1865,7 @@ gb.tree.OpenLayers.prototype.requestLayerInfo = function(obj) {
 					
 					buttonArea = $("<span>").addClass("gb-modal-buttons").append(closeBtn);
 
-					modal = new gb.modal.Base({
+					modal = new gb.modal.ModalBase({
 						"title" : "Properties",
 						"width" : "700px",
 						"autoOpen" : true,
@@ -1904,69 +1890,11 @@ gb.tree.OpenLayers.prototype.requestLayerInfo = function(obj) {
  * @function
  * @param {Object.<string, string|Object>} obj - 테이블 내용
  * @param {boolean} isVector - 레이어 타입이 Vector인지 여부 
- * @return {DOM}
+ * @return {HTMLElement}
  */
 gb.tree.OpenLayers.prototype.createPropTable = function(obj, isVector) {
 	var that = this;
 	
-	var tdStyle = {
-		"padding" : ".78571429em .78571429em"
-	};
-
-	var tdKeyStyle = {
-		"padding" : ".78571429em .78571429em",
-		"background" : "rgba(0,0,0,.03)",
-		"font-weight" : "700"
-	};
-
-	var trStyle = {
-		"border-bottom" : "1px solid rgba(0,0,0,.1)"
-	};
-	
-	var labelStyle = {
-		"display" : "inline-block",
-		"position" : "relative",
-		"background" : "#e0e1e2 none",
-		"color" : "rgba(0,0,0,.6)",
-		"margin" : "0 .25em .25em 0",
-		"padding" : ".78571429em 1.5em .78571429em",
-		"font-weight" : "700",
-		"line-height" : "1em",
-		"border-radius" : ".28571429rem"
-	};
-	
-	var attrLabelStyle = {
-		"display" : "inline-block",
-		"position" : "relative",
-		"background" : "#e0e1e2 none",
-		"color" : "rgba(0,0,0,.6)",
-		"margin" : "0 .25em .25em 0",
-		"padding" : ".785714em 2.0em .785714em .785714em",
-		"font-weight" : "700",
-		"line-height" : "1em",
-		"border-radius" : ".28571429rem"
-	};
-
-	var fieldStyle = {
-		"width" : "50%",
-		"padding-left" : ".5em",
-		"padding-right" : ".5em"
-	};
-	
-	var selectTitleStyle = {
-		"font-weight" : "700"
-	};
-	
-	var iconStyle = {
-		"left" : "auto",
-		"right" : "0",
-		"position" : "absolute",
-		"text-align": "center",
-		"width": "30px",
-		"color": "#db2828",
-		"cursor": "pointer"
-	};
-
 	var list = obj || false;
 	if (!list) {
 		return;
@@ -1982,7 +1910,7 @@ gb.tree.OpenLayers.prototype.createPropTable = function(obj, isVector) {
 		}
 		
 		if(!this.translation[i]){
-			key = $("<td>").css(tdKeyStyle).text(i).css("width", "20%");
+			key = $("<td>").addClass("gb-openlayers-td-key").text(i).css("width", "20%");
 		} else {
 			if(i === "attInfo" && isVector){
 				var addLabel = 
@@ -2004,14 +1932,14 @@ gb.tree.OpenLayers.prototype.createPropTable = function(obj, isVector) {
 						.append(addIcon)
 						.css({"width": "100%"});
 				
-				key = $("<td>").css(tdKeyStyle).append(addDiv).css("width", "20%");
+				key = $("<td>").addClass("gb-openlayers-td-key").append(addDiv).css("width", "20%");
 			} else {
-				key = $("<td>").css(tdKeyStyle).text(this.translation[i][that.locale]).css("width", "20%");
+				key = $("<td>").addClass("gb-openlayers-td-key").text(this.translation[i][that.locale]).css("width", "20%");
 			}
 		}
 		
 		if (list[i] instanceof Object) {
-			value = $("<td>").css(tdStyle);
+			value = $("<td>").addClass("gb-openlayers-td");
 			for ( var j in list[i]) {
 				labelKey = $("<span>").addClass("layer-attr-key").text(j);
 				if (list[i][j] instanceof Object) {
@@ -2027,12 +1955,12 @@ gb.tree.OpenLayers.prototype.createPropTable = function(obj, isVector) {
 					labelValue = $("<span>").text(list[i][j]);
 				}
 				
-				label = $("<div>").css(labelStyle).append(labelKey).append(labelValue);
+				label = $("<div>").addClass("gb-openlayers-label").append(labelKey).append(labelValue);
 				if (isVector) {
 					removeAttr = 
 						$("<i>")
 							.addClass("far fa-trash-alt")
-							.css(iconStyle);
+							.addClass("gb-openlayers-icon");
 					
 					removeAttr.click(function(){
 						var attrKey = $(this).parent().find(".layer-attr-key").text();
@@ -2066,7 +1994,7 @@ gb.tree.OpenLayers.prototype.createPropTable = function(obj, isVector) {
 						
 						var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
 						
-						var modal = new gb.modal.Base({
+						var modal = new gb.modal.ModalBase({
 							"title" : that.translation.deleteAttr[that.locale],
 							"width" : 310,
 							"height" : 200,
@@ -2101,33 +2029,33 @@ gb.tree.OpenLayers.prototype.createPropTable = function(obj, isVector) {
 						
 						modal.open();
 					});
-					label.append(removeAttr).css(attrLabelStyle);
+					label.append(removeAttr).addClass("gb-openlayers-label-attr");
 				}
 				value.append(label);
 			}
 		} else {
 			if (i === "style") {
-				selectTitle = $("<label>").css(selectTitleStyle).text(this.translation["workspace"][this.locale]);
+				selectTitle = $("<label>").addClass("gb-openlayers-select-title").text(this.translation["workspace"][this.locale]);
 				select = $("<div>").text(list.styleWorkspace || this.translation["myserver"][this.locale]);
-				selectField = $("<div>").css(fieldStyle).append(selectTitle).append(select);
+				selectField = $("<div>").addClass("gb-openlayers-field").append(selectTitle).append(select);
 
-				value = $("<td>").css(tdStyle).css("display", "flex").append(selectField);
+				value = $("<td>").addClass("gb-openlayers-td").css("display", "flex").append(selectField);
 
 				selectTitle = 
 					$("<div>")
-						.append($("<label>").css(selectTitleStyle).text(this.translation["style"][this.locale]));
+						.append($("<label>").addClass("gb-openlayers-select-title").text(this.translation["style"][this.locale]));
 				select = $("<div>").text(list[i]);
-				selectField = $("<div>").css(fieldStyle).append(selectTitle).append(select);
+				selectField = $("<div>").addClass("gb-openlayers-field").append(selectTitle).append(select);
 				value.append(selectField);
 			} else {
 				if (i === "styleWorkspace") {
 					continue;
 				}
-				value = $("<td>").css(tdStyle).text(list[i]);
+				value = $("<td>").addClass("gb-openlayers-td").text(list[i]);
 			}
 		}
 
-		tr = $("<tr>").css(trStyle).append(key).append(value);
+		tr = $("<tr>").addClass("gb-openlayers-tr").append(key).append(value);
 		if(i === "geoserver" || i === "workspace" || i === "datastore" || i === "geoserverURL" || i === "geoserverID"){
 			tbody.prepend(tr);
 		} else {
@@ -2183,7 +2111,7 @@ gb.tree.OpenLayers.prototype.addPropModal = function(obj) {
 				"overflow-y" : "auto"
 			});
 	
-	var addPropModal = new gb.modal.Base({
+	var addPropModal = new gb.modal.ModalBase({
 		"title" : this.translation.addAttribute[this.locale],
 		"width" : 540,
 		"autoOpen" : true,

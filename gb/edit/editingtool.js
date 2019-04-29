@@ -18,16 +18,11 @@ gb.edit.ACTIVEAREA = 7.75;
  * <script src="./gb/map/map.js"></script>
  * <%-- jsTree openlayers3--%>
  * <script type="text/javascript" src="./jsTree-openlayers3/jstree.js"></script>
- * <link rel="stylesheet" type="text/css"
- *   href="./jsTree-openlayers3/themes/default/style.css" />
- * <script type="text/javascript"
- *   src="./jsTree-openlayers3/jstree-visibility.js"></script>
- * <script type="text/javascript"
- *   src="./jsTree-openlayers3/jstree-layerproperties.js"></script>
- * <script type="text/javascript"
- *   src="./jsTree-openlayers3/jstree-legends.js"></script>
- * <script type="text/javascript"
- *   src="./jsTree-openlayers3/jstree-functionmarker.js"></script>
+ * <link rel="stylesheet" type="text/css" href="./jsTree-openlayers3/themes/default/style.css" />
+ * <script type="text/javascript" src="./jsTree-openlayers3/jstree-visibility.js"></script>
+ * <script type="text/javascript" src="./jsTree-openlayers3/jstree-layerproperties.js"></script>
+ * <script type="text/javascript" src="./jsTree-openlayers3/jstree-legends.js"></script>
+ * <script type="text/javascript" src="./jsTree-openlayers3/jstree-functionmarker.js"></script>
  * <!-- gb.tree.openlayers -->
  * <script src="./gb/tree/openlayers.js"></script>
  * <!-- gb.edit -->
@@ -182,28 +177,28 @@ gb.edit.EditingTool = function(obj) {
 	/**
 	 * 현재 편집중인 레이어의 Source 객체
 	 * @private
-	 * @type {ol.source.TileSource|ol.source.VectorSource}
+	 * @type {ol.source.TileSource|ol.source.Vector}
 	 */
 	this.selectedSource = undefined;
 	
 	/**
 	 * 현재 편집중인 Source 객체들의 집합
 	 * @private
-	 * @type {ol.Collection.<ol.source.VectorSource>}
+	 * @type {ol.Collection.<ol.source.Vector>}
 	 */
 	this.selectSources = new ol.Collection();
 	
 	/**
 	 * Geoserver로부터 import된 레이어들의 Vector Source 객체 집합
 	 * @private
-	 * @type {Object.<string, ol.source.VectorSource>}
+	 * @type {Object.<string, ol.source.Vector>}
 	 */
 	this.vectorSourcesOfServer_ = {};
 	
 	/**
 	 * 벡터 레이어들의 Vector Source 객체 집합
 	 * @private
-	 * @type {Object.<string, ol.source.VectorSource>}
+	 * @type {Object.<string, ol.source.Vector>}
 	 */
 	this.vectorSourcesOfVector_ = {};
 	
@@ -365,9 +360,9 @@ gb.edit.EditingTool = function(obj) {
 	this.count = 1;
 	
 	/**
-	 * EditingTool 작업표시줄에 표현될 DOM 객체들의 집합
+	 * EditingTool 작업표시줄에 표현될 HTMLElement 객체들의 집합
 	 * @private
-	 * @type {Object.<string, DOM>}
+	 * @type {Object.<string, HTMLElement>}
 	 */
 	this.btn = {
 			selectBtn : undefined,
@@ -540,7 +535,7 @@ gb.edit.EditingTool = function(obj) {
 	this.featureTB = $("<tbody>");
 	var ftb = $("<table>").addClass("gb-table").append(fhd).append(this.featureTB);
 
-	this.featurePop = new gb.panel.Base({
+	this.featurePop = new gb.panel.PanelBase({
 		"width" : "240px",
 		"positionX" : 384,
 		"positionY" : 150,
@@ -560,7 +555,7 @@ gb.edit.EditingTool = function(obj) {
 	var ahd = $("<thead>").append(atr);
 	this.attrTB = $("<tbody>");
 	var atb = $("<table>").addClass("gb-table").append(ahd).append(this.attrTB);
-	this.attrPop = new gb.panel.Base({
+	this.attrPop = new gb.panel.PanelBase({
 		"width" : "300px",
 		"positionX" : 384,
 		"positionY" : 150,
@@ -1481,7 +1476,7 @@ gb.edit.EditingTool.prototype.draw = function(layer) {
 								"overflow-y" : "auto"
 							});
 					
-					var addPropModal = new gb.modal.Base({
+					var addPropModal = new gb.modal.ModalBase({
 						"width" : 540,
 						"autoOpen" : source.get("git").attribute.length !== 0 ? true : false,
 						"body" : body,
@@ -2047,8 +2042,6 @@ gb.edit.EditingTool.prototype.remove = function(layer) {
 			stroke : undefined
 		});
 		
-		
-		
 		var msg1 = $("<div>").css({
 			"text-align" : "center",
 			"font-size" : "16px"
@@ -2069,7 +2062,7 @@ gb.edit.EditingTool.prototype.remove = function(layer) {
 			"float" : "right"
 		}).addClass("gb-button").addClass("gb-button-primary").text(this.translation["delete"][this.locale]);
 		var buttonArea = $("<span>").addClass("gb-modal-buttons").append(okBtn).append(closeBtn);
-		var deleteModal = new gb.modal.Base({
+		var deleteModal = new gb.modal.ModalBase({
 			"title" : this.translation.deleteFeature[this.locale],
 			"width" : 310,
 			"height" : 200,
@@ -3889,16 +3882,16 @@ gb.edit.EditingTool.prototype.editToolToggle = function(){
  */
 gb.edit.EditingTool.prototype.displayEditZoomHint = function(bool){
 	if(bool){
-		if(this.headerTag.find(".edit-zoom-hint").length === 0){
+		if(this.headerTag.find(".gb-editingtool-zoom-hint").length === 0){
 			this.ulTagLeft.css("display", "none");
 
-			var editZoomHintTag = $("<h1 class='edit-zoom-hint'>");
+			var editZoomHintTag = $("<h1 class='gb-editingtool-zoom-hint'>");
 			var icon = $("<span>").html("<i class='fas fa-exclamation-circle'></i>");
 			var text = $("<span>").html(this.translation.editToolHint[this.locale]);
 
-			editZoomHintTag.css("margin-top", "6px");
-			editZoomHintTag.css("padding-left", "6px");
-			editZoomHintTag.css("display", "inline-block");
+//			editZoomHintTag.css("margin-top", "6px");
+//			editZoomHintTag.css("padding-left", "6px");
+//			editZoomHintTag.css("display", "inline-block");
 
 			editZoomHintTag.append(icon);
 			editZoomHintTag.append(text);
@@ -3908,59 +3901,40 @@ gb.edit.EditingTool.prototype.displayEditZoomHint = function(bool){
 			var icon = $("<i class='fas fa-plus'>");
 			var span = $("<span class='label'>").append(icon).append(this.translation.editToolHint[this.locale]);
 			
-			var btn = $("<button class='zoom-in'>").css({
-				"position": "absolute",
-				"margin": "auto",
-				"left": "0",
-				"right": "0",
-				"width": "300px",
-				"height": "70px",
-				"font-size": "150%",
-				"border-radius": "8px",
-				"background": "rgba(0,0,0,0.5)",
-				"color": "#fff",
-				"cursor": "default",
-				"pointer-events": "none"
-			}).append(span)/*.click(function(){
-				var view = that.map.getView();
-				var extent = view.calculateExtent();
-				var coordinates = [[[extent[0], extent[1]], [extent[2], extent[1]], [extent[2], extent[3]], [extent[0], extent[3]], [extent[0], extent[1]]]];
-				var geom = new ol.geom.Polygon(coordinates);
-				var area = ol.sphere.getArea(geom, {projection: view.getProjection().getCode()});
-				area = Math.round(area/1000000*100)/100;
-				
-				var zoomSqrt = Math.sqrt((gb.edit.ACTIVEAREA)/area);
-				var zoomExtent = [extent[0]*zoomSqrt, extent[1]*zoomSqrt, extent[2]*zoomSqrt, extent[3]*zoomSqrt];
-				
-				view.fit(zoomExtent);
-			});*/
+			var btn = $("<button class='gb-editingtool-zoomin-btn'>")
+				.append(span)
+				/*.click(function(){
+					var view = that.map.getView();
+					var extent = view.calculateExtent();
+					var coordinates = [[[extent[0], extent[1]], [extent[2], extent[1]], [extent[2], extent[3]], [extent[0], extent[3]], [extent[0], extent[1]]]];
+					var geom = new ol.geom.Polygon(coordinates);
+					var area = ol.sphere.getArea(geom, {projection: view.getProjection().getCode()});
+					area = Math.round(area/1000000*100)/100;
+					
+					var zoomSqrt = Math.sqrt((gb.edit.ACTIVEAREA)/area);
+					var zoomExtent = [extent[0]*zoomSqrt, extent[1]*zoomSqrt, extent[2]*zoomSqrt, extent[3]*zoomSqrt];
+					
+					view.fit(zoomExtent);
+				});*/
 			
-			var notice = $("<div id='zoomNotice' class='notice'>").css({
-				"position": "absolute",
-				"top": "50%",
-				"left": "0",
-				"right": "0",
-				"text-align": "center",
-				"z-index": "2"
-			}).append(btn);
-			
+			var notice = $("<div id='zoomNotice' class='gb-editingtool-zoom-notice'>").append(btn);
 			this.targetElement.append(notice);
 		}
 
 		// this.deactiveAnotherInteraction();
 	} else {
 		$("#zoomNotice").remove();
-		this.headerTag.find(".edit-zoom-hint").remove();
+		this.headerTag.find(".gb-editingtool-zoom-hint").remove();
 		this.ulTagLeft.css("display", "inline-block");
 	}
 }
 
 /**
- * 현재 편집중인 레이어의 vector source 객체를 반환한다.
+ * 현재 편집중인 레이어의 vector source 객체들를 반환한다.
  * 
  * @method gb.edit.EditingTool#getSelectSources
  * @function
- * @return {ol.source.Vector|undifined} vector source 가 없을 경우 undifined 값 반환
+ * @return {ol.Collection.<ol.source.Vector>}
  */
 gb.edit.EditingTool.prototype.getSelectSources = function(){
 	return this.selectSources;

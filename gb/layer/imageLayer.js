@@ -7,6 +7,7 @@ if (!gb.layer)
 (function($){
 	
 	/**
+	 * @classdesc
 	 * 이미지 레이어 추가 기능. 로컬에 있는 이미지 파일을 불러와 Openlayers Map에 이미지 레이어 객체로 추가한다.
 	 * @class gb.layer.ImageLayer
 	 * @memberof gb.layer
@@ -212,7 +213,7 @@ if (!gb.layer)
 	/**
 	 * 이미지 레이어 편집 메뉴바를 생성한다. 설정한 엘리먼트의 왼쪽 상단에 표시된다.
 	 * @function gb.layer.ImageLayer#createMenuBar
-	 * @param {DOM} target - 메뉴바를 생성할 element
+	 * @param {HTMLElement} target - 메뉴바를 생성할 element
 	 */
 	gb.layer.ImageLayer.prototype.createMenuBar = function(target){
 		if($.find("#imageLayerMenu").length !== 0){
@@ -257,26 +258,9 @@ if (!gb.layer)
 			that.activeEdit("move");
 		});
 		
-		var menu = $("<div id='imageLayerMenu'>").css({
-			"position": "absolute",
-			"background-color": "#27292a",
-			"color": "#fff",
-			"text-shadow": "none",
-			"top": "5em",
-			"left": "0px",
-			"width": "40px",
-			"height": "auto",
-			"white-space": "nowrap",
-			"overflow": "hidden",
-			"-webkit-transition": "0.3s width ease, 0.5s transform ease",
-			"-moz-transition": "0.3s width ease, 0.5s transform ease",
-			"-o-transition": "0.3s width ease, 0.5s transform ease",
-			"-ms-transition": "0.3s width ease, 0.5s transform ease",
-			"transition": "0.3s width ease, 0.5s transform ease",
-			"z-index": "2"
-		}).append(item1).append(item2);
+		var menu = $("<div id='imageLayerMenu'>").addClass("gb-imagelayer-menu").append(item1).append(item2);
 		
-		target.append(menu);
+		$(target).append(menu);
 	}
 	
 	/**
@@ -440,12 +424,27 @@ if (!gb.layer)
 	
 	/**
 	 * Pointer event type
-	 * @type {Object}
-	 * @protected
+	 * @enum {string}
 	 */
 	gb.layer.PointerEventType = {
+		/**
+		 * Triggered upon feature multiTransform start 
+		 * @event gb.layer.Pointer#transformstart
+		 * @type {string} 
+		 * @api
+		 */
 		TRANSFORMSTART : 'transformstart',
+		/**
+		 * Triggered upon feature multiTransforming 
+		 * @event gb.layer.Pointer#transforming
+		 * @api
+		 */
 		TRANSFORMING : 'transforming',
+		/**
+		 * Triggered upon feature multiTransform end 
+		 * @event gb.layer.Pointer#transformend
+		 * @api
+		 */
 		TRANSFORMEND : 'transformend'
 	};
 	
@@ -602,7 +601,8 @@ if (!gb.layer)
 	};
 	
 	/**
-	 * @classdesc 마우스 이벤트 인스턴스
+	 * @classdesc Events emitted by {@link gb.interaction.MultiTransform} instances
+	 *            are instances of this type.
 	 * @class gb.layer.Pointer.Event
 	 * @memberof gb.layer.Pointer
 	 * @constructor
@@ -612,7 +612,8 @@ if (!gb.layer)
 	 * @param {ol.Feature}
 	 *            feature The feature modified.
 	 * @param {ol.MapBrowserPointerEvent}
-	 *            mapBrowserPointerEvent Associated {ol.MapBrowserPointerEvent}.
+	 *            mapBrowserPointerEvent Associated
+	 *            {@link ol.MapBrowserPointerEvent}.
 	 */
 	gb.layer.Pointer.Event = function(type, feature, mapBrowserPointerEvent) {
 		//ol.events.Event.call(this, type);
