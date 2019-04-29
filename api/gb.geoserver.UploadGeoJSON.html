@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>UploadGeoJSON - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="gb.crs.BaseCRS.html">BaseCRS</a><ul class='methods'><li data-type='method'><a href="gb.crs.BaseCRS.html#getMaps">getMaps</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#setMaps">setMaps</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#getMessage">getMessage</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#setMessage">setMessage</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#getEPSGCode">getEPSGCode</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#setEPSGCode">setEPSGCode</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#searchEPSGCode">searchEPSGCode</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#applyProjection">applyProjection</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#setProjection">setProjection</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#getProjection">getProjection</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#setValidEPSG">setValidEPSG</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#getValidEPSG">getValidEPSG</a></li><li data-type='method'><a href="gb.crs.BaseCRS.html#open">open</a></li></ul></li><li><a href="gb.edit.CommandLine.html">CommandLine</a><ul class='methods'><li data-type='method'><a href="gb.edit.CommandLine.html#createContent">createContent</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#setLabel">setLabel</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#resetParams">resetParams</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#pushParam">pushParam</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#pushWorkHistory">pushWorkHistory</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#resetWorkHistory">resetWorkHistory</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#downHistory">downHistory</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#uploadHistory">uploadHistory</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#parseCmdText">parseCmdText</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#insertHistoryLayout">insertHistoryLayout</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#emptyHistoryLayout">emptyHistoryLayout</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#insertLogLayout">insertLogLayout</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#emptyLogLayout">emptyLogLayout</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#executeCommand">executeCommand</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#resetAll">resetAll</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#resetCommand">resetCommand</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#addCommand">addCommand</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#getCommandList">getCommandList</a></li><li data-type='method'><a href="gb.edit.CommandLine.html#autocomplete">autocomplete</a></li></ul></li><li><a href="gb.edit.FeatureRecord.html">FeatureRecord</a><ul class='methods'><li data-type='method'><a href="gb.edit.FeatureRecord.html#getCreated">getCreated</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#getModified">getModified</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#getRemoved">getRemoved</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#clearAll">clearAll</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#clearCreated">clearCreated</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#clearModified">clearModified</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#clearRemoved">clearRemoved</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#isEditing">isEditing</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#isRemoved">isRemoved</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#create">create</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#remove">remove</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#removeByLayer">removeByLayer</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#update">update</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#requestLayerInfo">requestLayerInfo</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#getStructure">getStructure</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#getPartStructure">getPartStructure</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#deleteFeatureCreated">deleteFeatureCreated</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#deleteFeatureModified">deleteFeatureModified</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#deleteFeatureRemoved">deleteFeatureRemoved</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#save">save</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#closeEditTool">closeEditTool</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#sendWFSTTransaction">sendWFSTTransaction</a></li><li data-type='method'><a href="gb.edit.FeatureRecord.html#wfstCallback">wfstCallback</a></li></ul></li><li><a href="gb.edit.EditingTool.html">EditingTool</a><ul class='methods'><li data-type='method'><a href="gb.edit.EditingTool.html#toggleFeatureHistoryModal">toggleFeatureHistoryModal</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#updateFeatureHistoryModal">updateFeatureHistoryModal</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getVersioningFeature">getVersioningFeature</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getInteractions_">getInteractions_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getInteraction_">getInteraction_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setInteraction_">setInteraction_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getLayer">getLayer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#activeIntrct_">activeIntrct_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#deactiveIntrct_">deactiveIntrct_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#activeBtn_">activeBtn_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#deactiveBtn_">deactiveBtn_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#deactiveAllBtn_">deactiveAllBtn_</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#select">select</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#draw">draw</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#move">move</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#rotate">rotate</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#modify">modify</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#remove">remove</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#updateSelected">updateSelected</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getFeatures">getFeatures</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#removeFeatureFromUnmanaged">removeFeatureFromUnmanaged</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#clearUnmanaged">clearUnmanaged</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setMap">setMap</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getMap">getMap</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#isString">isString</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#isInteger">isInteger</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#isDouble">isDouble</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#isBoolean">isBoolean</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#isDate">isDate</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#addSnappingLayer">addSnappingLayer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#removeSnappingLayer">removeSnappingLayer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#loadSnappingLayer">loadSnappingLayer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#zoomToFit">zoomToFit</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#addInteraction">addInteraction</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#deactiveAnotherInteraction">deactiveAnotherInteraction</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getTileLayersInMap">getTileLayersInMap</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getVectorVectorLayersInMap">getVectorVectorLayersInMap</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getImageVectorLayersInMap">getImageVectorLayersInMap</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setVisibleWFS">setVisibleWFS</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setVisibleWMS">setVisibleWMS</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setVisibleVectorVector">setVisibleVectorVector</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setVisibleImageVector">setVisibleImageVector</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#refreshTileLayer">refreshTileLayer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#refreshSources">refreshSources</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setVectorSourceOfServer">setVectorSourceOfServer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#setVectorSourceOfVector">setVectorSourceOfVector</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getVectorSourceOfServer">getVectorSourceOfServer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getVectorSourcesOfServer">getVectorSourcesOfServer</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getVectorSourceOfVector">getVectorSourceOfVector</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getVectorSourcesOfVector">getVectorSourcesOfVector</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#editToolOpen">editToolOpen</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#editToolClose">editToolClose</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#editToolToggle">editToolToggle</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#displayEditZoomHint">displayEditZoomHint</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#getSelectSources">getSelectSources</a></li><li data-type='method'><a href="gb.edit.EditingTool.html#checkActiveTool">checkActiveTool</a></li></ul></li><li><a href="gb.edit.ModifyLayerProperties.html">ModifyLayerProperties</a><ul class='methods'><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#createTableContent">createTableContent</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#open">open</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#close">close</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#setRefer">setRefer</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#getRefer">getRefer</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#refresh">refresh</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#setLayer">setLayer</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#getLayer">getLayer</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#setServerInfo">setServerInfo</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#getServerInfo">getServerInfo</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#getLayerId">getLayerId</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#setForm">setForm</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#setWorkSpaceList">setWorkSpaceList</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#getImageTileInfo">getImageTileInfo</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#requestStyleList">requestStyleList</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#requestStyleLegend">requestStyleLegend</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#saveLayerProperties">saveLayerProperties</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#checkOtreeLayer">checkOtreeLayer</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#setValidEPSG">setValidEPSG</a></li><li data-type='method'><a href="gb.edit.ModifyLayerProperties.html#searchEPSGCode">searchEPSGCode</a></li></ul></li><li><a href="gb.edit.Undo.html">Undo</a><ul class='methods'><li data-type='method'><a href="gb.edit.Undo.html#push">push</a></li><li data-type='method'><a href="gb.edit.Undo.html#undo">undo</a></li><li data-type='method'><a href="gb.edit.Undo.html#redo">redo</a></li><li data-type='method'><a href="gb.edit.Undo.html#invalidateAll">invalidateAll</a></li><li data-type='method'><a href="gb.edit.Undo.html#setActive">setActive</a></li><li data-type='method'><a href="gb.edit.Undo.html#pushAction">pushAction</a></li></ul></li><li><a href="gb.embed.EmbedBase.html">EmbedBase</a><ul class='methods'><li data-type='method'><a href="gb.embed.EmbedBase.html#setEmbedBody">setEmbedBody</a></li><li data-type='method'><a href="gb.embed.EmbedBase.html#getEmbedBody">getEmbedBody</a></li><li data-type='method'><a href="gb.embed.EmbedBase.html#getEmbed">getEmbed</a></li><li data-type='method'><a href="gb.embed.EmbedBase.html#open">open</a></li><li data-type='method'><a href="gb.embed.EmbedBase.html#close">close</a></li></ul></li><li><a href="gb.footer.FooterBase.html">FooterBase</a><ul class='methods'><li data-type='method'><a href="gb.footer.FooterBase.html#anotherFooterIsOpen">anotherFooterIsOpen</a></li><li data-type='method'><a href="gb.footer.FooterBase.html#anotherFooterClose">anotherFooterClose</a></li><li data-type='method'><a href="gb.footer.FooterBase.html#createContent">createContent</a></li><li data-type='method'><a href="gb.footer.FooterBase.html#open">open</a></li><li data-type='method'><a href="gb.footer.FooterBase.html#close">close</a></li><li data-type='method'><a href="gb.footer.FooterBase.html#createToggleEvent">createToggleEvent</a></li><li data-type='method'><a href="gb.footer.FooterBase.html#setTitle">setTitle</a></li></ul></li><li><a href="gb.geoserver.UploadGeoJSON.html">UploadGeoJSON</a><ul class='methods'><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#getGeoserverTree">getGeoserverTree</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#setGeoserverTree">setGeoserverTree</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#getEPSGCode">getEPSGCode</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#setEPSGCode">setEPSGCode</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#getUploadURL">getUploadURL</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#open">open</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#setGeoServer">setGeoServer</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#getGeoServer">getGeoServer</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#setWorkspace">setWorkspace</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#getWorkspace">getWorkspace</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#setDatastore">setDatastore</a></li><li data-type='method'><a href="gb.geoserver.UploadGeoJSON.html#getDatastore">getDatastore</a></li></ul></li><li><a href="gb.geoserver.UploadSHP.html">UploadSHP</a><ul class='methods'><li data-type='method'><a href="gb.geoserver.UploadSHP.html#getEPSGCode">getEPSGCode</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#setEPSGCode">setEPSGCode</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#setValidEPSG">setValidEPSG</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#getValidEPSG">getValidEPSG</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#getUploadURL">getUploadURL</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#open">open</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#resultTable">resultTable</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#setCallback">setCallback</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#getCallback">getCallback</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#setGeoServer">setGeoServer</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#getGeoServer">getGeoServer</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#setWorkspace">setWorkspace</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#getWorkspace">getWorkspace</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#setDatastore">setDatastore</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#getDatastore">getDatastore</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#uploadFile">uploadFile</a></li><li data-type='method'><a href="gb.geoserver.UploadSHP.html#searchEPSGCode">searchEPSGCode</a></li></ul></li><li><a href="gb.header.HeaderBase.html">HeaderBase</a><ul class='methods'><li data-type='method'><a href="gb.header.HeaderBase.html#createContent">createContent</a></li><li data-type='method'><a href="gb.header.HeaderBase.html#openTool">openTool</a></li><li data-type='method'><a href="gb.header.HeaderBase.html#closeTool">closeTool</a></li><li data-type='method'><a href="gb.header.HeaderBase.html#toggleTool">toggleTool</a></li><li data-type='method'><a href="gb.header.HeaderBase.html#createToggleEvent">createToggleEvent</a></li><li data-type='method'><a href="gb.header.HeaderBase.html#setActiveTool">setActiveTool</a></li><li data-type='method'><a href="gb.header.HeaderBase.html#getActiveTool">getActiveTool</a></li></ul></li><li><a href="gb.interaction.Copypaste.html">Copypaste</a><ul class='methods'><li data-type='method'><a href="gb.interaction.Copypaste.html#clip">clip</a></li><li data-type='method'><a href="gb.interaction.Copypaste.html#paste">paste</a></li><li data-type='method'><a href="gb.interaction.Copypaste.html#createFeatureId">createFeatureId</a></li></ul></li><li><a href="gb.interaction.HoleDraw.html">HoleDraw</a><ul class='methods'><li data-type='method'><a href="gb.interaction.HoleDraw.html#checkSelected">checkSelected</a></li><li data-type='method'><a href="gb.interaction.HoleDraw.html#setSelectFeatures">setSelectFeatures</a></li></ul></li><li><a href="gb.interaction.MeasureTip.html">MeasureTip</a><ul class='methods'><li data-type='method'><a href="gb.interaction.MeasureTip.html#createMeasureTip_">createMeasureTip_</a></li><li data-type='method'><a href="gb.interaction.MeasureTip.html#removeMeasureTip_">removeMeasureTip_</a></li><li data-type='method'><a href="gb.interaction.MeasureTip.html#formatArea_">formatArea_</a></li><li data-type='method'><a href="gb.interaction.MeasureTip.html#formatLength_">formatLength_</a></li></ul></li><li><a href="gb.interaction.MultiTransform.html">MultiTransform</a><ul class='methods'><li data-type='method'><a href="gb.interaction.MultiTransform.html#setActiveSelect_">setActiveSelect_</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#getActiveSelect_">getActiveSelect_</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#handleDownEvent">handleDownEvent</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#handleDragEvent">handleDragEvent</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#handleMoveEvent">handleMoveEvent</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#handleUpEvent">handleUpEvent</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#drawMbr">drawMbr</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#getFeatures">getFeatures</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#selectTask_">selectTask_</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#rotateAlgorithm_">rotateAlgorithm_</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#scaleAlgorithm_">scaleAlgorithm_</a></li><li data-type='method'><a href="gb.interaction.MultiTransform.html#flipAlgorithm_">flipAlgorithm_</a></li></ul></li><li><a href="gb.layer.Attribute.html">Attribute</a><ul class='methods'><li data-type='method'><a href="gb.layer.Attribute.html#setOriginFieldName">setOriginFieldName</a></li><li data-type='method'><a href="gb.layer.Attribute.html#getOriginFieldName">getOriginFieldName</a></li><li data-type='method'><a href="gb.layer.Attribute.html#setFieldName">setFieldName</a></li><li data-type='method'><a href="gb.layer.Attribute.html#getFieldName">getFieldName</a></li><li data-type='method'><a href="gb.layer.Attribute.html#setType">setType</a></li><li data-type='method'><a href="gb.layer.Attribute.html#getType">getType</a></li><li data-type='method'><a href="gb.layer.Attribute.html#setDecimal">setDecimal</a></li><li data-type='method'><a href="gb.layer.Attribute.html#getDecimal">getDecimal</a></li><li data-type='method'><a href="gb.layer.Attribute.html#setSize">setSize</a></li><li data-type='method'><a href="gb.layer.Attribute.html#getSize">getSize</a></li><li data-type='method'><a href="gb.layer.Attribute.html#setNull">setNull</a></li><li data-type='method'><a href="gb.layer.Attribute.html#getNull">getNull</a></li><li data-type='method'><a href="gb.layer.Attribute.html#clone">clone</a></li><li data-type='method'><a href="gb.layer.Attribute.html#getStructure">getStructure</a></li></ul></li><li><a href="gb.layer.FeatureList.html">FeatureList</a><ul class='methods'><li data-type='method'><a href="gb.layer.FeatureList.html#createTableElement">createTableElement</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#removeTableElement">removeTableElement</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#clickEvent">clickEvent</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#onResize">onResize</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#resizeTbody">resizeTbody</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#openSaveModal">openSaveModal</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#searchTable">searchTable</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#updateTable">updateTable</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#updateFeatureList">updateFeatureList</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#nextFeatureList">nextFeatureList</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#requestLayerInfo">requestLayerInfo</a></li><li data-type='method'><a href="gb.layer.FeatureList.html#sendWFSTTransaction">sendWFSTTransaction</a></li></ul></li><li><a href="gb.layer.ImageLayer.html">ImageLayer</a><ul class='methods'><li data-type='method'><a href="gb.layer.ImageLayer.html#createMenuBar">createMenuBar</a></li><li data-type='method'><a href="gb.layer.ImageLayer.html#removeMenuBar">removeMenuBar</a></li><li data-type='method'><a href="gb.layer.ImageLayer.html#activeEdit">activeEdit</a></li><li data-type='method'><a href="gb.layer.ImageLayer.html#deActiveEdit">deActiveEdit</a></li><li data-type='method'><a href="gb.layer.ImageLayer.html#move">move</a></li><li data-type='method'><a href="gb.layer.ImageLayer.html#scale">scale</a></li></ul></li><li><a href="gb.layer.Pointer.html">Pointer</a><ul class='methods'><li data-type='method'><a href="gb.layer.Pointer.html#handleDownEvent">handleDownEvent</a></li><li data-type='method'><a href="gb.layer.Pointer.html#handleDragEvent">handleDragEvent</a></li><li data-type='method'><a href="gb.layer.Pointer.html#handleMoveEvent">handleMoveEvent</a></li><li data-type='method'><a href="gb.layer.Pointer.html#handleUpEvent">handleUpEvent</a></li><li data-type='method'><a href="gb.layer.Pointer.html#drawMbr">drawMbr</a></li><li data-type='method'><a href="gb.layer.Pointer.html#selectTask_">selectTask_</a></li><li data-type='method'><a href="gb.layer.Pointer.html#scaleAlgorithm_">scaleAlgorithm_</a></li></ul></li><li><a href="gb.layer.Pointer.Event.html">Event</a></li><li><a href="gb.layer.Label.html">Label</a><ul class='methods'><li data-type='method'><a href="gb.layer.Label.html#getText">getText</a></li><li data-type='method'><a href="gb.layer.Label.html#createTextStyle">createTextStyle</a></li></ul></li><li><a href="gb.layer.Navigator.html">Navigator</a><ul class='methods'><li data-type='method'><a href="gb.layer.Navigator.html#setFeatures">setFeatures</a></li><li data-type='method'><a href="gb.layer.Navigator.html#requestFeatureList">requestFeatureList</a></li><li data-type='method'><a href="gb.layer.Navigator.html#open">open</a></li><li data-type='method'><a href="gb.layer.Navigator.html#close">close</a></li><li data-type='method'><a href="gb.layer.Navigator.html#showFeatureInfo">showFeatureInfo</a></li><li data-type='method'><a href="gb.layer.Navigator.html#prev">prev</a></li><li data-type='method'><a href="gb.layer.Navigator.html#prev">prev</a></li></ul></li><li><a href="gb.Map_.html">Map</a><ul class='methods'><li data-type='method'><a href="gb.Map_.html#getUpperMap">getUpperMap</a></li><li data-type='method'><a href="gb.Map_.html#setUpperMap">setUpperMap</a></li><li data-type='method'><a href="gb.Map_.html#getLowerMap">getLowerMap</a></li><li data-type='method'><a href="gb.Map_.html#setLowerMap">setLowerMap</a></li><li data-type='method'><a href="gb.Map_.html#getUpperDiv">getUpperDiv</a></li><li data-type='method'><a href="gb.Map_.html#getLowerDiv">getLowerDiv</a></li><li data-type='method'><a href="gb.Map_.html#setSize">setSize</a></li></ul></li><li><a href="gb.map.MousePosition.html">MousePosition</a><ul class='methods'><li data-type='method'><a href="gb.map.MousePosition.html#setProjection">setProjection</a></li></ul></li><li><a href="gb.modal.ModalBase.html">ModalBase</a><ul class='methods'><li data-type='method'><a href="gb.modal.ModalBase.html#getModalBody">getModalBody</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#setModalBody">setModalBody</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#getModalFooter">getModalFooter</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#setModalFooter">setModalFooter</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#getModal">getModal</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#open">open</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#close">close</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#refreshPosition">refreshPosition</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#setWidth">setWidth</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#getWidth">getWidth</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#setHeight">setHeight</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#getHeight">getHeight</a></li><li data-type='method'><a href="gb.modal.ModalBase.html#getMaxZIndex">getMaxZIndex</a></li></ul></li><li><a href="gb.panel.PanelBase.html">PanelBase</a><ul class='methods'><li data-type='method'><a href="gb.panel.PanelBase.html#setPanelBody">setPanelBody</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#getPanel">getPanel</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#open">open</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#close">close</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#setWidth">setWidth</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#getWidth">getWidth</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#setHeight">setHeight</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#getHeight">getHeight</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#setPositionX">setPositionX</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#getPositionX">getPositionX</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#setPositionY">setPositionY</a></li><li data-type='method'><a href="gb.panel.PanelBase.html#getPositionY">getPositionY</a></li></ul></li><li><a href="gb.style.BaseMap.html">BaseMap</a><ul class='methods'><li data-type='method'><a href="gb.style.BaseMap.html#open">open</a></li><li data-type='method'><a href="gb.style.BaseMap.html#changeLayer">changeLayer</a></li></ul></li><li><a href="gb.style.LayerStyle.html">LayerStyle</a><ul class='methods'><li data-type='method'><a href="gb.style.LayerStyle.html#hexFromRGB">hexFromRGB</a></li><li data-type='method'><a href="gb.style.LayerStyle.html#decimalFromHex">decimalFromHex</a></li><li data-type='method'><a href="gb.style.LayerStyle.html#setLayer">setLayer</a></li><li data-type='method'><a href="gb.style.LayerStyle.html#setLayerName">setLayerName</a></li><li data-type='method'><a href="gb.style.LayerStyle.html#getLayer">getLayer</a></li></ul></li><li><a href="gb.tree.GeoServer.html">GeoServer</a><ul class='methods'><li data-type='method'><a href="gb.tree.GeoServer.html#getJSTree">getJSTree</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setJSTree">setJSTree</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getLoadingNumber">getLoadingNumber</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setLoadingNumber">setLoadingNumber</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#initLoadingNumber">initLoadingNumber</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getLoadingList">getLoadingList</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setLoadingList">setLoadingList</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#addLoadingList">addLoadingList</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#initLoadingList">initLoadingList</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#changeNodeOnLoadingList">changeNodeOnLoadingList</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#openAddGeoServer">openAddGeoServer</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#addGeoServer">addGeoServer</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#openDeleteGeoServer">openDeleteGeoServer</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#deleteGeoServer">deleteGeoServer</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#openDeleteGeoServerLayer">openDeleteGeoServerLayer</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#deleteGeoServerLayer">deleteGeoServerLayer</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#refreshList">refreshList</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#openSearchBar">openSearchBar</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#closeSearchBar">closeSearchBar</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getAddGeoServerURL">getAddGeoServerURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setAddGeoServerURL">setAddGeoServerURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getDeleteGeoServerURL">getDeleteGeoServerURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setDeleteGeoServerURL">setDeleteGeoServerURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getGeoServerInfoURL">getGeoServerInfoURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setGeoServerInfoURL">setGeoServerInfoURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getDeleteGeoServerLayerURL">getDeleteGeoServerLayerURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setDeleteGeoServerLayerURL">setDeleteGeoServerLayerURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getGetTreeURL">getGetTreeURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setGetTreeURL">setGetTreeURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getSwitchGeoGigBranchURL">getSwitchGeoGigBranchURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setSwitchGeoGigBranchURL">setSwitchGeoGigBranchURL</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#getUploadSHP">getUploadSHP</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#setUploadSHP">setUploadSHP</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#messageModal">messageModal</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#switchBranch">switchBranch</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#openNodeRecursive">openNodeRecursive</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#errorModal">errorModal</a></li><li data-type='method'><a href="gb.tree.GeoServer.html#showSpinner">showSpinner</a></li></ul></li><li><a href="gb.tree.OpenLayers.html">OpenLayers</a><ul class='methods'><li data-type='method'><a href="gb.tree.OpenLayers.html#getJSTreeElement">getJSTreeElement</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#getJSTree">getJSTree</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#setJSTree">setJSTree</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#setEditingTool">setEditingTool</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#getEditingTool">getEditingTool</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#createGroupNode">createGroupNode</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#refreshList">refreshList</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#openSearchBar">openSearchBar</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#closeSearchBar">closeSearchBar</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#getUploadJSON">getUploadJSON</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#setUploadJSON">setUploadJSON</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#openAddLayer">openAddLayer</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#getAttrForm">getAttrForm</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#createUploadModal">createUploadModal</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#loadShpZip">loadShpZip</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#createImageModal">createImageModal</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#openDeleteLayer">openDeleteLayer</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#deleteLayer">deleteLayer</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#vectorLayerInfo">vectorLayerInfo</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#requestLayerInfo">requestLayerInfo</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#createPropTable">createPropTable</a></li><li data-type='method'><a href="gb.tree.OpenLayers.html#addPropModal">addPropModal</a></li></ul></li><li><a href="gb.validation.LayerDefinition.html">LayerDefinition</a><ul class='methods'><li data-type='method'><a href="gb.validation.LayerDefinition.html#getInputFile">getInputFile</a></li><li data-type='method'><a href="gb.validation.LayerDefinition.html#updateStructure">updateStructure</a></li><li data-type='method'><a href="gb.validation.LayerDefinition.html#clearStructure">clearStructure</a></li><li data-type='method'><a href="gb.validation.LayerDefinition.html#setStructure">setStructure</a></li><li data-type='method'><a href="gb.validation.LayerDefinition.html#getStructure">getStructure</a></li><li data-type='method'><a href="gb.validation.LayerDefinition.html#getJSONFile">getJSONFile</a></li></ul></li><li><a href="gb.validation.OptionDefinition.html">OptionDefinition</a><ul class='methods'><li data-type='method'><a href="gb.validation.OptionDefinition.html#init">init</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#setQACategory">setQACategory</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#getQACategory">getQACategory</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#setQAVersion">setQAVersion</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#getQAVersion">getQAVersion</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#printCategory">printCategory</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#printOption">printOption</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#printDetailForm">printDetailForm</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#getInputFile">getInputFile</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#updateStructure">updateStructure</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#setLayerDefinition">setLayerDefinition</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#getLayerDefinition">getLayerDefinition</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#clearStructure">clearStructure</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#setStructure">setStructure</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#getStructure">getStructure</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#isEmpty">isEmpty</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#getJSONFile">getJSONFile</a></li><li data-type='method'><a href="gb.validation.OptionDefinition.html#deleteConfirmModal">deleteConfirmModal</a></li></ul></li><li><a href="gb.validation.Validation.html">Validation</a><ul class='methods'><li data-type='method'><a href="gb.validation.Validation.html#open">open</a></li><li data-type='method'><a href="gb.validation.Validation.html#getParameter">getParameter</a></li><li data-type='method'><a href="gb.validation.Validation.html#createContent">createContent</a></li><li data-type='method'><a href="gb.validation.Validation.html#createJSTreePanel">createJSTreePanel</a></li><li data-type='method'><a href="gb.validation.Validation.html#removeSameTypeNode">removeSameTypeNode</a></li><li data-type='method'><a href="gb.validation.Validation.html#createChildren">createChildren</a></li><li data-type='method'><a href="gb.validation.Validation.html#updateChildren">updateChildren</a></li><li data-type='method'><a href="gb.validation.Validation.html#createWorkTreePanel">createWorkTreePanel</a></li><li data-type='method'><a href="gb.validation.Validation.html#createOptionPanel">createOptionPanel</a></li><li data-type='method'><a href="gb.validation.Validation.html#createModalFooter">createModalFooter</a></li><li data-type='method'><a href="gb.validation.Validation.html#openNodeRecursive">openNodeRecursive</a></li><li data-type='method'><a href="gb.validation.Validation.html#getLoadingNumber">getLoadingNumber</a></li><li data-type='method'><a href="gb.validation.Validation.html#setLoadingNumber">setLoadingNumber</a></li><li data-type='method'><a href="gb.validation.Validation.html#initLoadingNumber">initLoadingNumber</a></li><li data-type='method'><a href="gb.validation.Validation.html#getLoadingList">getLoadingList</a></li><li data-type='method'><a href="gb.validation.Validation.html#setLoadingList">setLoadingList</a></li><li data-type='method'><a href="gb.validation.Validation.html#addNodeToLoadingList">addNodeToLoadingList</a></li><li data-type='method'><a href="gb.validation.Validation.html#initLoadingList">initLoadingList</a></li><li data-type='method'><a href="gb.validation.Validation.html#changeNodeOnLoadingList">changeNodeOnLoadingList</a></li></ul></li><li><a href="gb.versioning.Feature.html">Feature</a><ul class='methods'><li data-type='method'><a href="gb.versioning.Feature.html#close">close</a></li><li data-type='method'><a href="gb.versioning.Feature.html#open">open</a></li><li data-type='method'><a href="gb.versioning.Feature.html#openConflictDetailModal">openConflictDetailModal</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getFeatureLogURL">getFeatureLogURL</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getDiffURL">getDiffURL</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getCatFeatureObjectURL">getCatFeatureObjectURL</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getFeatureRevertURL">getFeatureRevertURL</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getFeatureAttributeURL">getFeatureAttributeURL</a></li><li data-type='method'><a href="gb.versioning.Feature.html#clearChangesTbody">clearChangesTbody</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getTBody">getTBody</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setCommits">setCommits</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getCommits">getCommits</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setCommitsByInfo">setCommitsByInfo</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setPath">setPath</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getPath">getPath</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setRepo">setRepo</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getRepo">getRepo</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setServer">setServer</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getServer">getServer</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setIDString">setIDString</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getIDString">getIDString</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getPanel">getPanel</a></li><li data-type='method'><a href="gb.versioning.Feature.html#refresh">refresh</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setFeature">setFeature</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getFeature">getFeature</a></li><li data-type='method'><a href="gb.versioning.Feature.html#messageModal">messageModal</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getLeftMap">getLeftMap</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getRightMap">getRightMap</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getLeftTBody">getLeftTBody</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getRightTBody">getRightTBody</a></li><li data-type='method'><a href="gb.versioning.Feature.html#runAfterSaveCallback">runAfterSaveCallback</a></li><li data-type='method'><a href="gb.versioning.Feature.html#setEditingTool">setEditingTool</a></li><li data-type='method'><a href="gb.versioning.Feature.html#getEditingTool">getEditingTool</a></li></ul></li><li><a href="gb.versioning.Repository.html">Repository</a><ul class='methods'><li data-type='method'><a href="gb.versioning.Repository.html#geoserverInfoModal">geoserverInfoModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#manageRemoteRepository">manageRemoteRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#transitPage">transitPage</a></li><li data-type='method'><a href="gb.versioning.Repository.html#beginTransaction">beginTransaction</a></li><li data-type='method'><a href="gb.versioning.Repository.html#endTransaction">endTransaction</a></li><li data-type='method'><a href="gb.versioning.Repository.html#cancelTransaction">cancelTransaction</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getBranchList">getBranchList</a></li><li data-type='method'><a href="gb.versioning.Repository.html#refreshList">refreshList</a></li><li data-type='method'><a href="gb.versioning.Repository.html#refreshRemoteList">refreshRemoteList</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getJSTree">getJSTree</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getRemoteJSTree">getRemoteJSTree</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getServerTreeURL">getServerTreeURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getBeginTransactionURL">getBeginTransactionURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getEndTransactionURL">getEndTransactionURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getCancelTransactionURL">getCancelTransactionURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getCheckoutBranchURL">getCheckoutBranchURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getBranchListURL">getBranchListURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getRemoteTreeURL">getRemoteTreeURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getRemoveRemoteRepositoryURL">getRemoveRemoteRepositoryURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getRemoveRepositoryURL">getRemoveRepositoryURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getMergeBranchURL">getMergeBranchURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getInitRepositoryURL">getInitRepositoryURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getCreateBranchURL">getCreateBranchURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getPullRepositoryURL">getPullRepositoryURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getPushRepositoryURL">getPushRepositoryURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getAddRemoteRepositoryURL">getAddRemoteRepositoryURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getResolveConflictURL">getResolveConflictURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getFeatureBlameURL">getFeatureBlameURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getCatConflictFeatureObjectURL">getCatConflictFeatureObjectURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getDataStoreListURL">getDataStoreListURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getListGeoserverLayerURL">getListGeoserverLayerURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getPublishGeogigLayerURL">getPublishGeogigLayerURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getRemoveGeogigLayerURL">getRemoveGeogigLayerURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getInfoRepositoryURL">getInfoRepositoryURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getLogLayerURL">getLogLayerURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getDiffLayerURL">getDiffLayerURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getFeatureDiffURL">getFeatureDiffURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getNowRemoteRepository">getNowRemoteRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setNowRemoteRepository">setNowRemoteRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getNowBranch">getNowBranch</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setNowBranch">setNowBranch</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getNowLayer">getNowLayer</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setNowLayer">setNowLayer</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getNowRepository">getNowRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setNowRepository">setNowRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getNowServer">getNowServer</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setNowServer">setNowServer</a></li><li data-type='method'><a href="gb.versioning.Repository.html#open">open</a></li><li data-type='method'><a href="gb.versioning.Repository.html#checkoutBranch">checkoutBranch</a></li><li data-type='method'><a href="gb.versioning.Repository.html#mergeBranch">mergeBranch</a></li><li data-type='method'><a href="gb.versioning.Repository.html#removeRemoteRepository">removeRemoteRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#pullRepository">pullRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#pushRepository">pushRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#pullRepositoryModal">pullRepositoryModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#pushRepositoryModal">pushRepositoryModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#initRepositoryModal">initRepositoryModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#initRepository">initRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#removeRepositoryModal">removeRepositoryModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#removeRepository">removeRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#messageModal">messageModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#quitModal">quitModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#mergeModal">mergeModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#newBranchModal">newBranchModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#createNewBranch">createNewBranch</a></li><li data-type='method'><a href="gb.versioning.Repository.html#addRemoteRepoModal">addRemoteRepoModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#addRemoteRepository">addRemoteRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#resolveConflictModal">resolveConflictModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#resolveConflict">resolveConflict</a></li><li data-type='method'><a href="gb.versioning.Repository.html#conflictDetailModal">conflictDetailModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setCommitId">setCommitId</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getCommitId">getCommitId</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getCurrentMap">getCurrentMap</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getTargetMap">getTargetMap</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setFetchRepository">setFetchRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getFetchRepository">getFetchRepository</a></li><li data-type='method'><a href="gb.versioning.Repository.html#publishModal">publishModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getListGeoServerLayer">getListGeoServerLayer</a></li><li data-type='method'><a href="gb.versioning.Repository.html#publishGeogigLayer">publishGeogigLayer</a></li><li data-type='method'><a href="gb.versioning.Repository.html#removeLayerModal">removeLayerModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#infoRepoModal">infoRepoModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#removeLayer">removeLayer</a></li><li data-type='method'><a href="gb.versioning.Repository.html#layerHistoryModal">layerHistoryModal</a></li><li data-type='method'><a href="gb.versioning.Repository.html#revert">revert</a></li><li data-type='method'><a href="gb.versioning.Repository.html#showSpinner">showSpinner</a></li><li data-type='method'><a href="gb.versioning.Repository.html#loadCommitDetail">loadCommitDetail</a></li><li data-type='method'><a href="gb.versioning.Repository.html#openDetailChanges">openDetailChanges</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getLeftTBody">getLeftTBody</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getRightTBody">getRightTBody</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getFeatureRevertURL">getFeatureRevertURL</a></li><li data-type='method'><a href="gb.versioning.Repository.html#setLayerHistoryArea">setLayerHistoryArea</a></li><li data-type='method'><a href="gb.versioning.Repository.html#getLayerHistoryArea">getLayerHistoryArea</a></li></ul></li></ul><h3>Externals</h3><ul><li><a href="external-_jsTree-geoserver%2520plugin_.html">jsTree-geoserver plugin</a></li><li><a href="external-_jsTree-openlayers%2520plugin_.html">jsTree-openlayers plugin</a></li></ul><h3>Events</h3><ul><li><a href="gb.interaction.MultiTransform.html#event:transformstart">transformstart</a></li><li><a href="gb.interaction.MultiTransform.html#event:transforming">transforming</a></li><li><a href="gb.interaction.MultiTransform.html#event:transformend">transformend</a></li><li><a href="gb.layer.Pointer.html#event:transformstart">transformstart</a></li><li><a href="gb.layer.Pointer.html#event:transforming">transforming</a></li><li><a href="gb.layer.Pointer.html#event:transformend">transformend</a></li></ul><h3>Namespaces</h3><ul><li><a href="gb.html">gb</a></li><li><a href="gb.crs.html">crs</a></li><li><a href="gb.edit.html">edit</a></li><li><a href="gb.embed.html">embed</a></li><li><a href="gb.footer.html">footer</a></li><li><a href="gb.geoserver.html">geoserver</a></li><li><a href="gb.header.html">header</a></li><li><a href="gb.interaction.html">interaction</a></li><li><a href="gb.layer.html">layer</a></li><li><a href="gb.map.html">map</a></li><li><a href="gb.modal.html">modal</a></li><li><a href="gb.module.html">module</a></li><li><a href="gb.overriding.html">overriding</a></li><li><a href="gb.panel.html">panel</a></li><li><a href="gb.style.html">style</a></li><li><a href="gb.tree.html">tree</a></li><li><a href="gb.validation.html">validation</a></li><li><a href="gb.versioning.html">versioning</a></li><li><a href="gb.module.isEditing.html">isEditing</a><ul class='methods'><li data-type='method'><a href="gb.module.isEditing.html#.get">get</a></li><li data-type='method'><a href="gb.module.isEditing.html#.set">set</a></li><li data-type='method'><a href="gb.module.isEditing.html#.alert">alert</a></li></ul></li><li><a href="gb.module.serviceVersion.html">serviceVersion</a><ul class='methods'><li data-type='method'><a href="gb.module.serviceVersion.html#.getWMSCrs">getWMSCrs</a></li><li data-type='method'><a href="gb.module.serviceVersion.html#.geoserverSettingModal">geoserverSettingModal</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">UploadGeoJSON</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="gb.html">gb</a><a href="gb.geoserver.html">.geoserver</a>.</span>
+        
+        UploadGeoJSON
+        </h2>
+        
+            <div class="class-description"><p>지오서버에 레이어를 업로드 하기위한 모달 객체를 정의한다.</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="UploadGeoJSON"><span class="type-signature"></span>new UploadGeoJSON<span class="signature">(obj)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>SOYIJUN</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>생성자 옵션을 담은 객체</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>json객체를 업로드할 URL</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>epsg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">number</span>
+|
+
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>업로드할 레이어의 좌표계</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>geoserverTree</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="gb.tree.GeoServer.html">gb.tree.GeoServer</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>연동될 gb.tree.GeoServer 객체</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>locale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>"en"</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>사용할 언어 ko | en</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="getGeoserverTree"><span class="type-signature"></span>getGeoserverTree<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="gb.tree.GeoServer.html">gb.tree.GeoServer</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>지오서버 트리를 반환한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>지오서버 트리 객체</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="gb.tree.GeoServer.html">gb.tree.GeoServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setGeoserverTree"><span class="type-signature"></span>setGeoserverTree<span class="signature">(fnc)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>지오서버 트리를 설정한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>fnc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>지오서버 트리 객체를 반환하는 함수</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getEPSGCode"><span class="type-signature"></span>getEPSGCode<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>업로드할 레이어 좌표계의 EPSG 코드를 반환한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>좌표계의 EPSG 코드</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setEPSGCode"><span class="type-signature"></span>setEPSGCode<span class="signature">(code)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>업로드할 레이어 좌표계의 EPSG 코드를 설정한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>code</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>좌표계의 EPSG 코드</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getUploadURL"><span class="type-signature"></span>getUploadURL<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>업로드 URL 주소를 반환한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>업로드 URL 주소</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="open"><span class="type-signature"></span>open<span class="signature">(epsg)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>모달을 연다</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>epsg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>업로드 할 레이어의 좌표계</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code></code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setGeoServer"><span class="type-signature"></span>setGeoServer<span class="signature">(geoserver)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>지오서버를 설정한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>geoserver</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>설정할 지오서버의 이름</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getGeoServer"><span class="type-signature"></span>getGeoServer<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>지오서버를 반환한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>설정한 지오서버의 이름</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setWorkspace"><span class="type-signature"></span>setWorkspace<span class="signature">(workspace)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>워크스페이스를 설정한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>workspace</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>설정할 워크스페이스의 이름</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getWorkspace"><span class="type-signature"></span>getWorkspace<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>워크스페이스를 반환한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>설정한 워크스페이스의 이름</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setDatastore"><span class="type-signature"></span>setDatastore<span class="signature">(datastore)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>데이터스토어를 설정한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>datastore</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>설정할 데이터스토어의 이름</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getDatastore"><span class="type-signature"></span>getDatastore<span class="signature">()</span><span class="type-signature"> &rarr; {string}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>데이터스토어를 반환한다.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>설정한 데이터스토어의 이름</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Apr 29 2019 11:41:12 GMT+0900 (대한민국 표준시) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
