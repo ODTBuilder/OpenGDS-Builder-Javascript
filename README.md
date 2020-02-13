@@ -205,6 +205,7 @@ var gb3dMap = new gb3d.Map({
     
 ** 자세한 선언 방법은 포함된 API를 참조바랍니다.    
 ```
+![3차원 지도 화면](https://github.com/ODTBuilder/OpenGDS-Builder-Javascript/blob/master/screenshot/3dcapture.JPG) 
 
 ** icon 이미지는 fontawesome(https://fontawesome.com/icons)을 사용하였습니다.</br>
 ### 5. 사용 라이브러리
