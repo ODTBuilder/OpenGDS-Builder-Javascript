@@ -3,7 +3,7 @@
 
 <a name="korean"></a>
 # OpenGDS-Builder-Javascript
-OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git) 웹애플리케이션을 위해 공간정보기술(주)가 개발한 Javascript library들입니다. Layer 정보, Feature 속성, 그래픽 등의 공간 데이터에 대한 다양한 편집 기능을 제공하며 사용자 친화적인 UI로 공간정보를 보다 쉽게 다룰 수 있게 해줍니다.</br>
+OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git), OpenGDSBuilder2019Prod(https://github.com/ODTBuilder/OpenGDSBuilder2019Prod.git) 웹애플리케이션을 위해 공간정보기술(주)가 개발한 Javascript library들입니다. Layer 정보, Feature 속성, 그래픽 등의 공간 데이터에 대한 다양한 편집 기능을 제공하며 사용자 친화적인 UI로 공간정보를 보다 쉽게 다룰 수 있게 해줍니다.</br>
 이 라이브러리들을 다운로드하여 기능별로 사용할 수 있으며 확장이 가능합니다.
 
 # 특징
@@ -12,7 +12,7 @@ OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuild
 - 공간 데이터를 웹브라우저상에서 쉽고 빠르게 관리할 수 있습니다.<br>
 - 오픈소스 기반으로 개발되어 확장성이 뛰어납니다.<br><br>
 일부 라이브러리들(검수, Geoserver 연동, 버저닝 등)은 작동을 위해 서버와의 통신이 필수적입니다.
-서버와 연동되는 부분의 기능들은 OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git) 에서 확인할 수 있습니다.
+서버와 연동되는 부분의 기능들은 OpenGDSBuilder2018Prod(https://github.com/ODTBuilder/OpenGDSBuilder2018Prod.git), OpenGDSBuilder2019Prod(https://github.com/ODTBuilder/OpenGDSBuilder2019Prod.git) 에서 확인할 수 있습니다.
 
 # Quick Start
 
@@ -184,8 +184,28 @@ OpenGDS-Builder-Javascript는 OpenGDSBuilder2018Prod(https://github.com/ODTBuild
     });
   <script>
 </body>
-```
 ** 위와 같은 방식을 통해 Editing Tool 메뉴에 새로운 기능을 추가할 수 있습니다.</br>
+```
+### 5. 3차원으로 확장하기
+```
+// CesiumJS 임포트
+<script src="/resources/js/cesium/Cesium.js"></script>
+<link rel="stylesheet" type="text/css" href="/resources/js/cesium/Widgets/widgets.css" />
+// ThreeJS 임포트
+<script src="${pageContext.request.contextPath}/resources/js/three/three.js"></script>
+```
+
+```
+// 3차원 지도 객체 선언
+var gb3dMap = new gb3d.Map({
+			"gbMap" : gbMap, // 1번 과정에서 선언한 gbMap 변수를 생성자 파라미터로 입력
+			"target" : $(".area-3d")[0], // 3차원 지도 영역 DIV 엘리먼트
+			"initPosition" : [ 127.03250885009764, 37.51989305019379 ] // 최초 시작 지점
+	});
+    
+** 자세한 선언 방법은 포함된 API를 참조바랍니다.    
+```
+
 ** icon 이미지는 fontawesome(https://fontawesome.com/icons)을 사용하였습니다.</br>
 ### 5. 사용 라이브러리
 jQuery 2.2.2 (MIT License)</br>
