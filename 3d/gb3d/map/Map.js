@@ -179,13 +179,13 @@ gb3d.Map = function(obj) {
 	/**
 	 * 좌표계 바운딩 박스 - 최소값
 	 * 
-	 * @type {Array.<number>}
+	 * @type {number[]}
 	 */
 	this.minCRS = [ -180.0, -90.0 ];
 	/**
 	 * 좌표계 바운딩 박스 - 최대값
 	 * 
-	 * @type {Array.<number>}
+	 * @type {number[]}
 	 */
 	this.maxCRS = [ 180.0, 90.0 ];
 

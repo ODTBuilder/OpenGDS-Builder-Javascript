@@ -731,7 +731,7 @@ gb3d.io.ImporterThree.getChildrenMeshes = function(obj, result) {
  * 
  * @method gb3d.io.ImporterThree#getFloorPlan
  * @param {THREE.Object3D} obj - 평면도를 만들 객체
- * @param {Array.<number>} center - 객체의 중점
+ * @param {number[]} center - 객체의 중점
  * @param {Array.<Object>} result - 결과를 담을 배열
  * @return {Array.<Object>} 평면도 폴리곤이 담긴 배열
  */
