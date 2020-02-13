@@ -220,3 +220,5 @@ proj4js 2.2.1 (MIT License)</br>
 jsTree 3.3.3, 3.3.7 (MIT License)</br>
 ol-geocoder 3.2.0 (MIT License)</br>
 Openlayers3 v5.3.0 (FreeBSD) www.openlayers.org</br>
+ThreeJS r112 (MIT License)</br>
+CesiumJS v 1.65 (Apache License 2.0)</br>
