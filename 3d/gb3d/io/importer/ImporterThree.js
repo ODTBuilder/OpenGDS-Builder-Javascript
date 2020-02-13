@@ -1230,7 +1230,7 @@ gb3d.io.ImporterThree.prototype.getFeatureRecord = function() {
  * 2D 편집이력 객체를 설정한다.
  * 
  * @method gb3d.io.ImporterThree#setFeatureRecord
- * @return {gb.edit.FeatureRecord} 피처 편집이력 객체
+ * @param {gb.edit.FeatureRecord} frecord - 피처 편집이력 객체
  */
 gb3d.io.ImporterThree.prototype.setFeatureRecord = function(frecord) {
 	return this.frecord = frecord;

@@ -2362,6 +2362,13 @@ gb3d.Math.getLineStringVertexAndFaceFromDegrees = function(arr, radius, center, 
 	}
 }
 
+/**
+ * 라인스트링 지오메트리에 따른 UV좌표를 생성한다.
+ * 
+ * @method gb3d.Math.createUVVerticeOnLineString
+ * @param {THREE.Geometry} geometry - UV좌표를 입력할 지오메트리 객체
+ * @param {Object} 지오메트리 객체에 덮어쓸 좌표값 객체 
+ */
 gb3d.Math.createUVVerticeOnLineString = function(geometry, result){
 
 	geometry.vertices = result.points;
@@ -2815,6 +2822,13 @@ gb3d.Math.createUVVerticeOnLineString = function(geometry, result){
 	geometry.uvsNeedUpdate = true;
 }
 
+/**
+ * 지오메트리에 따른 UV좌표를 생성한다.
+ * 
+ * @method gb3d.Math.createUVVerticeOnPolygon
+ * @param {THREE.Geometry} geometry - UV좌표를 입력할 지오메트리 객체
+ * @param {Object} 지오메트리 객체에 덮어쓸 좌표값 객체 
+ */
 gb3d.Math.createUVVerticeOnPolygon = function(geometry, result){
 
 	geometry.vertices = result.points;

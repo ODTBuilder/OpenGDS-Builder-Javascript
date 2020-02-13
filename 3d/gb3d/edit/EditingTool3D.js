@@ -1743,7 +1743,7 @@ gb3d.edit.EditingTool3D.prototype.createPolygonObject = function(arr, extent, op
 		if(that.texture.hasOwnProperty(option.texture)){
 			var txturl = that.texture[option.texture];
 			texture = new THREE.TextureLoader().load(txturl);
-//			texture.flipY = false;
+// texture.flipY = false;
 		}
 	}
 	// 이준 끝
@@ -2945,6 +2945,8 @@ gb3d.edit.EditingTool3D.updateFloorPlan = function(selectedFeature, threeObj) {
  * 선택한 b3dm을 glb로 변환하여 편집화면에 불러온다
  * 
  * @method gb3d.edit.EditingTool3D#getGLTFfromServer
+ * @param {Cesium.Cesium3DTileFeature} pickedFeature - 선택한 3d tileset 피처
+ * @param {ol.layer.Base} layer - 선택한 레이어
  */
 gb3d.edit.EditingTool3D.prototype.getGLTFfromServer = function(pickedFeature, layer){
 	var that = this;
@@ -3188,7 +3190,7 @@ gb3d.edit.EditingTool3D.prototype.setThreeTree = function(tree){
  * ThreeTree에서 노드를 삭제한다.
  * 
  * @method gb3d.edit.EditingTool3D#removeNode
- * @param {gb3d.tree.ThreeTree} tree - 트리 객체
+ * @param {string} id - 삭제할 노드 id
  */
 gb3d.edit.EditingTool3D.prototype.removeNode = function(id){
 	var that = this;
@@ -3248,6 +3250,7 @@ gb3d.edit.EditingTool3D.prototype.setThreeEdit = function(flag){
  * 현재 선택한 객체의 스케일값을 반환한다.
  * 
  * @method gb3d.edit.EditingTool3D#getScale
+ * @return {THREE.Vector3} 스케일값 객체
  */
 gb3d.edit.EditingTool3D.prototype.getScale = function(){
 	return this.scale; 
@@ -3257,24 +3260,27 @@ gb3d.edit.EditingTool3D.prototype.getScale = function(){
  * 현재 선택한 객체의 스케일값을 저장한다.
  * 
  * @method gb3d.edit.EditingTool3D#setScale
+ * @param {THREE.Vector3} scale - 스케일값 객체
  */
 gb3d.edit.EditingTool3D.prototype.setScale = function(scale){
 	this.scale = scale; 
 }
 
 /**
- * 현재 선택한 객체의 스케일값을 반환한다.
+ * 현재 선택한 객체의 로테이션값을 반환한다.
  * 
  * @method gb3d.edit.EditingTool3D#getRotation
+ * @return {THREE.Euler} 회전값 객체
  */
 gb3d.edit.EditingTool3D.prototype.getRotation = function(){
 	return this.rotation; 
 }
 
 /**
- * 현재 선택한 객체의 스케일값을 저장한다.
+ * 현재 선택한 객체의 로테이션값을 저장한다.
  * 
  * @method gb3d.edit.EditingTool3D#setRotation
+ * @param {THREE.Euler} rotation - 회전값 객체
  */
 gb3d.edit.EditingTool3D.prototype.setRotation = function(rotation){
 	this.rotation = rotation; 

@@ -211,7 +211,7 @@ gb3d.Map = function(obj) {
 	var near = 1;
 	var far = 10*1000*1000;
 
-//	THREE.Object3D.DefaultUp.set( 0, 0, 1 );
+// THREE.Object3D.DefaultUp.set( 0, 0, 1 );
 	/**
 	 * three js scene 객체
 	 * 
@@ -554,6 +554,7 @@ gb3d.Map.prototype.deleteThreeObject = function(object){
  * 
  * @method gb3d.Map#getThreeObjectById
  * @param {string} id - Feature ID
+ * @param {ol.layer.Base} layer - 특정할 레이어 객체
  * @return {gb3d.object.ThreeObject}
  */
 gb3d.Map.prototype.getThreeObjectById = function(id, layer){
@@ -683,8 +684,9 @@ gb3d.Map.prototype.removeThreeObject = function( object, cancel ) {
 }
 
 /**
- * Add Tileset
+ * 타일셋을 추가한다.
  * 
+ * @Deprecated
  * @method gb3d.Map#addTileset
  * @param {gb3d.object.Tileset} tileset - 타일셋 객체
  */
